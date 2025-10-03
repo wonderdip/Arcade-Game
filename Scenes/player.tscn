@@ -1,9 +1,15 @@
-[gd_scene load_steps=29 format=3 uid="uid://cf3plcg7m0wcg"]
+[gd_scene load_steps=32 format=3 uid="uid://cf3plcg7m0wcg"]
 
 [ext_resource type="Script" uid="uid://kbx36j4fsn6t" path="res://Scripts/player.gd" id="1_cvnsp"]
+[ext_resource type="Texture2D" uid="uid://cjw067oe2ia60" path="res://Assets/Characters/Block sprite-Sheet.png" id="2_fkybt"]
 [ext_resource type="Texture2D" uid="uid://cpv88bc3aiepp" path="res://Assets/Characters/idle sprite-Sheet.png" id="2_vgqql"]
 [ext_resource type="Texture2D" uid="uid://dp3uy7erc7xvr" path="res://Assets/Characters/jump sprite-Sheet.png" id="3_fkybt"]
 [ext_resource type="Texture2D" uid="uid://ciy5qth1k2307" path="res://Assets/Characters/run sprite-Sheet.png" id="4_x3wgy"]
+[ext_resource type="PackedScene" uid="uid://b3gw6epw21u3s" path="res://Scenes/player_arms.tscn" id="6_x3wgy"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_igrcy"]
+atlas = ExtResource("2_fkybt")
+region = Rect2(0, 0, 32, 37)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fkybt"]
 atlas = ExtResource("3_fkybt")
@@ -97,6 +103,14 @@ region = Rect2(224, 0, 32, 32)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_igrcy")
+}],
+"loop": true,
+"name": &"Block",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_fkybt")
 }, {
 "duration": 1.0,
@@ -108,22 +122,10 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_fd4e3")
 }, {
-"duration": 1.0,
+"duration": 10.0,
 "texture": SubResource("AtlasTexture_qqcod")
 }, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qqcod")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qqcod")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qqcod")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_qqcod")
-}, {
-"duration": 1.0,
+"duration": 10.0,
 "texture": SubResource("AtlasTexture_qqcod")
 }],
 "loop": false,
@@ -203,12 +205,14 @@ height = 26.0
 
 [node name="Player" type="CharacterBody2D"]
 collision_mask = 30
+slide_on_ceiling = false
+floor_stop_on_slope = false
 script = ExtResource("1_cvnsp")
 JumpForce = -230.0
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_pu2lt")
-animation = &"Idle"
+animation = &"Block"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-1, 0)
@@ -218,4 +222,4 @@ shape = SubResource("CapsuleShape2D_ukyrk")
 wait_time = 0.1
 one_shot = true
 
-[connection signal="animation_finished" from="Sprite" to="." method="_on_sprite_animation_finished"]
+[node name="Player Arms" parent="." instance=ExtResource("6_x3wgy")]

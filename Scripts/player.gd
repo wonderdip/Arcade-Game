@@ -12,10 +12,14 @@ var peak_gravity_scale: float = 0.5   # how floaty the top feels
 var peak_threshold: float = 80.0      # how close to 0 velocity to count as "peak"
 
 var is_hitting: bool = false
+var in_blockzone: bool = false
 
 @onready var sprite: AnimatedSprite2D = $Sprite
+@onready var player_arms: Node2D = $"Player Arms"
 
-
+func _ready() -> void:
+	player_arms.visible = false
+	
 func _physics_process(delta: float) -> void:
 	# Apply gravity with floaty jump feel
 	if velocity.y < 0:  # going up
@@ -39,13 +43,13 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, direction * Speed, Acceleration * delta)
 	else:
 		velocity.x = move_toward(velocity.x, 0, Friction * delta)
-
+	
 	# --- Handle attack ---
 	if Input.is_action_just_pressed("hit") and not is_on_floor() and not is_hitting:
-		# Start hit only in the air
-		sprite.play("Hit")
 		is_hitting = true
-
+		player_arms.swing()
+		sprite.play("Hit")
+		
 	# Cancel hit if you land
 	if is_on_floor() and is_hitting:
 		is_hitting = false
@@ -54,7 +58,10 @@ func _physics_process(delta: float) -> void:
 	# --- Pick animations (if not hitting) ---
 	if not is_hitting:
 		if not is_on_floor():
-			sprite.play("Jump")
+			if in_blockzone == false:
+				sprite.play("Jump")
+			elif in_blockzone == true:
+				sprite.play("Block")
 		elif direction != 0:
 			sprite.play("Run")
 		else:
@@ -68,3 +75,4 @@ func _physics_process(delta: float) -> void:
 
 	# Apply movement
 	move_and_slide()
+	

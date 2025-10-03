@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=4 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=11 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
+[ext_resource type="Script" uid="uid://bshn1jsaig2fx" path="res://Scripts/world.gd" id="1_fo5ed"]
 [ext_resource type="Texture2D" uid="uid://jhr0hmkkxwpy" path="res://Assets/NetPole.png" id="2_5a7ea"]
 [ext_resource type="Texture2D" uid="uid://c4hb1weoybdb7" path="res://Assets/Court-Sheet.png" id="2_go701"]
 [ext_resource type="PackedScene" uid="uid://txgrcwpblspl" path="res://Scenes/ball.tscn" id="4_8j60k"]
@@ -27,7 +28,11 @@ height = 73.499985
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5a7ea"]
 size = Vector2(12, 116)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8j60k"]
+size = Vector2(60, 100)
+
 [node name="World" type="Node2D"]
+script = ExtResource("1_fo5ed")
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
 z_index = -10
@@ -56,8 +61,18 @@ collision_layer = 16
 position = Vector2(128, 78)
 shape = SubResource("RectangleShape2D_5a7ea")
 
+[node name="Block Zone" type="Area2D" parent="."]
+position = Vector2(128, 104)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Block Zone"]
+position = Vector2(0, -6.75)
+shape = SubResource("RectangleShape2D_8j60k")
+
 [node name="Player" parent="." instance=ExtResource("1_a02cp")]
 position = Vector2(40, 112)
 
 [node name="Ball" parent="." instance=ExtResource("4_8j60k")]
-position = Vector2(128, -8)
+position = Vector2(80, -40)
+
+[connection signal="body_entered" from="Block Zone" to="." method="_on_block_zone_body_entered"]
+[connection signal="body_exited" from="Block Zone" to="." method="_on_block_zone_body_exited"]
