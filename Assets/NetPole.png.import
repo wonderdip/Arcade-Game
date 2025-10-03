@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b7oagt3b30f4q"
-path="res://.godot/imported/run sprite-Sheet.png-665b233376abee261019a3b7f7692a80.ctex"
+uid="uid://jhr0hmkkxwpy"
+path="res://.godot/imported/NetPole.png-657b5d8874eb8b8f7acd8d90f4f5b886.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/run sprite-Sheet.png"
-dest_files=["res://.godot/imported/run sprite-Sheet.png-665b233376abee261019a3b7f7692a80.ctex"]
+source_file="res://Assets/NetPole.png"
+dest_files=["res://.godot/imported/NetPole.png-657b5d8874eb8b8f7acd8d90f4f5b886.ctex"]
 
 [params]
 

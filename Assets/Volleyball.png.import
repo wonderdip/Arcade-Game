@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chin8x3p7rsou"
-path="res://.godot/imported/idle sprite-Sheet.png-a6c9ec6af0b31b59df7d7c1ec0d50b69.ctex"
+uid="uid://m7f8mlud45t1"
+path="res://.godot/imported/Volleyball.png-0e76fb148a5b65cdd372d847d007571d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/idle sprite-Sheet.png"
-dest_files=["res://.godot/imported/idle sprite-Sheet.png-a6c9ec6af0b31b59df7d7c1ec0d50b69.ctex"]
+source_file="res://Assets/Volleyball.png"
+dest_files=["res://.godot/imported/Volleyball.png-0e76fb148a5b65cdd372d847d007571d.ctex"]
 
 [params]
 

@@ -1,16 +1,63 @@
-[gd_scene load_steps=3 format=3 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=9 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
+[ext_resource type="Texture2D" uid="uid://jhr0hmkkxwpy" path="res://Assets/NetPole.png" id="2_5a7ea"]
+[ext_resource type="Texture2D" uid="uid://c4hb1weoybdb7" path="res://Assets/Court-Sheet.png" id="2_go701"]
+[ext_resource type="PackedScene" uid="uid://txgrcwpblspl" path="res://Scenes/ball.tscn" id="4_8j60k"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_a02cp"]
-size = Vector2(1006, 20)
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5a7ea"]
+texture = ExtResource("2_go701")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -5, 8, -5, 8, 8, -8, 8)
+1:0/0 = 0
+2:0/0 = 0
+2:0/0/physics_layer_1/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+
+[sub_resource type="TileSet" id="TileSet_8j60k"]
+physics_layer_0/collision_layer = 4
+physics_layer_0/collision_mask = 4
+physics_layer_1/collision_layer = 8
+physics_layer_1/collision_mask = 8
+sources/0 = SubResource("TileSetAtlasSource_5a7ea")
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5a7ea"]
+radius = 6.0
+height = 73.499985
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5a7ea"]
+size = Vector2(12, 116)
 
 [node name="World" type="Node2D"]
 
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+z_index = -10
+position = Vector2(128, 80)
+tile_map_data = PackedByteArray("AAD4/wMAAAAAAAAAAAD5/wMAAAAAAAAAAAD6/wMAAAAAAAAAAAD7/wMAAAAAAAAAAAD8/wMAAAAAAAAAAAD9/wMAAAAAAAAAAAD+/wMAAAAAAAAAAAD//wMAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAD4/wIAAAABAAAAAAD5/wIAAAABAAAAAAD6/wIAAAABAAAAAAD7/wIAAAABAAAAAAD8/wIAAAABAAAAAAD9/wIAAAABAAAAAAD+/wIAAAABAAAAAAD//wIAAAABAAAAAAAAAAIAAAABAAAAAAABAAIAAAABAAAAAAACAAIAAAABAAAAAAADAAIAAAABAAAAAAAEAAIAAAABAAAAAAAFAAIAAAABAAAAAAAGAAIAAAABAAAAAAAHAAIAAAABAAAAAAD3/wMAAAACAAAAAGD3/wIAAAACAAAAAGD3/wEAAAACAAAAAGD3/wAAAAACAAAAAGD3////AAACAAAAAGD3//7/AAACAAAAAGD3//3/AAACAAAAAGD3//z/AAACAAAAAGD3//v/AAACAAAAAGD3//r/AAACAAAAAGD3//n/AAACAAAAAGAIAAMAAAACAAAAAFAIAAIAAAACAAAAAFAIAAEAAAACAAAAAFAIAAAAAAACAAAAAFAIAP//AAACAAAAAFAIAP7/AAACAAAAAFAIAP3/AAACAAAAAFAIAPz/AAACAAAAAFAIAPv/AAACAAAAAFAIAPr/AAACAAAAAFAIAPn/AAACAAAAAFA=")
+tile_set = SubResource("TileSet_8j60k")
+
+[node name="Pole" type="StaticBody2D" parent="."]
+position = Vector2(128, 104)
+scale = Vector2(1, 1.1428572)
+collision_layer = 32
+collision_mask = 2
+
+[node name="Pole" type="Sprite2D" parent="Pole"]
+z_index = 1
+texture = ExtResource("2_5a7ea")
+
+[node name="Ball Collision" type="CollisionShape2D" parent="Pole"]
+position = Vector2(0, 6.9999995)
+shape = SubResource("CapsuleShape2D_5a7ea")
+
+[node name="PlayerBlocker" type="StaticBody2D" parent="."]
+collision_layer = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerBlocker"]
+position = Vector2(128, 78)
+shape = SubResource("RectangleShape2D_5a7ea")
+
 [node name="Player" parent="." instance=ExtResource("1_a02cp")]
+position = Vector2(40, 112)
 
-[node name="StaticBody2D" type="StaticBody2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
-position = Vector2(243, 101)
-shape = SubResource("RectangleShape2D_a02cp")
+[node name="Ball" parent="." instance=ExtResource("4_8j60k")]
+position = Vector2(128, -8)
