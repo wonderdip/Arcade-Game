@@ -3,6 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://m7f8mlud45t1" path="res://Assets/Volleyball.png" id="1_d60mj"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_d60mj"]
+friction = 0.5
 bounce = 0.5
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ij5cq"]
@@ -10,9 +11,13 @@ radius = 5.0
 
 [node name="Ball" type="RigidBody2D" groups=["ball"]]
 collision_layer = 2
-collision_mask = 45
+collision_mask = 44
+collision_priority = 20.0
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_d60mj")
+gravity_scale = 0.8
+linear_damp = 0.5
+angular_damp = 1.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.5, 0.5)

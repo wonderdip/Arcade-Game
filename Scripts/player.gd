@@ -12,6 +12,7 @@ var peak_gravity_scale: float = 0.5   # how floaty the top feels
 var peak_threshold: float = 80.0      # how close to 0 velocity to count as "peak"
 
 var is_hitting: bool = false
+var is_bumping: bool = false
 var in_blockzone: bool = false
 
 @onready var sprite: AnimatedSprite2D = $Sprite
@@ -35,28 +36,45 @@ func _physics_process(delta: float) -> void:
 	# Handle jump
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JumpForce
-
+	
 	# Handle movement
 	var direction := Input.get_axis("left", "right")
-
-	if direction != 0 and not is_hitting:
+	
+	if is_bumping:
+		velocity.x = 0  # lock in place during bump
+	elif direction != 0 and not is_hitting:
 		velocity.x = move_toward(velocity.x, direction * Speed, Acceleration * delta)
 	else:
 		velocity.x = move_toward(velocity.x, 0, Friction * delta)
 	
 	# --- Handle attack ---
-	if Input.is_action_just_pressed("hit") and not is_on_floor() and not is_hitting:
+	if Input.is_action_just_pressed("hit") and not is_on_floor() and not is_hitting and not is_bumping:
 		is_hitting = true
 		player_arms.swing()
 		sprite.play("Hit")
-		
+	
+	# Handle bump - only on ground and not during other actions
+	if Input.is_action_pressed("Bump") and is_on_floor() and not is_hitting:
+		if not is_bumping:
+			is_bumping = true
+			player_arms.bump()
+			sprite.play("Bump")
+	else:
+		# Release bump when button is let go
+		if is_bumping:
+			is_bumping = false
+			player_arms.stop_bump()  # Use the new stop_bump function
+			sprite.play("Idle")
+
+	
 	# Cancel hit if you land
 	if is_on_floor() and is_hitting:
 		is_hitting = false
+		player_arms.stop_hit()
 		sprite.play("Idle")
-
-	# --- Pick animations (if not hitting) ---
-	if not is_hitting:
+		
+	# --- Pick animations (if not hitting or bumping) ---
+	if not is_bumping and not is_hitting:
 		if not is_on_floor():
 			if in_blockzone == false:
 				sprite.play("Jump")
@@ -67,12 +85,15 @@ func _physics_process(delta: float) -> void:
 		else:
 			sprite.play("Idle")
 
-	# Flip sprite
-	if direction > 0:
-		sprite.flip_h = false
-	elif direction < 0:
-		sprite.flip_h = true
+	# Flip sprite based on direction
+	if direction != 0:
+		if direction > 0:
+			sprite.flip_h = false
+		elif direction < 0:
+			sprite.flip_h = true
+		
+		# Always update arm direction when there's input
+		player_arms.sprite_direction(direction)
 
 	# Apply movement
 	move_and_slide()
-	
