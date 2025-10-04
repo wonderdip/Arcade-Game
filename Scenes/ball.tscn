@@ -21,7 +21,7 @@ continuous_cd = 2
 contact_monitor = true
 max_contacts_reported = 4
 linear_damp = 0.5
-angular_damp = 0.5
+angular_damp = 2.0
 script = ExtResource("1_ij5cq")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]

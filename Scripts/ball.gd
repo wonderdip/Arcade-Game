@@ -1,8 +1,8 @@
 extends RigidBody2D
 
 @export var normal_gravity_scale: float = 0.8
-@export var hover_gravity_scale: float = 0.01
-@export var hover_linear_damp: float = 2.0
+@export var hover_gravity_scale: float = 0.05
+@export var hover_linear_damp: float = 1.2
 
 var normal_linear_damp: float = 0.5
 var is_hovering: bool = false

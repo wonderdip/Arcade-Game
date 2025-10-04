@@ -31,25 +31,20 @@ func _ready():
 
 
 func _physics_process(_delta):
-	# Clean up old entries from hit_bodies dictionary
+	if not (is_hitting or is_bumping):
+		return
+
 	var current_time = Time.get_ticks_msec() / 1000.0
-	var bodies_to_remove = []
-	
-	for body in hit_bodies.keys():
-		if current_time - hit_bodies[body] > hit_cooldown:
-			bodies_to_remove.append(body)
-	
-	for body in bodies_to_remove:
-		hit_bodies.erase(body)
-	
-	# Continuously check for overlapping bodies during active states
-	if (is_hitting or is_bumping) and not collision_shape.disabled:
-		var overlapping = get_overlapping_bodies()
-		for body in overlapping:
-			if body.is_in_group("ball") and not body in hit_bodies:
-				# Check if ball is in valid position
-				if body.global_position.y <= collision_shape.global_position.y + 3:
-					_apply_hit_to_ball(body)
+	var overlapping = get_overlapping_bodies()
+	for body in overlapping:
+		if not body.is_in_group("ball"):
+			continue
+		if body in hit_bodies and current_time - hit_bodies[body] < hit_cooldown:
+			continue
+		if body.global_position.y > collision_shape.global_position.y + 5:
+			continue
+		
+		_apply_hit_to_ball(body)
 
 
 func swing():
@@ -110,7 +105,7 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	
 	# Ignore balls below the arms
-	if body.global_position.y > collision_shape.global_position.y + 3:
+	if body.global_position.y > collision_shape.global_position.y + 1:
 		print("Invalid hit - ball below arms")
 		return
 	
