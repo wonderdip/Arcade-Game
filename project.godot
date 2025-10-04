@@ -67,6 +67,12 @@ Bump={
 2d_physics/layer_4="Side Walls"
 2d_physics/layer_5="Middle Wall"
 2d_physics/layer_6="Pole"
+2d_physics/layer_7="Arms"
+
+[physics]
+
+common/physics_ticks_per_second=80
+common/physics_jitter_fix=0.6
 
 [rendering]
 

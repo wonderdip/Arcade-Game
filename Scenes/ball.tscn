@@ -11,11 +11,12 @@ radius = 5.0
 
 [node name="Ball" type="RigidBody2D" groups=["ball"]]
 collision_layer = 2
-collision_mask = 44
+collision_mask = 108
 collision_priority = 20.0
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_d60mj")
 gravity_scale = 0.8
+continuous_cd = 2
 linear_damp = 0.5
 angular_damp = 1.0
 
