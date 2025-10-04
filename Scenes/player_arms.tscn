@@ -131,15 +131,15 @@ _data = {
 }
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ism15"]
-radius = 1.0
+radius = 2.9958892
 height = 22.0
 
 [node name="Player Arms" type="Area2D"]
 collision_layer = 64
 collision_mask = 2
 script = ExtResource("1_f6qgc")
-bump_force = 2.0
-bump_upward_force = -40.0
+bump_force = 10.0
+bump_upward_force = -60.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

@@ -71,7 +71,7 @@ Bump={
 
 [physics]
 
-common/physics_ticks_per_second=80
+common/physics_ticks_per_second=120
 common/physics_jitter_fix=0.6
 
 [rendering]

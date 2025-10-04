@@ -7,7 +7,7 @@ friction = 0.5
 bounce = 0.5
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ij5cq"]
-radius = 5.0
+radius = 4.0
 
 [node name="Ball" type="RigidBody2D" groups=["ball"]]
 collision_layer = 2
@@ -18,7 +18,7 @@ physics_material_override = SubResource("PhysicsMaterial_d60mj")
 gravity_scale = 0.8
 continuous_cd = 2
 linear_damp = 0.5
-angular_damp = 1.0
+angular_damp = 0.5
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 scale = Vector2(0.5, 0.5)

@@ -236,8 +236,3 @@ wait_time = 0.1
 one_shot = true
 
 [node name="Player Arms" parent="." instance=ExtResource("6_x3wgy")]
-position = Vector2(0, -0.5)
-hit_force = null
-upward_force = null
-bump_force = null
-bump_upward_force = null
