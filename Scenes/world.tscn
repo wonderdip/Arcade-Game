@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=4 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=13 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
 [ext_resource type="Script" uid="uid://bshn1jsaig2fx" path="res://Scripts/world.gd" id="1_fo5ed"]
 [ext_resource type="Texture2D" uid="uid://jhr0hmkkxwpy" path="res://Assets/NetPole.png" id="2_5a7ea"]
 [ext_resource type="Texture2D" uid="uid://c4hb1weoybdb7" path="res://Assets/Court-Sheet.png" id="2_go701"]
+[ext_resource type="Script" uid="uid://b3vf3iffgaffp" path="res://Scripts/hover_zone.gd" id="4_5ukr8"]
 [ext_resource type="PackedScene" uid="uid://txgrcwpblspl" path="res://Scenes/ball.tscn" id="4_8j60k"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5a7ea"]
@@ -25,13 +26,16 @@ sources/0 = SubResource("TileSetAtlasSource_5a7ea")
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5a7ea"]
 radius = 6.0
-height = 73.499985
+height = 66.499985
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5a7ea"]
 size = Vector2(12, 116)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8j60k"]
 size = Vector2(60, 100)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_o06y3"]
+size = Vector2(260, 38)
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_fo5ed")
@@ -50,6 +54,8 @@ collision_mask = 2
 
 [node name="Pole" type="Sprite2D" parent="Pole"]
 z_index = 1
+position = Vector2(0, 1.75)
+scale = Vector2(1, 0.9375)
 texture = ExtResource("2_5a7ea")
 
 [node name="Ball Collision" type="CollisionShape2D" parent="Pole"]
@@ -69,6 +75,16 @@ position = Vector2(128, 104)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Block Zone"]
 position = Vector2(0, -6.75)
 shape = SubResource("RectangleShape2D_8j60k")
+
+[node name="Hover Zone" type="Area2D" parent="."]
+position = Vector2(128, 46)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("4_5ukr8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hover Zone"]
+position = Vector2(0, 9)
+shape = SubResource("RectangleShape2D_o06y3")
 
 [node name="Player" parent="." instance=ExtResource("1_a02cp")]
 position = Vector2(40, 112)

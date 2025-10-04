@@ -7,14 +7,15 @@ extends Area2D
 var is_hitting: bool = false
 var is_bumping: bool = false
 var facing_right: bool = true
-var hit_bodies: Array = []
+var hit_bodies: Dictionary = {}  # Changed to Dictionary to track timestamps
 
 @export var hit_force: float = 150.0
-@export var upward_force: float = -100.0
+@export var downward_force: float = -100.0
 
 @export var bump_force: float = 80.0
 @export var bump_upward_force: float = -200.0
 
+@export var hit_cooldown: float = 0.15  # Time before same ball can be hit again
 
 
 func _ready():
@@ -22,9 +23,33 @@ func _ready():
 	monitorable = true
 	if not body_entered.is_connected(_on_body_entered):
 		body_entered.connect(_on_body_entered)
+	if not body_exited.is_connected(_on_body_exited):
+		body_exited.connect(_on_body_exited)
 	
 	# Start with collision disabled
 	collision_shape.disabled = true
+
+
+func _physics_process(_delta):
+	# Clean up old entries from hit_bodies dictionary
+	var current_time = Time.get_ticks_msec() / 1000.0
+	var bodies_to_remove = []
+	
+	for body in hit_bodies.keys():
+		if current_time - hit_bodies[body] > hit_cooldown:
+			bodies_to_remove.append(body)
+	
+	for body in bodies_to_remove:
+		hit_bodies.erase(body)
+	
+	# Continuously check for overlapping bodies during active states
+	if (is_hitting or is_bumping) and not collision_shape.disabled:
+		var overlapping = get_overlapping_bodies()
+		for body in overlapping:
+			if body.is_in_group("ball") and not body in hit_bodies:
+				# Check if ball is in valid position
+				if body.global_position.y <= collision_shape.global_position.y + 3:
+					_apply_hit_to_ball(body)
 
 
 func swing():
@@ -34,13 +59,6 @@ func swing():
 		visible = true
 		collision_shape.disabled = false
 		anim.play("Hit")
-		
-		await get_tree().process_frame  # Wait for the shape to move
-		var overlapping = get_overlapping_bodies()
-		for body in overlapping:
-			if body.is_in_group("ball"):
-				hit_bodies.append(body)
-				print("Ball already overlapping at swing start - ignoring")
 
 
 func bump():
@@ -50,14 +68,7 @@ func bump():
 		visible = true
 		collision_shape.disabled = false
 		anim.play("Bump")
-		
-		await get_tree().process_frame  # Wait for the shape to move
-		var overlapping = get_overlapping_bodies()
-		for body in overlapping:
-			if body.is_in_group("ball"):
-				hit_bodies.append(body)
-				print("Ball already overlapping at bump start - ignoring")
-	
+
 	
 func stop_bump():
 	if is_bumping:
@@ -68,6 +79,7 @@ func stop_bump():
 		anim.play("RESET")
 		visible = false
 
+
 func stop_hit():
 	if is_hitting:
 		is_hitting = false
@@ -76,6 +88,7 @@ func stop_hit():
 		anim.stop()
 		anim.play("RESET")
 		visible = false
+
 		
 func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "Hit":
@@ -84,10 +97,9 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 		collision_shape.disabled = true
 		visible = false
 	elif anim_name == "Bump":
-		is_bumping = false
-		hit_bodies.clear()
-		collision_shape.disabled = true
-		visible = false
+		# Don't clear when bump animation finishes if still holding button
+		pass
+
 
 func _on_body_entered(body: Node2D) -> void:
 	if not (is_hitting or is_bumping):
@@ -98,11 +110,26 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	
 	# Ignore balls below the arms
-	if body.global_position.y > collision_shape.global_position.y:
+	if body.global_position.y > collision_shape.global_position.y + 3:
 		print("Invalid hit - ball below arms")
 		return
 	
-	hit_bodies.append(body)
+	_apply_hit_to_ball(body)
+
+
+func _on_body_exited(body: Node2D) -> void:
+	# When ball leaves the area, allow it to be hit again after cooldown
+	if body.is_in_group("ball") and body in hit_bodies:
+		# Reset the timestamp so it can be hit again soon
+		hit_bodies[body] = Time.get_ticks_msec() / 1000.0 - hit_cooldown + 0.05
+
+
+func _apply_hit_to_ball(body: RigidBody2D) -> void:
+	if body in hit_bodies:
+		return
+	
+	# Record this hit with current timestamp
+	hit_bodies[body] = Time.get_ticks_msec() / 1000.0
 	
 	var contact_point = collision_shape.global_position
 	var hit_direction: Vector2
@@ -114,11 +141,9 @@ func _on_body_entered(body: Node2D) -> void:
 		print("BUMP! Impulse:", impulse)
 	elif is_hitting:
 		hit_direction = Vector2(1 if facing_right else -1, -0.2).normalized()
-		var impulse = hit_direction * hit_force + Vector2(0, upward_force)
+		var impulse = hit_direction * hit_force + Vector2(0, -downward_force)
 		body.apply_impulse(impulse, contact_point - body.global_position)
 		print("HIT! Impulse:", impulse)
-
-
 
 
 func sprite_direction(sprite_dir):

@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://txgrcwpblspl"]
+[gd_scene load_steps=5 format=3 uid="uid://txgrcwpblspl"]
 
 [ext_resource type="Texture2D" uid="uid://m7f8mlud45t1" path="res://Assets/Volleyball.png" id="1_d60mj"]
+[ext_resource type="Script" uid="uid://cmmnovr8dmvae" path="res://Scripts/ball.gd" id="1_ij5cq"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_d60mj"]
 friction = 0.5
@@ -17,11 +18,13 @@ mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_d60mj")
 gravity_scale = 0.8
 continuous_cd = 2
+contact_monitor = true
+max_contacts_reported = 4
 linear_damp = 0.5
 angular_damp = 0.5
+script = ExtResource("1_ij5cq")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.5, 0.5)
 texture = ExtResource("1_d60mj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
