@@ -1,6 +1,7 @@
 extends Node2D
 
 @onready var ball_scene: PackedScene = preload("res://Scenes/ball.tscn")
+@onready var player_scene: PackedScene = preload("res://Scenes/player.tscn")
 @onready var score_board: Node2D = $ScoreBoard
 @onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
 
@@ -20,10 +21,28 @@ func _ready() -> void:
 			if peer_count >= 1:
 				await get_tree().create_timer(1.0).timeout
 				spawn_ball()
-	else:
-		# Local mode - players are already in scene, just wait a moment
+	if Networkhandler.is_local == true:
+		# Local mode - spawn both players manually
 		print("Local multiplayer mode detected")
-		# Ball can be spawned immediately or wait for player input
+		setup_local_players()
+
+func setup_local_players() -> void:
+	# Spawn Player 1
+	var player1 = player_scene.instantiate()
+	player1.name = "1"
+	player1.position = Vector2(40, 112)
+	player1.input_suffix = "_1"
+	add_child(player1)
+	
+	# Spawn Player 2
+	var player2 = player_scene.instantiate()
+	player2.name = "2"
+	player2.position = Vector2(216, 112)
+	player2.input_suffix = "_2"
+	add_child(player2)
+	print(player2.get_path())
+	
+	print("Local players spawned")
 
 func _on_peer_connected(id: int):
 	if multiplayer.is_server() and not ball_spawned:

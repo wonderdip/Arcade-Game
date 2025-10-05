@@ -23,20 +23,15 @@ var is_local_mode: bool = false
 @onready var player_arms: Node2D = $"Player Arms"
 
 func _enter_tree() -> void:
-	set_multiplayer_authority(name.to_int())
+	is_local_mode = Networkhandler.is_local
+	if !is_local_mode:
+		set_multiplayer_authority(name.to_int())
 
 func _ready() -> void:
 	player_arms.visible = false
 	
-	# Check if we're in network mode or local mode
-	is_local_mode = multiplayer.multiplayer_peer == null
-	
 	if is_local_mode:
-		# Local multiplayer mode - use device IDs
-		# Player name should be "1" or "2" when spawned locally
-		var player_num = name.to_int() if name.is_valid_int() else 1
-		input_suffix = "_" + str(player_num)
-		print("Local mode: Player ", player_num, " using device ", player_num - 1)
+		print("Connected Joybads: ", Input.get_connected_joypads())
 	else:
 		# Network multiplayer mode
 		var peer_id = name.to_int()
@@ -66,6 +61,7 @@ func _physics_process(delta: float) -> void:
 
 	# Handle jump
 	if Input.is_action_just_pressed("jump" + input_suffix) and is_on_floor():
+		print(input_suffix)
 		velocity.y = JumpForce
 	
 	# Handle movement

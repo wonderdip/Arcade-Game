@@ -4,7 +4,7 @@ extends MultiplayerSpawner
 
 func _ready() -> void:
 	# Spawn server's own player immediately
-	if multiplayer.is_server():
+	if multiplayer.is_server() and Networkhandler.is_local == false:
 		call_deferred("spawn_player", 1)
 	
 	# Connect to spawn other players when they join

@@ -12,9 +12,22 @@ grow_vertical = 2
 script = ExtResource("1_28flt")
 
 [node name="Server" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -98.0
+offset_top = -61.5
+offset_right = 98.0
+offset_bottom = 61.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="Server"]
+layout_mode = 2
+text = "Local Play"
 
 [node name="Server" type="Button" parent="Server"]
 layout_mode = 2
@@ -22,8 +35,8 @@ text = "Create Server"
 
 [node name="Join" type="Button" parent="Server"]
 layout_mode = 2
-text = "Join
-"
+text = "Join Game"
 
+[connection signal="pressed" from="Server/Button" to="." method="_on_button_pressed"]
 [connection signal="pressed" from="Server/Server" to="." method="_on_server_pressed"]
-[connection signal="pressed" from="Server/Join" to="." method="_on_client_pressed"]
+[connection signal="pressed" from="Server/Join" to="." method="_on_join_pressed"]
