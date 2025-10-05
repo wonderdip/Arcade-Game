@@ -15,8 +15,9 @@ var is_hitting: bool = false
 var is_bumping: bool = false
 var in_blockzone: bool = false
 
-# Player-specific input suffixes
-var input_suffix: String = "_1"
+# Device-based input for local multiplayer
+var device_id: int = -1
+var player_number: int = -1
 var is_local_mode: bool = false
 
 @onready var sprite: AnimatedSprite2D = $Sprite
@@ -27,30 +28,34 @@ func _enter_tree() -> void:
 	if !is_local_mode:
 		set_multiplayer_authority(name.to_int())
 
+func setup_local_player(dev_id: int, p_number: int):
+	device_id = dev_id
+	player_number = p_number
+	print("Player %d setup with device %d" % [player_number, device_id])
+
 func _ready() -> void:
 	player_arms.visible = false
 	
-	if is_local_mode:
-		print("Connected Joybads: ", Input.get_connected_joypads())
-	else:
+	if !is_local_mode:
 		# Network multiplayer mode
 		var peer_id = name.to_int()
 		if multiplayer.get_unique_id() == peer_id:
 			if multiplayer.is_server():
-				input_suffix = "_1"
 				global_position = Vector2(40, 112)
 			else:
-				input_suffix = "_2"
 				global_position = Vector2(216, 112)
 	
 func _physics_process(delta: float) -> void:
-	# In local mode, always process. In network mode, check authority
+	# In local mode, check device_id. In network mode, check authority
+	if is_local_mode and device_id < 0:
+		return  # Not setup yet
+	
 	if not is_local_mode and !is_multiplayer_authority(): 
 		return
 	
 	# Apply gravity with floaty jump feel
 	if velocity.y < 0:
-		if not Input.is_action_pressed("jump" + input_suffix):
+		if not _is_action_pressed("jump"):
 			velocity.y += gravity * low_jump_multiplier * delta
 		elif abs(velocity.y) < peak_threshold:
 			velocity.y += gravity * peak_gravity_scale * delta
@@ -60,12 +65,11 @@ func _physics_process(delta: float) -> void:
 		velocity.y += gravity * fall_multiplier * delta
 
 	# Handle jump
-	if Input.is_action_just_pressed("jump" + input_suffix) and is_on_floor():
-		print(input_suffix)
+	if _is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JumpForce
 	
 	# Handle movement
-	var direction := Input.get_axis("left" + input_suffix, "right" + input_suffix)
+	var direction := _get_axis("left", "right")
 	
 	if is_bumping:
 		velocity.x = 0
@@ -75,13 +79,13 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, Friction * delta)
 	
 	# Handle attack
-	if Input.is_action_just_pressed("hit" + input_suffix) and not is_on_floor() and not is_hitting and not is_bumping:
+	if _is_action_just_pressed("hit") and not is_on_floor() and not is_hitting and not is_bumping:
 		is_hitting = true
 		player_arms.swing()
 		sprite.play("Hit")
 	
 	# Handle bump
-	if Input.is_action_pressed("Bump" + input_suffix) and is_on_floor() and not is_hitting:
+	if _is_action_pressed("Bump") and is_on_floor() and not is_hitting:
 		if not is_bumping:
 			is_bumping = true
 			player_arms.bump()
@@ -119,3 +123,26 @@ func _physics_process(delta: float) -> void:
 		player_arms.sprite_direction(direction)
 
 	move_and_slide()
+
+# Helper functions for device-specific input
+func _is_action_pressed(action: String) -> bool:
+	if is_local_mode:
+		return Input.is_action_pressed(action, device_id)
+	else:
+		# Network mode - use suffix-based inputs
+		var suffix = "_1" if multiplayer.is_server() else "_2"
+		return Input.is_action_pressed(action + suffix)
+
+func _is_action_just_pressed(action: String) -> bool:
+	if is_local_mode:
+		return Input.is_action_just_pressed(action, device_id)
+	else:
+		var suffix = "_1" if multiplayer.is_server() else "_2"
+		return Input.is_action_just_pressed(action + suffix)
+
+func _get_axis(negative: String, positive: String) -> float:
+	if is_local_mode:
+		return Input.get_action_strength(positive, device_id) - Input.get_action_strength(negative, device_id)
+	else:
+		var suffix = "_1" if multiplayer.is_server() else "_2"
+		return Input.get_axis(negative + suffix, positive + suffix)

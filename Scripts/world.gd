@@ -8,6 +8,8 @@ extends Node2D
 var active_ball: Node2D = null
 var ball_spawned: bool = false
 var is_network_mode: bool = false
+var local_player_manager: Node = null
+var spawned_players: Array = []
 
 func _ready() -> void:
 	# Check if we're in network mode
@@ -21,28 +23,42 @@ func _ready() -> void:
 			if peer_count >= 1:
 				await get_tree().create_timer(1.0).timeout
 				spawn_ball()
-	if Networkhandler.is_local == true:
-		# Local mode - spawn both players manually
+	elif Networkhandler.is_local:
+		# Local mode - setup player manager
 		print("Local multiplayer mode detected")
-		setup_local_players()
+		setup_local_multiplayer()
 
-func setup_local_players() -> void:
-	# Spawn Player 1
-	var player1 = player_scene.instantiate()
-	player1.name = "1"
-	player1.position = Vector2(40, 112)
-	player1.input_suffix = "_1"
-	add_child(player1)
+func setup_local_multiplayer() -> void:
+	# Create the player manager
+	var PlayerManager = load("res://Scripts/local_player_manager.gd")
+	local_player_manager = PlayerManager.new()
+	local_player_manager.name = "LocalPlayerManager"
+	local_player_manager.max_players = 2
+	add_child(local_player_manager)
 	
-	# Spawn Player 2
-	var player2 = player_scene.instantiate()
-	player2.name = "2"
-	player2.position = Vector2(216, 112)
-	player2.input_suffix = "_2"
-	add_child(player2)
-	print(player2.get_path())
+	# Connect to player join signal
+	local_player_manager.player_joined.connect(_on_local_player_joined)
 	
-	print("Local players spawned")
+	print("Press any button to join! (Up to 2 players)")
+
+func _on_local_player_joined(device_id: int, player_number: int):
+	print("Spawning player %d with device %d" % [player_number, device_id])
+	
+	# Spawn the player
+	var player = player_scene.instantiate()
+	player.name = "Player_" + str(player_number)
+	player.position = local_player_manager.get_spawn_position(player_number)
+	
+	add_child(player)
+	
+	# Setup the player with their device
+	player.setup_local_player(device_id, player_number)
+	spawned_players.append(player)
+	
+	# If both players joined, spawn the ball
+	if spawned_players.size() == 2:
+		await get_tree().create_timer(0.5).timeout
+		spawn_ball_local()
 
 func _on_peer_connected(id: int):
 	if multiplayer.is_server() and not ball_spawned:
@@ -51,15 +67,14 @@ func _on_peer_connected(id: int):
 		spawn_ball()
 
 func _physics_process(_delta: float) -> void:
-	# Anyone can spawn ball in local mode, only server in network mode
+	# Ball spawning for testing/reset
 	if Input.is_action_just_pressed("spawnball_1") or Input.is_action_just_pressed("spawnball_2"):
 		if is_network_mode:
 			if multiplayer.is_server():
 				spawn_ball()
 			else:
 				rpc_id(1, "request_ball_spawn")
-		else:
-			# Local mode - just spawn directly
+		elif Networkhandler.is_local and spawned_players.size() >= 2:
 			spawn_ball_local()
 
 @rpc("any_peer", "call_remote")
