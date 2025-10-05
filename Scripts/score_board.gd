@@ -5,7 +5,7 @@ extends Node2D
 
 var player_two_score: int = 0
 var player_one_score: int = 0
-var last_point = 0
+@export var last_point = 0
 
 func _ready() -> void:
 	player_one_sprite.frame = 0

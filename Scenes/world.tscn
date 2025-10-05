@@ -59,6 +59,9 @@ size = Vector2(24, 87.25)
 size = Vector2(128, 17)
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_c5t2i"]
+properties/0/path = NodePath("ScoreBoard:last_point")
+properties/0/spawn = true
+properties/0/replication_mode = 1
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_fo5ed")

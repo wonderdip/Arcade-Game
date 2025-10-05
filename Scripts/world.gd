@@ -5,24 +5,43 @@ extends Node2D
 @onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
 
 var active_ball: Node2D = null
+var ball_spawned: bool = false
+var is_network_mode: bool = false
 
 func _ready() -> void:
-	# Wait for multiplayer to be ready
-	if not multiplayer.is_server():
-		return
+	# Check if we're in network mode
+	is_network_mode = multiplayer.multiplayer_peer != null
 	
-	# Give time for players to spawn first
-	await get_tree().create_timer(0.5).timeout
-	spawn_ball()
+	if is_network_mode:
+		# Network mode - only server spawns ball after client connects
+		if multiplayer.is_server():
+			multiplayer.peer_connected.connect(_on_peer_connected)
+			var peer_count = multiplayer.get_peers().size()
+			if peer_count >= 1:
+				await get_tree().create_timer(1.0).timeout
+				spawn_ball()
+	else:
+		# Local mode - players are already in scene, just wait a moment
+		print("Local multiplayer mode detected")
+		# Ball can be spawned immediately or wait for player input
+
+func _on_peer_connected(id: int):
+	if multiplayer.is_server() and not ball_spawned:
+		print("Client ", id, " connected. Spawning ball...")
+		await get_tree().create_timer(1.0).timeout
+		spawn_ball()
 
 func _physics_process(_delta: float) -> void:
-	# Only server can spawn balls, but both players can press the button
+	# Anyone can spawn ball in local mode, only server in network mode
 	if Input.is_action_just_pressed("spawnball_1") or Input.is_action_just_pressed("spawnball_2"):
-		if multiplayer.is_server():
-			spawn_ball()
+		if is_network_mode:
+			if multiplayer.is_server():
+				spawn_ball()
+			else:
+				rpc_id(1, "request_ball_spawn")
 		else:
-			# Client requests server to spawn ball
-			rpc_id(1, "request_ball_spawn")
+			# Local mode - just spawn directly
+			spawn_ball_local()
 
 @rpc("any_peer", "call_remote")
 func request_ball_spawn():
@@ -30,19 +49,41 @@ func request_ball_spawn():
 		spawn_ball()
 
 func spawn_ball() -> void:
+	# Network mode spawning
 	if not multiplayer.is_server():
 		return
 		
-	# Delete old ball if it exists
 	if active_ball != null and is_instance_valid(active_ball):
 		active_ball.queue_free()
-		await get_tree().process_frame  # Wait for deletion
+		await get_tree().process_frame
 
-	# Instantiate new ball
 	var ball_instance = ball_scene.instantiate()
-	active_ball = ball_instance
 	
-	# Set ball properties before adding to scene
+	if score_board.last_point == 1:
+		ball_instance.position = Vector2(30, -40)
+		ball_instance.current_player_side = 1
+	elif score_board.last_point == 2:
+		ball_instance.position = Vector2(226, -40)
+		ball_instance.current_player_side = 2
+	
+	ball_instance.name = "Ball_" + str(Time.get_ticks_msec())
+	
+	print("Server spawning ball at position: ", ball_instance.position)
+	
+	add_child(ball_instance, true)
+	active_ball = ball_instance
+	ball_spawned = true
+	
+	if not ball_instance.update_score.is_connected(score_board.update_score):
+		ball_instance.update_score.connect(score_board.update_score)
+
+func spawn_ball_local() -> void:
+	# Local mode spawning (no network replication needed)
+	if active_ball != null and is_instance_valid(active_ball):
+		active_ball.queue_free()
+
+	var ball_instance = ball_scene.instantiate()
+	
 	if score_board.last_point == 1:
 		ball_instance.global_position = Vector2(30, -40)
 		ball_instance.current_player_side = 1
@@ -50,19 +91,24 @@ func spawn_ball() -> void:
 		ball_instance.global_position = Vector2(226, -40)
 		ball_instance.current_player_side = 2
 	
-	# Add to scene first
-	add_child(ball_instance, true)
+	print("Local mode: Spawning ball at position: ", ball_instance.global_position)
 	
-	# Connect signal after adding to scene tree
+	add_child(ball_instance)
+	active_ball = ball_instance
+	
 	if not ball_instance.update_score.is_connected(score_board.update_score):
 		ball_instance.update_score.connect(score_board.update_score)
 
 func _on_player_one_side_body_entered(body: Node2D) -> void:
 	if body.is_in_group("ball"):
+		if is_network_mode and not multiplayer.is_server():
+			return
 		body.current_player_side = 1
 
 func _on_player_two_side_body_entered(body: Node2D) -> void:
 	if body.is_in_group("ball"):
+		if is_network_mode and not multiplayer.is_server():
+			return
 		body.current_player_side = 2
 
 func _on_block_zone_body_entered(body: Node2D):

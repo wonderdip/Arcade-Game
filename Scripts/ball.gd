@@ -8,8 +8,14 @@ signal update_score(current_player_side)
 @export var max_velocity: float = 500.0
 @onready var landing_ray: RayCast2D = $LandingRay
 @onready var landing_sprite: Sprite2D = $"Landing Sprite"
-var current_player_side: int = 0
-var scored: bool = false
+
+# These need to be synced
+var current_player_side: int = 0:
+	set(value):
+		current_player_side = value
+var scored: bool = false:
+	set(value):
+		scored = value
 
 var normal_linear_damp: float = 0.5
 var is_hovering: bool = false
@@ -22,11 +28,14 @@ func _ready():
 	normal_linear_damp = linear_damp
 	body_entered.connect(_on_body_entered)
 	
-	# Only process physics on server
+	# Only process physics on server, but allow visibility on clients
 	if multiplayer.is_server():
 		freeze = false
 		sleeping = false
-		print("Ball spawned on server - Freeze: ", freeze, " | Sleeping: ", sleeping)
+		print("Ball spawned on server at position: ", global_position)
+	else:
+		# On clients, just show the ball but don't simulate physics
+		print("Ball spawned on client at position: ", global_position)
 
 func _physics_process(_delta: float) -> void:
 	# Keep the raycast pointing straight down in world space
@@ -50,14 +59,12 @@ func enter_hover_zone():
 		is_hovering = true
 		gravity_scale = hover_gravity_scale
 		linear_damp = hover_linear_damp
-		print("Ball entering hover zone")
 
 func exit_hover_zone():
 	if is_hovering:
 		is_hovering = false
 		gravity_scale = normal_gravity_scale
 		linear_damp = normal_linear_damp
-		print("Ball exiting hover zone")
 
 func _on_body_entered(body: Node):
 	# Only process on server

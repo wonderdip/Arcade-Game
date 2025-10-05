@@ -17,6 +17,7 @@ var in_blockzone: bool = false
 
 # Player-specific input suffixes
 var input_suffix: String = "_1"
+var is_local_mode: bool = false
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var player_arms: Node2D = $"Player Arms"
@@ -27,19 +28,30 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	player_arms.visible = false
 	
-	# Determine which player this is based on multiplayer peer ID
-	var peer_id = name.to_int()
-	if multiplayer.get_unique_id() == peer_id:
-		# This is the local player
-		if multiplayer.is_server():
-			input_suffix = "_1"
-			global_position = Vector2(40, 112)  # Left side
-		else:
-			input_suffix = "_2"
-			global_position = Vector2(216, 112)  # Right side
+	# Check if we're in network mode or local mode
+	is_local_mode = multiplayer.multiplayer_peer == null
+	
+	if is_local_mode:
+		# Local multiplayer mode - use device IDs
+		# Player name should be "1" or "2" when spawned locally
+		var player_num = name.to_int() if name.is_valid_int() else 1
+		input_suffix = "_" + str(player_num)
+		print("Local mode: Player ", player_num, " using device ", player_num - 1)
+	else:
+		# Network multiplayer mode
+		var peer_id = name.to_int()
+		if multiplayer.get_unique_id() == peer_id:
+			if multiplayer.is_server():
+				input_suffix = "_1"
+				global_position = Vector2(40, 112)
+			else:
+				input_suffix = "_2"
+				global_position = Vector2(216, 112)
 	
 func _physics_process(delta: float) -> void:
-	if !is_multiplayer_authority(): return
+	# In local mode, always process. In network mode, check authority
+	if not is_local_mode and !is_multiplayer_authority(): 
+		return
 	
 	# Apply gravity with floaty jump feel
 	if velocity.y < 0:
