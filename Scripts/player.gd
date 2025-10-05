@@ -81,7 +81,7 @@ func _physics_process(delta: float) -> void:
 		sprite.play("Hit")
 	
 	# Handle bump
-	if _is_action_pressed("Bump") and is_on_floor() and not is_hitting:
+	if _is_action_pressed("bump") and is_on_floor() and not is_hitting:
 		if not is_bumping:
 			is_bumping = true
 			player_arms.bump()

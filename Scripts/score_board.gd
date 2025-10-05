@@ -10,7 +10,7 @@ var player_one_score: int = 0
 func _ready() -> void:
 	player_one_sprite.frame = 0
 	player_two_sprite.frame = 0
-	last_point = randi_range(1, 2)
+	last_point = 1
 
 func update_score(player):
 	if player == 1:

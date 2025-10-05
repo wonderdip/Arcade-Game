@@ -29,50 +29,18 @@ func _ready() -> void:
 				await get_tree().create_timer(1.0).timeout
 				spawn_ball()
 	elif Networkhandler.is_local:
-		print("Local mode detected - calling setup_local_multiplayer()")
-		# Local mode - setup player manager
-		setup_local_multiplayer()
+		LocalPlayerManager.player_joined.connect(_on_local_player_joined)
 	else:
 		print("WARNING: Neither network nor local mode!")
 
-func setup_local_multiplayer() -> void:
-	print("=== Setting up local multiplayer ===")
-	
-	# Create the player manager
-	var PlayerManager = load("res://Scripts/local_player_manager.gd")
-	local_player_manager = PlayerManager.new()
-	local_player_manager.name = "LocalPlayerManager"
-	local_player_manager.max_players = 2
-	
-	# Connect to player join signal BEFORE adding to tree
-	var connection_result = local_player_manager.player_joined.connect(_on_local_player_joined)
-	print("Signal connection result: ", connection_result)
-	print("Is signal connected? ", local_player_manager.player_joined.is_connected(_on_local_player_joined))
-	
-	add_child(local_player_manager)
-	
-	# Test if the function can be called directly
-	print("Testing direct function call...")
-	# Don't actually call it, just verify it exists
-	if has_method("_on_local_player_joined"):
-		print("_on_local_player_joined method exists")
-	else:
-		print("ERROR: _on_local_player_joined method NOT found!")
-	
-	print("Press any button/key to join! (Up to 2 players)")
-	print("Keyboard device ID: 0")
-	print("Controller devices will have IDs > 0")
-
 func _on_local_player_joined(device_id: int, player_number: int, input_type: String):
-	print("=== _on_local_player_joined called ===")
-	print("Device ID: ", device_id, " Player Number: ", player_number, " Input Type: ", input_type)
 	
 	# Spawn the player
 	var player = player_scene.instantiate()
 	print("Player scene instantiated: ", player)
 	
 	player.name = "Player_" + str(player_number)
-	player.position = local_player_manager.get_spawn_position(player_number)
+	player.position = LocalPlayerManager.get_spawn_position(player_number)
 	print("Player position set to: ", player.position)
 	
 	add_child(player)

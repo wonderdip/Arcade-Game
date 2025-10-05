@@ -12,7 +12,7 @@ func _on_local_pressed() -> void:
 	
 	Networkhandler.is_local = true
 	get_tree().change_scene_to_file("res://Scenes/world.tscn")
-
+	LocalPlayerManager.ready_to_accept_players = true
 func _on_join_pressed() -> void:
 	Networkhandler.is_local = false
 	Networkhandler.start_client()

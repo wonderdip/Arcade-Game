@@ -15,29 +15,55 @@ var spawn_positions = [
 var ready_to_accept_players: bool = false
 var keyboard_count: int = 0
 var controller_count: int = 0
+var player_1_actions: Array = ["bump_1", "hit_1", "jump_1", "left_1", "right_1"]
+var player_2_actions: Array = ["bump_2", "hit_2", "jump_2", "left_2", "right_2"]
+
 
 func _ready():
 	set_process_input(true)
 	await get_tree().process_frame
-	ready_to_accept_players = true
-	print("LocalPlayerManager ready!")
-	print("Press any key/button to join as Player 1")
-	print("Then press another key/button to join as Player 2")
 
 func _input(event: InputEvent):
-	if not ready_to_accept_players:
+	if not ready_to_accept_players or player_count >= max_players:
 		return
-	
-	if player_count >= max_players:
-		return
-	
-	# Detect keyboard input
-	if event is InputEventKey and event.pressed and not event.echo:
-		_try_register_device(0, "keyboard")
-	
-	# Detect joypad input
-	elif event is InputEventJoypadButton and event.pressed:
-		_try_register_device(event.device, "controller")
+
+	# Register Player 1
+	if player_count == 0:
+		# Controller registration
+		if event is InputEventJoypadButton and event.pressed:
+			_try_register_device(event.device, "controller")
+			print("Player 1 registered with controller")
+			return # Prevent further registration this frame
+		elif event is InputEventJoypadMotion and abs(event.axis_value) > 0.5:
+			_try_register_device(event.device, "controller")
+			print("Player 1 registered with controller (motion)")
+			return
+		
+		# Keyboard registration
+		for action in player_1_actions:
+			if event.is_action_pressed(action):
+				_try_register_device(event.device, "keyboard")
+				print("Player 1 registered with keyboard")
+				return
+
+	# Register Player 2
+	elif player_count == 1:
+		# Controller registration
+		if event is InputEventJoypadButton and event.pressed:
+			_try_register_device(event.device, "controller")
+			print("Player 2 registered with controller", event.device)
+			return
+		elif event is InputEventJoypadMotion and abs(event.axis_value) > 0.5:
+			_try_register_device(event.device, "controller")
+			print("Player 2 registered with controller (motion)")
+			return
+
+		# Keyboard registration
+		for action in player_2_actions:
+			if event.is_action_pressed(action):
+				_try_register_device(event.device, "keyboard")
+				print("Player 2 registered with keyboard", event.device)
+				return
 
 func _try_register_device(device_id: int, input_type: String) -> bool:
 	# For keyboard, allow up to 2 players
@@ -56,17 +82,13 @@ func _try_register_device(device_id: int, input_type: String) -> bool:
 	
 	# Register the device
 	player_count += 1
+	print(player_count)
 	registered_devices.append({"device_id": device_id, "input_type": input_type, "player_number": player_count})
 	
 	var device_name = "keyboard" if input_type == "keyboard" else ("controller " + str(device_id))
 	print("Player ", player_count, " joined with ", device_name)
 	
-	player_joined.emit(device_id, player_count, input_type)
-	
-	if player_count < max_players:
-		print("Waiting for Player ", player_count + 1, " to join...")
-	else:
-		print("Both players joined! Starting game...")
+	emit_signal("player_joined", device_id, player_count, input_type)
 	
 	return true
 
