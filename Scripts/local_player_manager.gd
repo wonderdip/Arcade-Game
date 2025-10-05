@@ -82,7 +82,6 @@ func _try_register_device(device_id: int, input_type: String) -> bool:
 	
 	# Register the device
 	player_count += 1
-	print(player_count)
 	registered_devices.append({"device_id": device_id, "input_type": input_type, "player_number": player_count})
 	
 	var device_name = "keyboard" if input_type == "keyboard" else ("controller " + str(device_id))

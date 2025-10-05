@@ -86,7 +86,6 @@ func _on_body_entered(body: Node):
 		
 	# Only trigger when hitting something relevant (floor/pole/walls)
 	if body is TileMapLayer or (body is StaticBody2D and (body.collision_layer & 4)):
-		print("Ball hit the ground - updating score")
 		emit_signal("update_score", current_player_side)
 		scored = true
 		

@@ -37,6 +37,12 @@ text = "Create Server"
 layout_mode = 2
 text = "Join Game"
 
+[node name="Solo" type="Button" parent="Server"]
+layout_mode = 2
+text = "Soloplayer
+"
+
 [connection signal="pressed" from="Server/Local" to="." method="_on_local_pressed"]
 [connection signal="pressed" from="Server/Server" to="." method="_on_server_pressed"]
 [connection signal="pressed" from="Server/Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="Server/Solo" to="." method="_on_solo_pressed"]

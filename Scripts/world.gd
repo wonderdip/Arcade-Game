@@ -12,15 +12,9 @@ var local_player_manager: Node = null
 var spawned_players: Array = []
 
 func _ready() -> void:
-	print("=== World._ready() called ===")
-	print("Networkhandler.is_local = ", Networkhandler.is_local)
-	
 	# Check if we're in network mode
 	is_network_mode = multiplayer.multiplayer_peer != null
-	print("is_network_mode = ", is_network_mode)
-	
 	if is_network_mode:
-		print("Network mode detected")
 		# Network mode - only server spawns ball after client connects
 		if multiplayer.is_server():
 			multiplayer.peer_connected.connect(_on_peer_connected)
@@ -31,31 +25,23 @@ func _ready() -> void:
 	elif Networkhandler.is_local:
 		LocalPlayerManager.player_joined.connect(_on_local_player_joined)
 	else:
-		print("WARNING: Neither network nor local mode!")
+		return
 
 func _on_local_player_joined(device_id: int, player_number: int, input_type: String):
 	
 	# Spawn the player
 	var player = player_scene.instantiate()
-	print("Player scene instantiated: ", player)
-	
 	player.name = "Player_" + str(player_number)
 	player.position = LocalPlayerManager.get_spawn_position(player_number)
-	print("Player position set to: ", player.position)
-	
 	add_child(player)
-	print("Player added to scene tree")
 	
 	# Setup the player with their device and input type
 	player.setup_local_player(device_id, player_number, input_type)
-	print("Player setup complete")
 	
 	spawned_players.append(player)
-	print("Players spawned so far: ", spawned_players.size())
 	
 	# If both players joined, spawn the ball
 	if spawned_players.size() == 2:
-		print("Both players joined - spawning ball...")
 		await get_tree().create_timer(0.5).timeout
 		spawn_ball_local()
 
@@ -101,8 +87,6 @@ func spawn_ball() -> void:
 	
 	ball_instance.name = "Ball_" + str(Time.get_ticks_msec())
 	
-	print("Server spawning ball at position: ", ball_instance.position)
-	
 	add_child(ball_instance, true)
 	active_ball = ball_instance
 	ball_spawned = true
@@ -123,8 +107,6 @@ func spawn_ball_local() -> void:
 	elif score_board.last_point == 2:
 		ball_instance.global_position = Vector2(226, -40)
 		ball_instance.current_player_side = 2
-	
-	print("Local mode: Spawning ball at position: ", ball_instance.global_position)
 	
 	add_child(ball_instance)
 	active_ball = ball_instance
