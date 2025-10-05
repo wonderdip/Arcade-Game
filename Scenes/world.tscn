@@ -10,7 +10,6 @@
 [ext_resource type="Texture2D" uid="uid://duddr3iorihic" path="res://Assets/StandsBG.png" id="4_k7acu"]
 [ext_resource type="PackedScene" uid="uid://dvtr6ublg51mt" path="res://Scenes/score_board.tscn" id="10_0fj1v"]
 [ext_resource type="Script" uid="uid://7pu4le1bq5tt" path="res://Scripts/multiplayer_spawner.gd" id="10_ikia7"]
-[ext_resource type="PackedScene" uid="uid://btcp30cq4g58t" path="res://Scenes/main_menu.tscn" id="11_ikia7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5v1tr"]
 size = Vector2(128, 144)
@@ -58,6 +57,8 @@ size = Vector2(24, 87.25)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o06y3"]
 size = Vector2(128, 17)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_c5t2i"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_fo5ed")
@@ -176,7 +177,8 @@ spawn_path = NodePath("..")
 script = ExtResource("10_ikia7")
 network_player = ExtResource("1_a02cp")
 
-[node name="MainMenu" parent="." instance=ExtResource("11_ikia7")]
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_c5t2i")
 
 [connection signal="body_entered" from="PlayerOneSide" to="." method="_on_player_one_side_body_entered"]
 [connection signal="body_entered" from="PlayerTwoSide" to="." method="_on_player_two_side_body_entered"]

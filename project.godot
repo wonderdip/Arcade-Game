@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Ican Arcade Game"
-run/main_scene="res://Scenes/world.tscn"
+run/main_scene="uid://btcp30cq4g58t"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
