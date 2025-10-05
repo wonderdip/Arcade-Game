@@ -63,9 +63,9 @@ func setup_local_multiplayer() -> void:
 	print("Keyboard device ID: 0")
 	print("Controller devices will have IDs > 0")
 
-func _on_local_player_joined(device_id: int, player_number: int):
+func _on_local_player_joined(device_id: int, player_number: int, input_type: String):
 	print("=== _on_local_player_joined called ===")
-	print("Device ID: ", device_id, " Player Number: ", player_number)
+	print("Device ID: ", device_id, " Player Number: ", player_number, " Input Type: ", input_type)
 	
 	# Spawn the player
 	var player = player_scene.instantiate()
@@ -78,8 +78,8 @@ func _on_local_player_joined(device_id: int, player_number: int):
 	add_child(player)
 	print("Player added to scene tree")
 	
-	# Setup the player with their device
-	player.setup_local_player(device_id, player_number)
+	# Setup the player with their device and input type
+	player.setup_local_player(device_id, player_number, input_type)
 	print("Player setup complete")
 	
 	spawned_players.append(player)

@@ -19,6 +19,7 @@ var in_blockzone: bool = false
 var device_id: int = -1
 var player_number: int = -1
 var is_local_mode: bool = false
+var input_type: String = ""
 
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var player_arms: Node2D = $"Player Arms"
@@ -27,11 +28,6 @@ func _enter_tree() -> void:
 	is_local_mode = Networkhandler.is_local
 	if !is_local_mode:
 		set_multiplayer_authority(name.to_int())
-
-func setup_local_player(dev_id: int, p_number: int):
-	device_id = dev_id
-	player_number = p_number
-	print("Player %d setup with device %d" % [player_number, device_id])
 
 func _ready() -> void:
 	player_arms.visible = false
@@ -124,25 +120,45 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-# Helper functions for device-specific input
+func setup_local_player(dev_id: int, p_number: int, inp_type: String):
+	device_id = dev_id
+	player_number = p_number
+	input_type = inp_type
+	print("Player %d setup with device %d (%s)" % [player_number, device_id, input_type])
+
+# Replace the helper functions with these:
 func _is_action_pressed(action: String) -> bool:
 	if is_local_mode:
-		return Input.is_action_pressed(action, device_id)
+		if input_type == "keyboard":
+			# For keyboard, use suffix-based inputs (_1, _2)
+			var suffix = "_" + str(player_number)
+			return Input.is_action_pressed(action + suffix)
+		else:
+			# For controller, use device-specific input
+			return Input.is_action_pressed(action, device_id)
 	else:
-		# Network mode - use suffix-based inputs
-		var suffix = "_1" if multiplayer.is_server() else "_2"
-		return Input.is_action_pressed(action + suffix)
+		# Network mode - use device 0 (local input device) with base actions
+		# Each player just uses their own keyboard/controller on their machine
+		return Input.is_action_pressed(action)
 
 func _is_action_just_pressed(action: String) -> bool:
 	if is_local_mode:
-		return Input.is_action_just_pressed(action, device_id)
+		if input_type == "keyboard":
+			var suffix = "_" + str(player_number)
+			return Input.is_action_just_pressed(action + suffix)
+		else:
+			return Input.is_action_just_pressed(action, device_id)
 	else:
-		var suffix = "_1" if multiplayer.is_server() else "_2"
-		return Input.is_action_just_pressed(action + suffix)
+		# Network mode - use base actions
+		return Input.is_action_just_pressed(action)
 
 func _get_axis(negative: String, positive: String) -> float:
 	if is_local_mode:
-		return Input.get_action_strength(positive, device_id) - Input.get_action_strength(negative, device_id)
+		if input_type == "keyboard":
+			var suffix = "_" + str(player_number)
+			return Input.get_axis(negative + suffix, positive + suffix)
+		else:
+			return Input.get_action_strength(positive, device_id) - Input.get_action_strength(negative, device_id)
 	else:
-		var suffix = "_1" if multiplayer.is_server() else "_2"
-		return Input.get_axis(negative + suffix, positive + suffix)
+		# Network mode - use base actions
+		return Input.get_axis(negative, positive)
