@@ -7,7 +7,7 @@ extends Area2D
 var is_hitting: bool = false
 var is_bumping: bool = false
 var facing_right: bool = true
-var hit_bodies: Dictionary = {}  # Changed to Dictionary to track timestamps
+var hit_bodies: Dictionary = {}  # Track timestamps
 
 @export var hit_force: float = 150.0
 @export var downward_force: float = -100.0
@@ -15,7 +15,8 @@ var hit_bodies: Dictionary = {}  # Changed to Dictionary to track timestamps
 @export var bump_force: float = 80.0
 @export var bump_upward_force: float = -200.0
 
-@export var hit_cooldown: float = 0.15  # Time before same ball can be hit again
+@export var hit_cooldown: float = 0.2  # Time before same ball can be hit again
+@export var max_ball_speed: float = 400.0  # Cap ball speed after hit
 
 
 func _ready():
@@ -36,13 +37,29 @@ func _physics_process(_delta):
 
 	var current_time = Time.get_ticks_msec() / 1000.0
 	var overlapping = get_overlapping_bodies()
+	
 	for body in overlapping:
 		if not body.is_in_group("ball"):
 			continue
 		if body in hit_bodies and current_time - hit_bodies[body] < hit_cooldown:
 			continue
-		if body.global_position.y > collision_shape.global_position.y + 5:
+		
+		# More strict position check
+		var ball_pos = body.global_position
+		var arm_pos = collision_shape.global_position
+		
+		# Ball must be above arms
+		if ball_pos.y > arm_pos.y + 3:
 			continue
+		
+		# Check if ball is moving away from us (already hit)
+		if body is RigidBody2D:
+			var ball_velocity = body.linear_velocity
+			var to_ball = (ball_pos - arm_pos).normalized()
+			
+			# If ball is already moving away fast, skip
+			if ball_velocity.dot(to_ball) > 200:
+				continue
 		
 		_apply_hit_to_ball(body)
 
@@ -101,11 +118,13 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	if not (body.is_in_group("ball") and body is RigidBody2D):
 		return
-	if body in hit_bodies:
+	
+	var current_time = Time.get_ticks_msec() / 1000.0
+	if body in hit_bodies and current_time - hit_bodies[body] < hit_cooldown:
 		return
 	
 	# Ignore balls below the arms
-	if body.global_position.y > collision_shape.global_position.y + 1:
+	if body.global_position.y > collision_shape.global_position.y + 3:
 		print("Invalid hit - ball below arms")
 		return
 	
@@ -113,32 +132,45 @@ func _on_body_entered(body: Node2D) -> void:
 
 
 func _on_body_exited(body: Node2D) -> void:
-	# When ball leaves the area, allow it to be hit again after cooldown
+	# When ball leaves the area, allow it to be hit again after short delay
 	if body.is_in_group("ball") and body in hit_bodies:
-		# Reset the timestamp so it can be hit again soon
-		hit_bodies[body] = Time.get_ticks_msec() / 1000.0 - hit_cooldown + 0.05
+		var current_time = Time.get_ticks_msec() / 1000.0
+		# Only update if enough time has passed
+		if current_time - hit_bodies[body] < hit_cooldown:
+			hit_bodies[body] = current_time - hit_cooldown + 0.08
 
 
 func _apply_hit_to_ball(body: RigidBody2D) -> void:
-	if body in hit_bodies:
+	var current_time = Time.get_ticks_msec() / 1000.0
+	
+	# Double check cooldown
+	if body in hit_bodies and current_time - hit_bodies[body] < hit_cooldown:
 		return
 	
 	# Record this hit with current timestamp
-	hit_bodies[body] = Time.get_ticks_msec() / 1000.0
+	hit_bodies[body] = current_time
 	
 	var contact_point = collision_shape.global_position
 	var hit_direction: Vector2
+	var impulse: Vector2
 	
 	if is_bumping:
 		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
-		var impulse = hit_direction * bump_force + Vector2(0, bump_upward_force)
-		body.apply_impulse(impulse, contact_point - body.global_position)
-		print("BUMP! Impulse:", impulse)
+		impulse = hit_direction * bump_force + Vector2(0, bump_upward_force)
 	elif is_hitting:
 		hit_direction = Vector2(1 if facing_right else -1, -0.2).normalized()
-		var impulse = hit_direction * hit_force + Vector2(0, -downward_force)
-		body.apply_impulse(impulse, contact_point - body.global_position)
-		print("HIT! Impulse:", impulse)
+		impulse = hit_direction * hit_force + Vector2(0, -downward_force)
+	
+	# Apply the impulse
+	body.apply_impulse(impulse, contact_point - body.global_position)
+	
+	# Cap the ball's speed to prevent crazy velocities
+	await get_tree().process_frame
+	if body.linear_velocity.length() > max_ball_speed:
+		body.linear_velocity = body.linear_velocity.normalized() * max_ball_speed
+		print("Ball speed capped at ", max_ball_speed)
+	
+	print("HIT! Impulse:", impulse, " Speed:", body.linear_velocity.length())
 
 
 func sprite_direction(sprite_dir):

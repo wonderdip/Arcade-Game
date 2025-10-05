@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=4 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=20 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
 [ext_resource type="Script" uid="uid://bshn1jsaig2fx" path="res://Scripts/world.gd" id="1_fo5ed"]
@@ -6,8 +6,9 @@
 [ext_resource type="Texture2D" uid="uid://c4hb1weoybdb7" path="res://Assets/Court-Sheet.png" id="2_go701"]
 [ext_resource type="Texture2D" uid="uid://bqf0dsaerynpd" path="res://Assets/BG.png" id="3_o06y3"]
 [ext_resource type="Script" uid="uid://b3vf3iffgaffp" path="res://Scripts/hover_zone.gd" id="4_5ukr8"]
-[ext_resource type="PackedScene" uid="uid://txgrcwpblspl" path="res://Scenes/ball.tscn" id="4_8j60k"]
+[ext_resource type="Texture2D" uid="uid://byabc8xbtfjnq" path="res://Assets/BleachersBG.png" id="4_5v1tr"]
 [ext_resource type="Texture2D" uid="uid://duddr3iorihic" path="res://Assets/StandsBG.png" id="4_k7acu"]
+[ext_resource type="PackedScene" uid="uid://dvtr6ublg51mt" path="res://Scenes/score_board.tscn" id="10_0fj1v"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5a7ea"]
 texture = ExtResource("2_go701")
@@ -26,6 +27,9 @@ physics_layer_1/collision_mask = 8
 physics_layer_1/collision_priority = 20.0
 sources/0 = SubResource("TileSetAtlasSource_5a7ea")
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k7acu"]
+size = Vector2(12, 194)
+
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_5ukr8"]
 friction = 10.0
 bounce = 0.55
@@ -39,10 +43,16 @@ height = 62.999985
 size = Vector2(12, 116)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8j60k"]
-size = Vector2(40, 87.25)
+size = Vector2(24, 87.25)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o06y3"]
 size = Vector2(128, 26)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5v1tr"]
+size = Vector2(128, 144)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0fj1v"]
+size = Vector2(128, 144)
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_fo5ed")
@@ -52,7 +62,7 @@ script = ExtResource("1_fo5ed")
 [node name="TileMapLayer" type="TileMapLayer" parent="BackGround"]
 z_index = -10
 position = Vector2(128, 80)
-tile_map_data = PackedByteArray("AAD4/wMAAAAAAAAAAAD5/wMAAAAAAAAAAAD6/wMAAAAAAAAAAAD7/wMAAAAAAAAAAAD8/wMAAAAAAAAAAAD9/wMAAAAAAAAAAAD+/wMAAAAAAAAAAAD//wMAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAD4/wIAAAABAAAAAAD5/wIAAAABAAAAAAD6/wIAAAABAAAAAAD7/wIAAAABAAAAAAD8/wIAAAABAAAAAAD9/wIAAAABAAAAAAD+/wIAAAABAAAAAAD//wIAAAABAAAAAAAAAAIAAAABAAAAAAABAAIAAAABAAAAAAACAAIAAAABAAAAAAADAAIAAAABAAAAAAAEAAIAAAABAAAAAAAFAAIAAAABAAAAAAAGAAIAAAABAAAAAAAHAAIAAAABAAAAAAD3/wMAAAACAAAAAGD3/wIAAAACAAAAAGD3/wEAAAACAAAAAGD3/wAAAAACAAAAAGD3////AAACAAAAAGD3//7/AAACAAAAAGD3//3/AAACAAAAAGD3//z/AAACAAAAAGD3//v/AAACAAAAAGD3//r/AAACAAAAAGD3//n/AAACAAAAAGAIAAMAAAACAAAAAFAIAAIAAAACAAAAAFAIAAEAAAACAAAAAFAIAP//AAACAAAAAFAIAP7/AAACAAAAAFAIAP3/AAACAAAAAFAIAPz/AAACAAAAAFAIAPv/AAACAAAAAFAIAPr/AAACAAAAAFAIAPn/AAACAAAAAFD3//j/AAACAAAAAGD3//f/AAACAAAAAGD3//b/AAACAAAAAGD3//X/AAACAAAAAGD3//T/AAACAAAAAGAIAPj/AAACAAAAAFAIAPf/AAACAAAAAFAIAPb/AAACAAAAAFAIAPX/AAACAAAAAFAIAPT/AAACAAAAAFAIAPP/AAACAAAAAFAIAAAAAAACAAAAAFA=")
+tile_map_data = PackedByteArray("AAD4/wMAAAAAAAAAAAD5/wMAAAAAAAAAAAD6/wMAAAAAAAAAAAD7/wMAAAAAAAAAAAD8/wMAAAAAAAAAAAD9/wMAAAAAAAAAAAD+/wMAAAAAAAAAAAD//wMAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAD4/wIAAAABAAAAAAD5/wIAAAABAAAAAAD6/wIAAAABAAAAAAD7/wIAAAABAAAAAAD8/wIAAAABAAAAAAD9/wIAAAABAAAAAAD+/wIAAAABAAAAAAD//wIAAAABAAAAAAAAAAIAAAABAAAAAAABAAIAAAABAAAAAAACAAIAAAABAAAAAAADAAIAAAABAAAAAAAEAAIAAAABAAAAAAAFAAIAAAABAAAAAAAGAAIAAAABAAAAAAAHAAIAAAABAAAAAAA=")
 tile_set = SubResource("TileSet_8j60k")
 
 [node name="BG" type="Sprite2D" parent="BackGround"]
@@ -71,10 +81,27 @@ position = Vector2(128, 16)
 rotation = -3.1415925
 texture = ExtResource("3_o06y3")
 
+[node name="Seats" type="Sprite2D" parent="BackGround"]
+modulate = Color(0.54788595, 0.54788595, 0.54788595, 1)
+position = Vector2(128, 48)
+texture = ExtResource("4_5v1tr")
+
 [node name="Stands" type="Sprite2D" parent="BackGround"]
 modulate = Color(0.7014114, 0.7014114, 0.7014114, 1)
-position = Vector2(128, 64)
+position = Vector2(128, 68)
 texture = ExtResource("4_k7acu")
+
+[node name="SideWalls" type="StaticBody2D" parent="."]
+collision_layer = 8
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SideWalls"]
+position = Vector2(-6, 49)
+shape = SubResource("RectangleShape2D_k7acu")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="SideWalls"]
+position = Vector2(262, 49)
+shape = SubResource("RectangleShape2D_k7acu")
 
 [node name="Pole" type="StaticBody2D" parent="."]
 position = Vector2(128, 104)
@@ -117,11 +144,29 @@ script = ExtResource("4_5ukr8")
 position = Vector2(0, 13)
 shape = SubResource("RectangleShape2D_o06y3")
 
+[node name="PlayerOneSide" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerOneSide"]
+position = Vector2(64, 62)
+shape = SubResource("RectangleShape2D_5v1tr")
+
+[node name="PlayerTwoSide" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerTwoSide"]
+position = Vector2(192, 62)
+shape = SubResource("RectangleShape2D_0fj1v")
+
 [node name="Player" parent="." instance=ExtResource("1_a02cp")]
 position = Vector2(40, 112)
 
-[node name="Ball" parent="." instance=ExtResource("4_8j60k")]
-position = Vector2(48, -40)
+[node name="ScoreBoard" parent="." instance=ExtResource("10_0fj1v")]
+position = Vector2(128, 12)
 
 [connection signal="body_entered" from="Block Zone" to="." method="_on_block_zone_body_entered"]
 [connection signal="body_exited" from="Block Zone" to="." method="_on_block_zone_body_exited"]
+[connection signal="body_entered" from="PlayerOneSide" to="." method="_on_player_one_side_body_entered"]
+[connection signal="body_entered" from="PlayerTwoSide" to="." method="_on_player_two_side_body_entered"]

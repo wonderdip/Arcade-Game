@@ -29,3 +29,12 @@ texture = ExtResource("1_d60mj")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_ij5cq")
+
+[node name="LandingRay" type="RayCast2D" parent="."]
+target_position = Vector2(0, 400)
+collision_mask = 4
+
+[node name="Landing Sprite" type="Sprite2D" parent="."]
+modulate = Color(0.5137255, 0.5647059, 1, 0.3647059)
+position = Vector2(9, 0)
+texture = ExtResource("1_d60mj")

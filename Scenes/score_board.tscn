@@ -1,0 +1,39 @@
+[gd_scene load_steps=4 format=3 uid="uid://dvtr6ublg51mt"]
+
+[ext_resource type="Script" uid="uid://b047t4pmh66y0" path="res://Scripts/score_board.gd" id="1_8vx40"]
+[ext_resource type="Texture2D" uid="uid://bsykhyyt11t6o" path="res://Assets/ScoreBoard.png" id="1_kcejm"]
+[ext_resource type="Texture2D" uid="uid://bao18c7obqvt6" path="res://Assets/Numbers-Sheet.png" id="2_8vx40"]
+
+[node name="ScoreBoard" type="Node2D"]
+script = ExtResource("1_8vx40")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -136.0
+offset_top = -12.0
+offset_right = 136.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+color = Color(0, 0, 0, 1)
+
+[node name="Board" type="Sprite2D" parent="."]
+texture = ExtResource("1_kcejm")
+
+[node name="PlayerOneScore" type="Sprite2D" parent="."]
+position = Vector2(-24, 0)
+scale = Vector2(1, 1.0666667)
+texture = ExtResource("2_8vx40")
+hframes = 10
+frame = 1
+
+[node name="PlayerTwoScore" type="Sprite2D" parent="."]
+position = Vector2(24, 0)
+scale = Vector2(1, 1.0666667)
+texture = ExtResource("2_8vx40")
+hframes = 10
