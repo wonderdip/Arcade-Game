@@ -3,8 +3,13 @@ extends MultiplayerSpawner
 @export var network_player: PackedScene
 
 func _ready() -> void:
+	# Only run in network mode
+	if Networkhandler.is_local:
+		print("Local mode - skipping multiplayer spawner")
+		return
+	
 	# Spawn server's own player immediately
-	if multiplayer.is_server() and Networkhandler.is_local == false:
+	if multiplayer.is_server():
 		call_deferred("spawn_player", 1)
 	
 	# Connect to spawn other players when they join

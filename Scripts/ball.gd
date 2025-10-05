@@ -19,22 +19,31 @@ var scored: bool = false:
 
 var normal_linear_damp: float = 0.5
 var is_hovering: bool = false
+var is_local_mode: bool = false
 
 func _enter_tree() -> void:
-	# Set the server as the authority for the ball
-	set_multiplayer_authority(1)
+	is_local_mode = Networkhandler.is_local
+	
+	# Set the server as the authority for the ball (only in network mode)
+	if not is_local_mode:
+		set_multiplayer_authority(1)
 
 func _ready():
 	normal_linear_damp = linear_damp
 	body_entered.connect(_on_body_entered)
 	
-	# Only process physics on server, but allow visibility on clients
-	if multiplayer.is_server():
+	if is_local_mode:
+		# Local mode - always simulate physics
+		freeze = false
+		sleeping = false
+		print("Ball spawned in local mode at position: ", global_position)
+	elif multiplayer.is_server():
+		# Network mode - only server simulates
 		freeze = false
 		sleeping = false
 		print("Ball spawned on server at position: ", global_position)
 	else:
-		# On clients, just show the ball but don't simulate physics
+		# Network client - just show the ball
 		print("Ball spawned on client at position: ", global_position)
 
 func _physics_process(_delta: float) -> void:
@@ -46,7 +55,8 @@ func _physics_process(_delta: float) -> void:
 		landing_sprite.global_position = hit_point
 
 func _integrate_forces(state):
-	if not multiplayer.is_server():
+	# In local mode, always process. In network mode, only on server
+	if not is_local_mode and not multiplayer.is_server():
 		return
 		
 	# Cap velocity to prevent ball from going crazy
@@ -67,8 +77,8 @@ func exit_hover_zone():
 		linear_damp = normal_linear_damp
 
 func _on_body_entered(body: Node):
-	# Only process on server
-	if not multiplayer.is_server():
+	# In local mode, always process. In network mode, only on server
+	if not is_local_mode and not multiplayer.is_server():
 		return
 		
 	if scored:

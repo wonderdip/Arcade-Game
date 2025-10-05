@@ -25,7 +25,7 @@ offset_bottom = 61.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Button" type="Button" parent="Server"]
+[node name="Local" type="Button" parent="Server"]
 layout_mode = 2
 text = "Local Play"
 
@@ -37,6 +37,6 @@ text = "Create Server"
 layout_mode = 2
 text = "Join Game"
 
-[connection signal="pressed" from="Server/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Server/Local" to="." method="_on_local_pressed"]
 [connection signal="pressed" from="Server/Server" to="." method="_on_server_pressed"]
 [connection signal="pressed" from="Server/Join" to="." method="_on_join_pressed"]
