@@ -22,6 +22,7 @@ config/icon="res://icon.svg"
 Networkhandler="*res://Scripts/networkhandler.gd"
 LocalPlayerManager="*res://Scripts/local_player_manager.gd"
 InputManager="*res://Scripts/input_manager.gd"
+ServerDiscovery="*res://Scripts/server_discovery.gd"
 
 [display]
 
