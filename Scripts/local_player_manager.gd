@@ -40,20 +40,18 @@ func _input(event: InputEvent):
 		_try_register_device(event.device, "controller")
 
 func _try_register_device(device_id: int, input_type: String) -> bool:
-	# Check if this device+type combo is already registered
-	for registered in registered_devices:
-		if registered.device_id == device_id and registered.input_type == input_type:
-			print("Device ", device_id, " (", input_type, ") already registered")
-			return false
-	
-	# Special handling for keyboard - allow 2 keyboard players
+	# For keyboard, allow up to 2 players
 	if input_type == "keyboard":
 		if keyboard_count >= 2:
 			print("Already have 2 keyboard players")
 			return false
 		keyboard_count += 1
 	else:
-		# For controllers, each device can only register once
+		# For controllers, check if this specific device is already registered
+		for registered in registered_devices:
+			if registered.device_id == device_id and registered.input_type == "controller":
+				print("Controller device ", device_id, " already registered")
+				return false
 		controller_count += 1
 	
 	# Register the device
