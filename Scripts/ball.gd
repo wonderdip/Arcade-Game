@@ -9,7 +9,7 @@ signal update_score(current_player_side)
 @onready var landing_ray: RayCast2D = $LandingRay
 @onready var landing_sprite: Sprite2D = $"Landing Sprite"
 var current_player_side: int = 0
-
+var scored: bool = false
 
 func _physics_process(_delta: float) -> void:
 	# Keep the raycast pointing straight down in world space
@@ -26,6 +26,11 @@ var is_hovering: bool = false
 func _ready():
 	normal_linear_damp = linear_damp
 	body_entered.connect(_on_body_entered)
+	
+	# Add these debug lines
+	print("Ball spawned - Freeze: ", freeze, " | Sleeping: ", sleeping)
+	freeze = false  # Force it to not be frozen
+	sleeping = false  # Force it to be awake
 
 
 func _integrate_forces(state):
@@ -50,14 +55,16 @@ func exit_hover_zone():
 		linear_damp = normal_linear_damp
 		print("Ball exiting hover zone")
 
-
 func _on_body_entered(body: Node):
-	if body is TileMapLayer:
-		print("Ball hit the ground - deleting")
+	if scored:
+		return  # Already scored, ignore further collisions
+		
+	# Only trigger when hitting something relevant (floor/pole/walls)
+	if body is TileMapLayer or (body is StaticBody2D and (body.collision_layer & 4)):
+		print("Ball hit the ground - updating score")
 		emit_signal("update_score", current_player_side)
-		queue_free()
-	elif body is StaticBody2D:
-		if body.collision_layer & 4:
-			print("Ball hit the ground - deleting")
-			emit_signal("update_score", current_player_side)
-			queue_free()
+		scored = true  # Prevent further scoring
+		
+		# Keep bouncing but ignore everything except layers 3, 4, 6
+		var allowed_layers = (1 << 2) | (1 << 3) | (1 << 5)  # layers 3, 4, 6
+		collision_mask = allowed_layers

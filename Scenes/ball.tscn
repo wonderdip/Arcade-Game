@@ -23,6 +23,7 @@ max_contacts_reported = 4
 linear_damp = 0.5
 angular_damp = 2.0
 script = ExtResource("1_ij5cq")
+max_velocity = 400.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_d60mj")

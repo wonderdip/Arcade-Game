@@ -14,13 +14,10 @@ func _ready() -> void:
 
 func update_score(player):
 	if player == 1:
-		player_two_score += 1
-		player_two_score %= 10  # loops back to 0 after 10
+		player_two_score = (player_two_score + 1) % 10
 		player_two_sprite.frame = player_two_score
 		last_point = 2
-
 	elif player == 2:
-		player_one_score += 1
-		player_one_score %= 10  # loops back to 0 after 10
+		player_one_score = (player_one_score + 1) % 10
 		player_one_sprite.frame = player_one_score
 		last_point = 1
