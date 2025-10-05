@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=4 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=22 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
 [ext_resource type="Script" uid="uid://bshn1jsaig2fx" path="res://Scripts/world.gd" id="1_fo5ed"]
@@ -9,6 +9,13 @@
 [ext_resource type="Texture2D" uid="uid://byabc8xbtfjnq" path="res://Assets/BleachersBG.png" id="4_5v1tr"]
 [ext_resource type="Texture2D" uid="uid://duddr3iorihic" path="res://Assets/StandsBG.png" id="4_k7acu"]
 [ext_resource type="PackedScene" uid="uid://dvtr6ublg51mt" path="res://Scenes/score_board.tscn" id="10_0fj1v"]
+[ext_resource type="Script" uid="uid://7pu4le1bq5tt" path="res://Scripts/multiplayer_spawner.gd" id="10_ikia7"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5v1tr"]
+size = Vector2(128, 144)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0fj1v"]
+size = Vector2(128, 144)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5a7ea"]
 texture = ExtResource("2_go701")
@@ -26,6 +33,9 @@ physics_layer_1/collision_layer = 8
 physics_layer_1/collision_mask = 8
 physics_layer_1/collision_priority = 20.0
 sources/0 = SubResource("TileSetAtlasSource_5a7ea")
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_5v1tr"]
+bounce = 0.6
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k7acu"]
 size = Vector2(12, 194)
@@ -46,16 +56,26 @@ size = Vector2(12, 116)
 size = Vector2(24, 87.25)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o06y3"]
-size = Vector2(128, 26)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_5v1tr"]
-size = Vector2(128, 144)
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_0fj1v"]
-size = Vector2(128, 144)
+size = Vector2(128, 17)
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_fo5ed")
+
+[node name="PlayerOneSide" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerOneSide"]
+position = Vector2(64, 62)
+shape = SubResource("RectangleShape2D_5v1tr")
+
+[node name="PlayerTwoSide" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerTwoSide"]
+position = Vector2(192, 62)
+shape = SubResource("RectangleShape2D_0fj1v")
 
 [node name="BackGround" type="Node2D" parent="."]
 
@@ -94,6 +114,7 @@ texture = ExtResource("4_k7acu")
 [node name="SideWalls" type="StaticBody2D" parent="."]
 collision_layer = 8
 collision_mask = 3
+physics_material_override = SubResource("PhysicsMaterial_5v1tr")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SideWalls"]
 position = Vector2(-6, 49)
@@ -129,6 +150,7 @@ shape = SubResource("RectangleShape2D_5a7ea")
 
 [node name="Block Zone" type="Area2D" parent="."]
 position = Vector2(128, 104)
+collision_layer = 128
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Block Zone"]
 position = Vector2(0, -0.375)
@@ -141,24 +163,8 @@ collision_mask = 2
 script = ExtResource("4_5ukr8")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hover Zone"]
-position = Vector2(0, 13)
+position = Vector2(0, 15.5)
 shape = SubResource("RectangleShape2D_o06y3")
-
-[node name="PlayerOneSide" type="Area2D" parent="."]
-collision_layer = 0
-collision_mask = 2
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerOneSide"]
-position = Vector2(64, 62)
-shape = SubResource("RectangleShape2D_5v1tr")
-
-[node name="PlayerTwoSide" type="Area2D" parent="."]
-collision_layer = 0
-collision_mask = 2
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerTwoSide"]
-position = Vector2(192, 62)
-shape = SubResource("RectangleShape2D_0fj1v")
 
 [node name="Player" parent="." instance=ExtResource("1_a02cp")]
 position = Vector2(40, 112)
@@ -166,7 +172,13 @@ position = Vector2(40, 112)
 [node name="ScoreBoard" parent="." instance=ExtResource("10_0fj1v")]
 position = Vector2(128, 12)
 
-[connection signal="body_entered" from="Block Zone" to="." method="_on_block_zone_body_entered"]
-[connection signal="body_exited" from="Block Zone" to="." method="_on_block_zone_body_exited"]
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("uid://cf3plcg7m0wcg")
+spawn_path = NodePath("..")
+script = ExtResource("10_ikia7")
+network_player = ExtResource("1_a02cp")
+
 [connection signal="body_entered" from="PlayerOneSide" to="." method="_on_player_one_side_body_entered"]
 [connection signal="body_entered" from="PlayerTwoSide" to="." method="_on_player_two_side_body_entered"]
+[connection signal="body_entered" from="Block Zone" to="." method="_on_block_zone_body_entered"]
+[connection signal="body_exited" from="Block Zone" to="." method="_on_block_zone_body_exited"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://cf3plcg7m0wcg"]
+[gd_scene load_steps=35 format=3 uid="uid://cf3plcg7m0wcg"]
 
 [ext_resource type="Script" uid="uid://kbx36j4fsn6t" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://cjw067oe2ia60" path="res://Assets/Characters/Block sprite-Sheet.png" id="2_fkybt"]
@@ -216,8 +216,16 @@ animations = [{
 radius = 7.0
 height = 26.0
 
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_3smsa"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath("Sprite:animation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
 [node name="Player" type="CharacterBody2D"]
-collision_mask = 28
+collision_mask = 156
 collision_priority = 20.0
 safe_margin = 0.2
 script = ExtResource("1_cvnsp")
@@ -236,3 +244,6 @@ wait_time = 0.1
 one_shot = true
 
 [node name="Player Arms" parent="." instance=ExtResource("6_x3wgy")]
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_3smsa")

@@ -18,13 +18,17 @@ var in_blockzone: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var player_arms: Node2D = $"Player Arms"
 
+func _enter_tree() -> void:
+	set_multiplayer_authority(name.to_int())
+
 func _ready() -> void:
 	player_arms.visible = false
 	
 func _physics_process(delta: float) -> void:
+	if !is_multiplayer_authority(): return
 	# Apply gravity with floaty jump feel
 	if velocity.y < 0:  # going up
-		if not Input.is_action_pressed("jump"):
+		if not Input.is_action_pressed("jump_1"):
 			velocity.y += gravity * low_jump_multiplier * delta
 		elif abs(velocity.y) < peak_threshold:
 			velocity.y += gravity * peak_gravity_scale * delta
@@ -34,11 +38,11 @@ func _physics_process(delta: float) -> void:
 		velocity.y += gravity * fall_multiplier * delta
 
 	# Handle jump
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if Input.is_action_just_pressed("jump_1") and is_on_floor():
 		velocity.y = JumpForce
 	
 	# Handle movement
-	var direction := Input.get_axis("left", "right")
+	var direction := Input.get_axis("left_1", "right_1")
 	
 	if is_bumping:
 		velocity.x = 0  # lock in place during bump
@@ -48,13 +52,13 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, Friction * delta)
 	
 	# --- Handle attack ---
-	if Input.is_action_just_pressed("hit") and not is_on_floor() and not is_hitting and not is_bumping:
+	if Input.is_action_just_pressed("hit_1") and not is_on_floor() and not is_hitting and not is_bumping:
 		is_hitting = true
 		player_arms.swing()
 		sprite.play("Hit")
 	
 	# Handle bump - only on ground and not during other actions
-	if Input.is_action_pressed("Bump") and is_on_floor() and not is_hitting:
+	if Input.is_action_pressed("Bump_1") and is_on_floor() and not is_hitting:
 		if not is_bumping:
 			is_bumping = true
 			player_arms.bump()
@@ -79,6 +83,7 @@ func _physics_process(delta: float) -> void:
 			if in_blockzone == false:
 				sprite.play("Jump")
 			elif in_blockzone == true:
+				print(in_blockzone)
 				sprite.play("Block")
 		elif direction != 0:
 			sprite.play("Run")

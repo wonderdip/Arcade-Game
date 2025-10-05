@@ -7,7 +7,7 @@ extends Node2D
 var active_ball: Node2D = null  # Track the current ball
 
 func _physics_process(_delta: float) -> void:
-	if Input.is_action_just_pressed("spawnball"):
+	if Input.is_action_just_pressed("spawnball_1"):
 		spawn_ball()
 
 func spawn_ball() -> void:
@@ -38,3 +38,11 @@ func _on_player_one_side_body_entered(body: Node2D) -> void:
 func _on_player_two_side_body_entered(body: Node2D) -> void:
 	if body.is_in_group("ball"):
 		body.current_player_side = 2
+
+func _on_block_zone_body_entered(body: Node2D):
+	if body == player:
+		player.in_blockzone = true
+
+func _on_block_zone_body_exited(body: Node2D) -> void:
+	if body == player:
+		player.in_blockzone = false
