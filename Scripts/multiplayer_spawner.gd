@@ -22,18 +22,18 @@ func _on_peer_connected(id: int) -> void:
 func spawn_player(id: int, index: int) -> void:
 	var player: Node = network_player.instantiate()
 	player.name = str(id)
-	
+	print(index)
 	match index:
 		1:
-			player.position = Vector2(40, 112)   # Left side, host
+			player.position = Vector2(30, 112)   # Left side, host
 		2:
-			player.position = Vector2(216, 112)  # Right side, 1st client
+			player.position = Vector2(226, 112)  # Right side, 1st client
 		3:
-			player.position = Vector2(40, 112)   # Left side, 2nd client
+			player.position = Vector2(30, 112)   # Left side, 2nd client
 		4:
-			player.position = Vector2(216, 112)  # Right side, 3rd client
+			player.position = Vector2(226, 112)  # Right side, 3rd client
 		_:
-			player.position = Vector2(40, 112)   # fallback
+			player.position = Vector2(30, 112)   # fallback
 	
-	get_node(spawn_path).add_child.call_deferred(player, true)
+	get_node(spawn_path).call_deferred("add_child", player)
 	print("Spawned player", id, "at position", player.position)
