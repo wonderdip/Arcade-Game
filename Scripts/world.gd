@@ -1,10 +1,16 @@
 extends Node2D
 
-@onready var player: CharacterBody2D = $Player
+@onready var player: CharacterBody2D
 @onready var ball_scene: PackedScene = preload("res://Scenes/ball.tscn")
 @onready var score_board: Node2D = $ScoreBoard
 
 var active_ball: Node2D = null  # Track the current ball
+
+func _ready() -> void:
+	var players = get_tree().get_nodes_in_group("Player")
+	if players.size() > 0:
+		player = players[0]  # Get the first player
+
 
 func _physics_process(_delta: float) -> void:
 	if Input.is_action_just_pressed("spawnball_1"):

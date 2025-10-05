@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://txgrcwpblspl"]
+[gd_scene load_steps=6 format=3 uid="uid://txgrcwpblspl"]
 
 [ext_resource type="Texture2D" uid="uid://m7f8mlud45t1" path="res://Assets/Volleyball.png" id="1_d60mj"]
 [ext_resource type="Script" uid="uid://cmmnovr8dmvae" path="res://Scripts/ball.gd" id="1_ij5cq"]
@@ -9,6 +9,17 @@ bounce = 0.5
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ij5cq"]
 radius = 4.0
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ij5cq"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:linear_velocity")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:angular_velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 1
 
 [node name="Ball" type="RigidBody2D" groups=["ball"]]
 collision_layer = 2
@@ -39,3 +50,6 @@ collision_mask = 4
 modulate = Color(0.5137255, 0.5647059, 1, 0.3647059)
 position = Vector2(9, 0)
 texture = ExtResource("1_d60mj")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_ij5cq")

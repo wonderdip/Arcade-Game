@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=4 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=23 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
 [ext_resource type="Script" uid="uid://bshn1jsaig2fx" path="res://Scripts/world.gd" id="1_fo5ed"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://duddr3iorihic" path="res://Assets/StandsBG.png" id="4_k7acu"]
 [ext_resource type="PackedScene" uid="uid://dvtr6ublg51mt" path="res://Scenes/score_board.tscn" id="10_0fj1v"]
 [ext_resource type="Script" uid="uid://7pu4le1bq5tt" path="res://Scripts/multiplayer_spawner.gd" id="10_ikia7"]
+[ext_resource type="PackedScene" uid="uid://btcp30cq4g58t" path="res://Scenes/main_menu.tscn" id="11_ikia7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5v1tr"]
 size = Vector2(128, 144)
@@ -166,17 +167,16 @@ script = ExtResource("4_5ukr8")
 position = Vector2(0, 15.5)
 shape = SubResource("RectangleShape2D_o06y3")
 
-[node name="Player" parent="." instance=ExtResource("1_a02cp")]
-position = Vector2(40, 112)
-
 [node name="ScoreBoard" parent="." instance=ExtResource("10_0fj1v")]
 position = Vector2(128, 12)
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("uid://cf3plcg7m0wcg")
+_spawnable_scenes = PackedStringArray("uid://cf3plcg7m0wcg", "uid://txgrcwpblspl")
 spawn_path = NodePath("..")
 script = ExtResource("10_ikia7")
 network_player = ExtResource("1_a02cp")
+
+[node name="MainMenu" parent="." instance=ExtResource("11_ikia7")]
 
 [connection signal="body_entered" from="PlayerOneSide" to="." method="_on_player_one_side_body_entered"]
 [connection signal="body_entered" from="PlayerTwoSide" to="." method="_on_player_two_side_body_entered"]
