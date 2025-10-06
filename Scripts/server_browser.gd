@@ -35,7 +35,7 @@ func _update_server_list():
 			display_text += server.name
 		else:
 			display_text += "[Unnamed]"
-		display_text += " - " + " (" + str(snapped(server.players, 1)) + "/" + str(snapped(server.max_players, 1)) + ")"
+		display_text += " (" + str(snapped(server["players"], 1)) + "/" + str(snapped(server["max_players"], 1)) + ")"
 		server_list.add_item(display_text)
 		server_list.set_item_metadata(server_list.get_item_count() - 1, server)
 
@@ -64,21 +64,22 @@ func refresh_servers():
 	server_list.clear()
 	join_button.disabled = true
 	status_label.text = "Searching for servers"
-	
 	searching = true
-	animate_search_label()  # start animation (non-blocking)
+	animate_search_label()
 	
-	ServerDiscovery.send_discovery_request()
+	if not ServerDiscovery.is_discovering:
+		ServerDiscovery.start_discovery_client()
 	
-	# Stop searching after 1 second (or when your discovery is done)
-	await get_tree().create_timer(ServerDiscovery.DISCOVERY_INTERVAL).timeout
+	# Send several discovery requests over time
+	for i in range(3):  # try 3 times over ~3 seconds
+		ServerDiscovery.send_discovery_request()
+		await get_tree().create_timer(1.0).timeout
+	
 	searching = false
-	
 	if discovered_servers.is_empty():
 		status_label.text = "No servers found"
 	else:
 		status_label.text = "Search complete (" + str(discovered_servers.size()) + " found)"
-
 
 func animate_search_label() -> void:
 	await get_tree().process_frame  # allow UI to update
