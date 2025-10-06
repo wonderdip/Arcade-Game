@@ -32,11 +32,8 @@ func start_server(server_name_param: String = "", port: int = DEFAULT_PORT) -> v
 	print("✅ Server started on port %d" % port)
 	print("🌐 Local IPs: ", local_ips)
 
-	# Make sure ServerDiscovery is autoloaded before this works!
-	if Engine.has_singleton("ServerDiscovery"):
-		ServerDiscovery.start_broadcasting(server_name, port, MAX_CLIENTS)
-	else:
-		push_warning("⚠️ ServerDiscovery not autoloaded!")
+	# Start broadcasting AFTER server is created
+	ServerDiscovery.start_broadcasting(server_name, port, MAX_CLIENTS)
 
 	get_tree().change_scene_to_file("res://Scenes/world.tscn")
 
@@ -103,5 +100,4 @@ func _on_connection_failed() -> void:
 func _exit_tree() -> void:
 	if peer:
 		peer.close()
-	if Engine.has_singleton("ServerDiscovery"):
-		ServerDiscovery.stop_broadcasting()
+	ServerDiscovery.stop_broadcasting()

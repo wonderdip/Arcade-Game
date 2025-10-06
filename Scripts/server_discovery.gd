@@ -2,7 +2,7 @@ extends Node
 
 signal server_discovered(server_info)
 
-const BROADCAST_PORT: int = 41678
+const BROADCAST_PORT: int = 41678  # Port for server to listen on
 const DISCOVERY_INTERVAL: float = 2.0
 
 var udp_server: PacketPeerUDP
@@ -28,11 +28,13 @@ func start_broadcasting(server_name: String, game_port: int, max_players: int = 
 		return
 	
 	udp_server = PacketPeerUDP.new()
+	# Server listens on BROADCAST_PORT
 	var err = udp_server.bind(BROADCAST_PORT, "*")
 	if err != OK:
-		push_error("Failed to bind UDP server: %s" % [err])
+		push_error("Failed to bind UDP server on port %d: %s" % [BROADCAST_PORT, err])
 		return
 	
+	# CRITICAL: Enable broadcast receiving
 	udp_server.set_broadcast_enabled(true)
 	
 	current_server_info = {
@@ -45,7 +47,8 @@ func start_broadcasting(server_name: String, game_port: int, max_players: int = 
 	}
 	
 	is_broadcasting = true
-	print("🔊 Started broadcasting server:", server_name, "on port", game_port)
+	print("🔊 Server UDP broadcasting enabled on port %d (game port: %d)" % [BROADCAST_PORT, game_port])
+	print("🌐 Local IPs: ", IP.get_local_addresses())
 
 
 # -----------------------------
@@ -56,15 +59,24 @@ func start_discovery_client():
 		return
 	
 	udp_client = PacketPeerUDP.new()
-	var err = udp_client.bind(BROADCAST_PORT + 1, "*")
+	# Client uses ephemeral port (0 = auto-assign)
+	var err = udp_client.bind(0, "*")
 	if err != OK:
 		push_error("Failed to bind UDP client: %s" % [err])
 		return
 	
 	udp_client.set_broadcast_enabled(true)
 	is_discovering = true
+	
+	# Wait a frame to ensure socket is ready
+	await get_tree().process_frame
+	
+	# Send initial discovery request
+	send_discovery_request()
+	
+	# Start periodic discovery
 	discovery_timer.start()
-	print("📡 Started discovery client on port", BROADCAST_PORT + 1)
+	print("📡 Started discovery client")
 
 
 func send_discovery_request():
@@ -74,11 +86,14 @@ func send_discovery_request():
 	var message = {"type": "discovery_request"}
 	var data = JSON.stringify(message).to_utf8_buffer()
 
-	# Send to both global and subnet broadcast
+	# Send to broadcast addresses
 	for bcast in _get_broadcast_addresses():
 		udp_client.set_dest_address(bcast, BROADCAST_PORT)
-		udp_client.put_packet(data)
-		print("➡️ Sent discovery request to", bcast, ":", BROADCAST_PORT)
+		var result = udp_client.put_packet(data)
+		if result == OK:
+			print("➡️ Sent discovery request to %s:%d" % [bcast, BROADCAST_PORT])
+		else:
+			print("❌ Failed to send to %s: %s" % [bcast, result])
 
 
 # -----------------------------
@@ -106,19 +121,20 @@ func stop_discovery_client():
 # -----------------------------
 func _process(_delta):
 	# SERVER: respond to discovery requests
-	if is_broadcasting and udp_server:
+	if is_broadcasting and udp_server and udp_server.get_available_packet_count() > 0:
 		while udp_server.get_available_packet_count() > 0:
 			var packet = udp_server.get_packet()
+			var sender_ip = udp_server.get_packet_ip()
+			var sender_port = udp_server.get_packet_port()
 			var message_str = packet.get_string_from_utf8()
 			var message = JSON.parse_string(message_str)
 			
 			if message and message.get("type") == "discovery_request":
-				var sender_ip = udp_server.get_packet_ip()
-				print("📨 Discovery request received from:", sender_ip)
-				_send_server_info(sender_ip)
+				print("📨 Discovery request from: %s:%d" % [sender_ip, sender_port])
+				_send_server_info(sender_ip, sender_port)
 
 	# CLIENT: receive server info responses
-	if is_discovering and udp_client:
+	if is_discovering and udp_client and udp_client.get_available_packet_count() > 0:
 		while udp_client.get_available_packet_count() > 0:
 			var packet = udp_client.get_packet()
 			var sender_ip = udp_client.get_packet_ip()
@@ -127,28 +143,34 @@ func _process(_delta):
 			
 			if server_info and server_info.get("type") == "server_info":
 				server_info.ip = sender_ip
-				print("✅ Found server:", server_info.name, "at", sender_ip)
+				print("✅ Found server: '%s' at %s:%d (Players: %d/%d)" % [
+					server_info.get("name", "Unnamed"),
+					sender_ip,
+					server_info.get("port", 0),
+					server_info.get("players", 0),
+					server_info.get("max_players", 0)
+				])
 				emit_signal("server_discovered", server_info)
 
 
 # -----------------------------
 # HELPERS
 # -----------------------------
-func _send_server_info(target_ip: String):
+func _send_server_info(target_ip: String, target_port: int):
 	if not udp_server:
 		return
 	
 	var response = current_server_info.duplicate()
 	response["type"] = "server_info"
-	response["ip"] = _get_local_ip()
 
-	var temp_udp = PacketPeerUDP.new()
-	temp_udp.set_broadcast_enabled(true)
-	temp_udp.set_dest_address(target_ip, BROADCAST_PORT + 1)
-	temp_udp.put_packet(JSON.stringify(response).to_utf8_buffer())
-	await get_tree().process_frame  # give time to send
-	temp_udp.close()
-	print("📤 Sent server info to", target_ip)
+	# Send response directly back to requester
+	udp_server.set_dest_address(target_ip, target_port)
+	var result = udp_server.put_packet(JSON.stringify(response).to_utf8_buffer())
+	
+	if result == OK:
+		print("📤 Sent server info to %s:%d" % [target_ip, target_port])
+	else:
+		print("❌ Failed to send server info: %s" % result)
 
 
 func _on_discovery_timer_timeout():
@@ -164,21 +186,45 @@ func _get_local_ip() -> String:
 	return "0.0.0.0"
 
 
-# Get both 255.255.255.255 and subnet broadcasts
+# Get broadcast addresses for local network
 func _get_broadcast_addresses() -> Array:
-	var result = ["255.255.255.255"]
+	var result = []
+	
+	# Add global broadcast first
+	result.append("255.255.255.255")
+	
+	# Add subnet-specific broadcasts based on local IPs
 	for addr in IP.get_local_addresses():
-		if addr.begins_with("192.168.") or addr.begins_with("10.") or addr.begins_with("172."):
-			var parts = Array(addr.split("."))
-			if parts.size() == 4:
-				parts[3] = "255"
-				result.append(".".join(parts))
+		# Skip loopback and IPv6
+		if addr.begins_with("127.") or addr.find(":") != -1:
+			continue
+			
+		var parts = addr.split(".")
+		if parts.size() != 4:
+			continue
+		
+		# For any valid IPv4 address, create its broadcast address
+		# Standard /24 subnet (most common home networks)
+		var broadcast_24 = "%s.%s.%s.255" % [parts[0], parts[1], parts[2]]
+		if broadcast_24 not in result:
+			result.append(broadcast_24)
+		
+		# Also try /16 subnet for larger networks
+		if addr.begins_with("10.") or addr.begins_with("172."):
+			var broadcast_16 = "%s.%s.255.255" % [parts[0], parts[1]]
+			if broadcast_16 not in result:
+				result.append(broadcast_16)
+	
+	print("🌐 Broadcasting to addresses: ", result)
+	print("🏠 Your local IPs: ", IP.get_local_addresses())
 	return result
+
 
 # Update player count dynamically
 func update_player_count(count: int):
 	if current_server_info.has("players"):
 		current_server_info.players = count
+		print("👥 Updated player count to: %d" % count)
 
 
 func _exit_tree():
