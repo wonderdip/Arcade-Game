@@ -18,8 +18,8 @@ func _ready() -> void:
 		# Network mode - only server spawns ball after client connects
 		if multiplayer.is_server():
 			multiplayer.peer_connected.connect(_on_peer_connected)
-			var peer_count = multiplayer.get_peers().size()
-			if peer_count >= 1:
+			var total_players = multiplayer.get_peers().size() + 1
+			if total_players == Networkhandler.MAX_CLIENTS:
 				await get_tree().create_timer(1.0).timeout
 				spawn_ball()
 	elif Networkhandler.is_local:
@@ -45,9 +45,11 @@ func _on_local_player_joined(device_id: int, player_number: int, input_type: Str
 		await get_tree().create_timer(0.5).timeout
 		spawn_ball_local()
 
-func _on_peer_connected(id: int):
-	if multiplayer.is_server() and not ball_spawned:
-		print("Client ", id, " connected. Spawning ball...")
+func _on_peer_connected(id: int) -> void:
+	var total_players = multiplayer.get_peers().size() + 1
+	print("Peer connected:", id, "Total players:", total_players)
+	
+	if total_players == Networkhandler.MAX_CLIENTS:
 		await get_tree().create_timer(1.0).timeout
 		spawn_ball()
 

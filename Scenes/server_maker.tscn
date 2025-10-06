@@ -44,9 +44,19 @@ max_value = 4.0
 value = 2.0
 prefix = "Max Players:"
 
-[node name="Confirm" type="Button" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+alignment = 1
+
+[node name="Confirm" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/align_to_largest_stylebox = 175
 text = "Create"
 
+[node name="Back" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Back"
+
 [connection signal="value_changed" from="VBoxContainer/SpinBox" to="." method="_on_spin_box_value_changed"]
-[connection signal="pressed" from="VBoxContainer/Confirm" to="." method="_on_confirm_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Confirm" to="." method="_on_confirm_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Back" to="." method="_on_back_pressed"]
