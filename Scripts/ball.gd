@@ -36,15 +36,11 @@ func _ready():
 		# Local mode - always simulate physics
 		freeze = false
 		sleeping = false
-		print("Ball spawned in local mode at position: ", global_position)
+		
 	elif multiplayer.is_server():
 		# Network mode - only server simulates
 		freeze = false
 		sleeping = false
-		print("Ball spawned on server at position: ", global_position)
-	else:
-		# Network client - just show the ball
-		print("Ball spawned on client at position: ", global_position)
 
 func _physics_process(_delta: float) -> void:
 	# Keep the raycast pointing straight down in world space

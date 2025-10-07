@@ -57,10 +57,13 @@ func is_action_pressed(player_number: int, action: String) -> bool:
 				return false
 				
 		elif action == "hit":
-			return Input.is_joy_button_pressed(device.device_id, JOY_BUTTON_X)
+			return Input.is_joy_button_pressed(device.device_id, JOY_BUTTON_B)
 			
 		elif action == "bump":
-			return Input.is_joy_button_pressed(device.device_id, JOY_BUTTON_B)
+			return Input.is_joy_button_pressed(device.device_id, JOY_BUTTON_X)
+		
+		elif action == "set":
+			return Input.is_joy_button_pressed(device.device_id, JOY_BUTTON_A)
 			
 		elif action == "left":
 			var joy_axis = Input.get_joy_axis(device.device_id, JOY_AXIS_LEFT_X)
@@ -97,20 +100,19 @@ func is_action_just_pressed(player_number: int, action: String) -> bool:
 			var previous_axis_y = last_axis_y.get(device.device_id, 0.0)
 			var axis_just_pressed = previous_axis_y >= -controller_deadzone and current_axis_y < -controller_deadzone
 			last_axis_y[device.device_id] = current_axis_y
-
-			var button_a_just_pressed = Input.is_joy_button_pressed(device.device_id, JOY_BUTTON_A)
-			if axis_just_pressed or button_a_just_pressed:
+			
+			if axis_just_pressed:
 				return true
 			else:
 				return false
 
 		elif action == "hit":
-			var just_pressed_x = Input.is_joy_button_pressed(device.device_id, JOY_BUTTON_X)
-			return just_pressed_x
-
-		elif action == "bump":
 			var just_pressed_b = Input.is_joy_button_pressed(device.device_id, JOY_BUTTON_B)
 			return just_pressed_b
+
+		elif action == "bump":
+			var just_pressed_x = Input.is_joy_button_pressed(device.device_id, JOY_BUTTON_X)
+			return just_pressed_x
 
 		else:
 			return false

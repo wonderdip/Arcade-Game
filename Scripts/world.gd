@@ -55,7 +55,7 @@ func _on_peer_connected(id: int) -> void:
 
 func _physics_process(_delta: float) -> void:
 	# Ball spawning for testing/reset
-	if Input.is_action_just_pressed("spawnball_1") or Input.is_action_just_pressed("spawnball_2"):
+	if (Input.is_action_just_pressed("spawnball_1") or Input.is_action_just_pressed("spawnball_2")) and ball_spawned == false:
 		if is_network_mode:
 			if multiplayer.is_server():
 				spawn_ball()
@@ -95,6 +95,9 @@ func spawn_ball() -> void:
 	
 	if not ball_instance.update_score.is_connected(score_board.update_score):
 		ball_instance.update_score.connect(score_board.update_score)
+		
+	if not ball_instance.update_score.is_connected(_on_ball_scored):
+		ball_instance.update_score.connect(_on_ball_scored)
 
 func spawn_ball_local() -> void:
 	# Local mode spawning (no network replication needed)
@@ -112,9 +115,16 @@ func spawn_ball_local() -> void:
 	
 	add_child(ball_instance)
 	active_ball = ball_instance
+	ball_spawned = true
 	
 	if not ball_instance.update_score.is_connected(score_board.update_score):
 		ball_instance.update_score.connect(score_board.update_score)
+		
+	if not ball_instance.update_score.is_connected(_on_ball_scored):
+		ball_instance.update_score.connect(_on_ball_scored)
+
+func _on_ball_scored(_side: int) -> void:
+	ball_spawned = false
 
 func _on_player_one_side_body_entered(body: Node2D) -> void:
 	if body.is_in_group("ball"):

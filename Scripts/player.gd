@@ -10,9 +10,13 @@ extends CharacterBody2D
 @export var low_jump_multiplier: float = 1.5
 var peak_gravity_scale: float = 0.5
 var peak_threshold: float = 80.0
+var block_gravity_mult: float
+var speed_mult: float
 
 var is_hitting: bool = false
 var is_bumping: bool = false
+var is_setting: bool = false
+var is_blocking: bool = false
 var in_blockzone: bool = false
 
 # Player identification
@@ -53,40 +57,52 @@ func _physics_process(delta: float) -> void:
 	var jump_just_pressed: bool
 	var hit_just_pressed: bool
 	var bump_pressed: bool
-
+	var set_pressed: bool
+	
 	if is_local_mode:
 		direction = InputManager.get_axis(player_number, "left", "right")
 		jump_pressed = InputManager.is_action_pressed(player_number, "jump")
 		jump_just_pressed = InputManager.is_action_just_pressed(player_number, "jump")
 		hit_just_pressed = InputManager.is_action_just_pressed(player_number, "hit")
 		bump_pressed = InputManager.is_action_pressed(player_number, "bump")
+		set_pressed = InputManager.is_action_pressed(player_number, "set")
 	else:
 		direction = Input.get_axis("left", "right")
 		jump_pressed = Input.is_action_pressed("jump")
 		jump_just_pressed = Input.is_action_just_pressed("jump")
 		hit_just_pressed = Input.is_action_just_pressed("hit")
 		bump_pressed = Input.is_action_pressed("bump")
+		set_pressed = Input.is_action_pressed("set")
 
 	# --- Movement and Actions ---
 	# Apply gravity with floaty jump feel
+	if is_blocking:
+		block_gravity_mult = 1.5  # increase this for lower jumps
+	else:
+		block_gravity_mult = 1
+
 	if velocity.y < 0:
 		if not jump_pressed:
-			velocity.y += gravity * low_jump_multiplier * delta
+			velocity.y += gravity * low_jump_multiplier * block_gravity_mult * delta
 		elif abs(velocity.y) < peak_threshold:
-			velocity.y += gravity * peak_gravity_scale * delta
+			velocity.y += gravity * peak_gravity_scale * block_gravity_mult * delta
 		else:
-			velocity.y += gravity * delta * 0.5
+			velocity.y += gravity * 0.5 * block_gravity_mult * delta
 	else:
-		velocity.y += gravity * fall_multiplier * delta
+		velocity.y += gravity * fall_multiplier * block_gravity_mult * delta
+
 
 	# Handle jump
 	if jump_just_pressed and is_on_floor():
 		velocity.y = JumpForce
-
-	if is_bumping:
-		velocity.x = 0
-	elif direction != 0 and not is_hitting:
-		velocity.x = move_toward(velocity.x, direction * Speed, Acceleration * delta)
+	
+	if is_bumping or is_setting:
+		speed_mult = 0.2
+	else:
+		speed_mult = 1
+	
+	if direction != 0 and not is_hitting:
+		velocity.x = move_toward(velocity.x, direction * Speed * speed_mult, Acceleration * delta)
 	else:
 		velocity.x = move_toward(velocity.x, 0, Friction * delta)
 
@@ -97,7 +113,7 @@ func _physics_process(delta: float) -> void:
 		sprite.play("Hit")
 
 	# Handle bump
-	if bump_pressed and is_on_floor() and not is_hitting:
+	if bump_pressed and is_on_floor() and not is_hitting and not is_setting:
 		if not is_bumping:
 			is_bumping = true
 			player_arms.bump()
@@ -107,7 +123,24 @@ func _physics_process(delta: float) -> void:
 			is_bumping = false
 			player_arms.stop_bump()
 			sprite.play("Idle")
-
+			
+	if set_pressed and is_on_floor() and not is_hitting and not is_bumping:
+		is_setting = true
+		sprite.play("Set")
+		player_arms.setting()
+	else:
+		if is_setting:
+			is_setting = false
+			sprite.play("Idle")
+			player_arms.stop_setting()
+		
+	if in_blockzone and not is_on_floor():
+		is_blocking = true
+		player_arms.block()
+	elif (is_on_floor() or not in_blockzone) and is_blocking:
+		is_blocking = false
+		player_arms.stop_block()
+		
 	# Cancel hit if you land
 	if is_on_floor() and is_hitting:
 		is_hitting = false
@@ -115,7 +148,7 @@ func _physics_process(delta: float) -> void:
 		sprite.play("Idle")
 
 	# Pick animations
-	if not is_bumping and not is_hitting:
+	if not is_bumping and not is_hitting and not is_setting:
 		if not is_on_floor():
 			if in_blockzone == false:
 				sprite.play("Jump")
