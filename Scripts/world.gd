@@ -4,6 +4,7 @@ extends Node2D
 @onready var player_scene: PackedScene = preload("res://Scenes/player.tscn")
 @onready var score_board: Node2D = $ScoreBoard
 @onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
+@onready var ball_timer: Timer = $BallTimer
 
 var active_ball: Node2D = null
 var ball_spawned: bool = false
@@ -125,7 +126,8 @@ func spawn_ball_local() -> void:
 
 func _on_ball_scored(_side: int) -> void:
 	ball_spawned = false
-
+	ball_timer.start()
+	
 func _on_player_one_side_body_entered(body: Node2D) -> void:
 	if body.is_in_group("ball"):
 		if is_network_mode and not multiplayer.is_server():
@@ -145,3 +147,13 @@ func _on_block_zone_body_entered(body: Node2D):
 func _on_block_zone_body_exited(body: Node2D) -> void:
 	if body is CharacterBody2D and "in_blockzone" in body:
 		body.in_blockzone = false
+
+
+func _on_ball_timer_timeout() -> void:
+	if is_network_mode:
+		if multiplayer.is_server():
+			spawn_ball()
+		else:
+			rpc_id(1, "request_ball_spawn")
+	elif Networkhandler.is_local and spawned_players.size() >= 2:
+		spawn_ball_local()

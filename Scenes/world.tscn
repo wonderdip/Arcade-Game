@@ -183,7 +183,12 @@ network_player = ExtResource("1_a02cp")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_c5t2i")
 
+[node name="BallTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
 [connection signal="body_entered" from="PlayerOneSide" to="." method="_on_player_one_side_body_entered"]
 [connection signal="body_entered" from="PlayerTwoSide" to="." method="_on_player_two_side_body_entered"]
 [connection signal="body_entered" from="Block Zone" to="." method="_on_block_zone_body_entered"]
 [connection signal="body_exited" from="Block Zone" to="." method="_on_block_zone_body_exited"]
+[connection signal="timeout" from="BallTimer" to="." method="_on_ball_timer_timeout"]

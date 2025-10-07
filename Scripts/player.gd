@@ -77,7 +77,7 @@ func _physics_process(delta: float) -> void:
 	# --- Movement and Actions ---
 	# Apply gravity with floaty jump feel
 	if is_blocking:
-		block_gravity_mult = 1.5  # increase this for lower jumps
+		block_gravity_mult = 1.3  # increase this for lower jumps
 	else:
 		block_gravity_mult = 1
 
@@ -98,6 +98,8 @@ func _physics_process(delta: float) -> void:
 	
 	if is_bumping or is_setting:
 		speed_mult = 0.2
+	elif is_hitting:
+		speed_mult = 0.4
 	else:
 		speed_mult = 1
 	
