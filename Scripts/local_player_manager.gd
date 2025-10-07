@@ -8,10 +8,10 @@ var max_players: int = 2
 
 # Spawn positions for each player
 var spawn_positions = [
-	Vector2(30, 112),   # Player 1
-	Vector2(226, 112),   # Player 2
-	Vector2(30, 112),
-	Vector2(226, 112)
+	Vector2(20, 112),   # Player 1
+	Vector2(236, 112),   # Player 2
+	Vector2(20, 112),
+	Vector2(236, 112)
 ]
 
 var ready_to_accept_players: bool = false

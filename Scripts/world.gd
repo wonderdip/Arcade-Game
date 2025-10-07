@@ -150,10 +150,11 @@ func _on_block_zone_body_exited(body: Node2D) -> void:
 
 
 func _on_ball_timer_timeout() -> void:
-	if is_network_mode:
-		if multiplayer.is_server():
-			spawn_ball()
-		else:
-			rpc_id(1, "request_ball_spawn")
-	elif Networkhandler.is_local and spawned_players.size() >= 2:
-		spawn_ball_local()
+	if not ball_spawned:
+		if is_network_mode:
+			if multiplayer.is_server():
+				spawn_ball()
+			else:
+				rpc_id(1, "request_ball_spawn")
+		elif Networkhandler.is_local and spawned_players.size() >= 2:
+			spawn_ball_local()
