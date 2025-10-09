@@ -5,6 +5,7 @@ var MAX_CLIENTS: int = 2
 
 var peer: ENetMultiplayerPeer
 var is_local: bool = false
+var is_solo: bool = false
 var server_name: String = ""
 
 func start_server(server_name_param: String = "", port: int = DEFAULT_PORT) -> void:

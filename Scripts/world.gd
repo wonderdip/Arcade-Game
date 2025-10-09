@@ -9,6 +9,7 @@ extends Node2D
 var active_ball: Node2D = null
 var ball_spawned: bool = false
 var is_network_mode: bool = false
+var is_solo_mode: bool = false
 var local_player_manager: Node = null
 var spawned_players: Array = []
 
@@ -25,6 +26,8 @@ func _ready() -> void:
 				spawn_ball()
 	elif Networkhandler.is_local:
 		LocalPlayerManager.player_joined.connect(_on_local_player_joined)
+	elif Networkhandler.is_solo:
+		is_solo_mode = true
 	else:
 		return
 
