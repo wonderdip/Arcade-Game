@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bsykhyyt11t6o"
-path="res://.godot/imported/ScoreBoard.png-34d87ac45968e35e47f20c64720c38f0.ctex"
+uid="uid://bao18c7obqvt6"
+path="res://.godot/imported/Numbers-Sheet.png-3f80102027747a986e89b9e2d7affc99.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/ScoreBoard.png"
-dest_files=["res://.godot/imported/ScoreBoard.png-34d87ac45968e35e47f20c64720c38f0.ctex"]
+source_file="res://Assets/World/Numbers-Sheet.png"
+dest_files=["res://.godot/imported/Numbers-Sheet.png-3f80102027747a986e89b9e2d7affc99.ctex"]
 
 [params]
 

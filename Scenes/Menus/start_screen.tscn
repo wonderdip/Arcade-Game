@@ -1,0 +1,102 @@
+[gd_scene load_steps=8 format=3 uid="uid://5mskd276w0y3"]
+
+[ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="1_5e717"]
+[ext_resource type="Texture2D" uid="uid://ic27ga3or3yx" path="res://Assets/Start Screen/TopViewCourt.png" id="2_mtlf8"]
+[ext_resource type="Texture2D" uid="uid://bdkut3u1wl1b6" path="res://Assets/Start Screen/Overlay.png" id="3_5e717"]
+[ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="4_5e717"]
+[ext_resource type="Texture2D" uid="uid://m7f8mlud45t1" path="res://Assets/Volleyball.png" id="4_mtlf8"]
+[ext_resource type="PackedScene" uid="uid://btcp30cq4g58t" path="res://Scenes/Menus/main_menu.tscn" id="6_nqnrp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5e717"]
+shader = ExtResource("1_5e717")
+shader_parameter/vignette_intensity = 0.7
+shader_parameter/vignette_opacity = 0.30000001425
+shader_parameter/vignette_rgb = Color(0, 0, 0, 1)
+shader_parameter/overlay_mode = true
+
+[node name="Start Screen" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BGCourt" type="Sprite2D" parent="."]
+modulate = Color(0.6, 0.6, 0.6, 1)
+scale = Vector2(2, 2)
+texture = ExtResource("2_mtlf8")
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_5e717")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -72.0
+offset_right = 128.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+visible = false
+layout_mode = 0
+offset_left = -66.0
+offset_top = -60.0
+offset_right = 66.0
+offset_bottom = -22.0
+texture = ExtResource("3_5e717")
+patch_margin_left = 4
+patch_margin_top = 4
+patch_margin_right = 4
+patch_margin_bottom = 4
+axis_stretch_horizontal = 2
+axis_stretch_vertical = 2
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -72.0
+offset_right = 128.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.0782, 0.11798, 0.17, 1)
+theme_override_constants/line_spacing = -5
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/shadow_outline_size = 0
+theme_override_fonts/font = ExtResource("4_5e717")
+theme_override_font_sizes/font_size = 30
+text = " V  lleyball 
+Smasherz"
+horizontal_alignment = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="Title"]
+position = Vector2(63, 17)
+scale = Vector2(2, 2)
+texture = ExtResource("4_mtlf8")
+
+[node name="MainMenu" parent="." instance=ExtResource("6_nqnrp")]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_top = 18.0
+offset_bottom = 18.0
+scale = Vector2(0.5, 0.5)

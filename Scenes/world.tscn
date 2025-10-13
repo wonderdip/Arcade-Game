@@ -1,15 +1,16 @@
-[gd_scene load_steps=23 format=4 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=25 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
 [ext_resource type="Script" uid="uid://bshn1jsaig2fx" path="res://Scripts/world.gd" id="1_fo5ed"]
-[ext_resource type="Texture2D" uid="uid://jhr0hmkkxwpy" path="res://Assets/NetPole.png" id="2_5a7ea"]
-[ext_resource type="Texture2D" uid="uid://c4hb1weoybdb7" path="res://Assets/Court-Sheet.png" id="2_go701"]
-[ext_resource type="Texture2D" uid="uid://bqf0dsaerynpd" path="res://Assets/BG.png" id="3_o06y3"]
+[ext_resource type="Texture2D" uid="uid://jhr0hmkkxwpy" path="res://Assets/World/NetPole.png" id="2_5a7ea"]
+[ext_resource type="Texture2D" uid="uid://c4hb1weoybdb7" path="res://Assets/World/Court-Sheet.png" id="2_go701"]
+[ext_resource type="Texture2D" uid="uid://bqf0dsaerynpd" path="res://Assets/World/BG.png" id="3_o06y3"]
 [ext_resource type="Script" uid="uid://b3vf3iffgaffp" path="res://Scripts/hover_zone.gd" id="4_5ukr8"]
-[ext_resource type="Texture2D" uid="uid://byabc8xbtfjnq" path="res://Assets/BleachersBG.png" id="4_5v1tr"]
-[ext_resource type="Texture2D" uid="uid://duddr3iorihic" path="res://Assets/StandsBG.png" id="4_k7acu"]
+[ext_resource type="Texture2D" uid="uid://byabc8xbtfjnq" path="res://Assets/World/BleachersBG.png" id="4_5v1tr"]
+[ext_resource type="Texture2D" uid="uid://duddr3iorihic" path="res://Assets/World/StandsBG.png" id="4_k7acu"]
 [ext_resource type="PackedScene" uid="uid://dvtr6ublg51mt" path="res://Scenes/score_board.tscn" id="10_0fj1v"]
 [ext_resource type="Script" uid="uid://7pu4le1bq5tt" path="res://Scripts/multiplayer_spawner.gd" id="10_ikia7"]
+[ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="11_ikia7"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5v1tr"]
 size = Vector2(128, 144)
@@ -63,6 +64,13 @@ properties/0/path = NodePath("ScoreBoard:last_point")
 properties/0/spawn = true
 properties/0/replication_mode = 1
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7yui6"]
+shader = ExtResource("11_ikia7")
+shader_parameter/vignette_intensity = 0.7
+shader_parameter/vignette_opacity = 0.30000001425
+shader_parameter/vignette_rgb = Color(0, 0, 0, 1)
+shader_parameter/overlay_mode = true
+
 [node name="World" type="Node2D"]
 script = ExtResource("1_fo5ed")
 
@@ -84,12 +92,6 @@ shape = SubResource("RectangleShape2D_0fj1v")
 
 [node name="BackGround" type="Node2D" parent="."]
 
-[node name="TileMapLayer" type="TileMapLayer" parent="BackGround"]
-z_index = -10
-position = Vector2(128, 80)
-tile_map_data = PackedByteArray("AAD4/wMAAAAAAAAAAAD5/wMAAAAAAAAAAAD6/wMAAAAAAAAAAAD7/wMAAAAAAAAAAAD8/wMAAAAAAAAAAAD9/wMAAAAAAAAAAAD+/wMAAAAAAAAAAAD//wMAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAD4/wIAAAABAAAAAAD5/wIAAAABAAAAAAD6/wIAAAABAAAAAAD7/wIAAAABAAAAAAD8/wIAAAABAAAAAAD9/wIAAAABAAAAAAD+/wIAAAABAAAAAAD//wIAAAABAAAAAAAAAAIAAAABAAAAAAABAAIAAAABAAAAAAACAAIAAAABAAAAAAADAAIAAAABAAAAAAAEAAIAAAABAAAAAAAFAAIAAAABAAAAAAAGAAIAAAABAAAAAAAHAAIAAAABAAAAAAA=")
-tile_set = SubResource("TileSet_8j60k")
-
 [node name="BG" type="Sprite2D" parent="BackGround"]
 modulate = Color(0.47801313, 0.47801313, 0.47801313, 1)
 position = Vector2(128, 96)
@@ -100,16 +102,26 @@ modulate = Color(0.59156823, 0.59156823, 0.59156823, 1)
 position = Vector2(128, 48)
 texture = ExtResource("3_o06y3")
 
+[node name="Seats" type="Sprite2D" parent="BackGround"]
+modulate = Color(0.54788595, 0.54788595, 0.54788595, 1)
+position = Vector2(128, 48)
+texture = ExtResource("4_5v1tr")
+
+[node name="Seats" type="Sprite2D" parent="BackGround/Seats"]
+modulate = Color(0.54788595, 0.54788595, 0.54788595, 1)
+position = Vector2(0, 54)
+texture = ExtResource("4_5v1tr")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="BackGround"]
+position = Vector2(128, 80)
+tile_map_data = PackedByteArray("AAD4/wMAAAAAAAAAAAD5/wMAAAAAAAAAAAD6/wMAAAAAAAAAAAD7/wMAAAAAAAAAAAD8/wMAAAAAAAAAAAD9/wMAAAAAAAAAAAD+/wMAAAAAAAAAAAD//wMAAAAAAAAAAAAAAAMAAAAAAAAAAAABAAMAAAAAAAAAAAACAAMAAAAAAAAAAAADAAMAAAAAAAAAAAAEAAMAAAAAAAAAAAAFAAMAAAAAAAAAAAAGAAMAAAAAAAAAAAAHAAMAAAAAAAAAAAD4/wIAAAABAAAAAAD5/wIAAAABAAAAAAD6/wIAAAABAAAAAAD7/wIAAAABAAAAAAD8/wIAAAABAAAAAAD9/wIAAAABAAAAAAD+/wIAAAABAAAAAAD//wIAAAABAAAAAAAAAAIAAAABAAAAAAABAAIAAAABAAAAAAACAAIAAAABAAAAAAADAAIAAAABAAAAAAAEAAIAAAABAAAAAAAFAAIAAAABAAAAAAAGAAIAAAABAAAAAAAHAAIAAAABAAAAAAA=")
+tile_set = SubResource("TileSet_8j60k")
+
 [node name="BG3" type="Sprite2D" parent="BackGround"]
 modulate = Color(0.59156823, 0.59156823, 0.59156823, 1)
 position = Vector2(128, 16)
 rotation = -3.1415925
 texture = ExtResource("3_o06y3")
-
-[node name="Seats" type="Sprite2D" parent="BackGround"]
-modulate = Color(0.54788595, 0.54788595, 0.54788595, 1)
-position = Vector2(128, 48)
-texture = ExtResource("4_5v1tr")
 
 [node name="Stands" type="Sprite2D" parent="BackGround"]
 modulate = Color(0.7014114, 0.7014114, 0.7014114, 1)
@@ -186,6 +198,19 @@ replication_config = SubResource("SceneReplicationConfig_c5t2i")
 [node name="BallTimer" type="Timer" parent="."]
 wait_time = 2.0
 one_shot = true
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_7yui6")
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_right = 256.0
+offset_bottom = 144.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
 
 [connection signal="body_entered" from="PlayerOneSide" to="." method="_on_player_one_side_body_entered"]
 [connection signal="body_entered" from="PlayerTwoSide" to="." method="_on_player_two_side_body_entered"]

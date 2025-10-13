@@ -5,7 +5,7 @@ var server_name_dialog: AcceptDialog
 var server_name_input: LineEdit
 
 func _on_server_pressed() -> void:
-	get_tree().change_scene_to_file("res://Scenes/server_maker.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Menus/server_maker.tscn")
 
 func _on_local_pressed() -> void:
 	# Clear any previous network connections

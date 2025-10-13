@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bc1tcp1vi545e"
-path="res://.godot/imported/Future Front Page.png-640d24dbac27cfced5e35d3331f9f015.ctex"
+uid="uid://duddr3iorihic"
+path="res://.godot/imported/StandsBG.png-43679561eaad8c4f367e261be11bdcc5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Future Front Page.png"
-dest_files=["res://.godot/imported/Future Front Page.png-640d24dbac27cfced5e35d3331f9f015.ctex"]
+source_file="res://Assets/World/StandsBG.png"
+dest_files=["res://.godot/imported/StandsBG.png-43679561eaad8c4f367e261be11bdcc5.ctex"]
 
 [params]
 

@@ -61,7 +61,7 @@ func _on_join_button_pressed():
 func _on_manual_connect_pressed():
 	var ip_text = manual_ip_input.text.strip_edges()
 	if ip_text.is_empty():
-		status_label.text = "Please enter an IP address"
+		status_label.text = "Enter IP address"
 		return
 	
 	# Parse IP and port (format: "10.0.0.218" or "10.0.0.218:41677")
@@ -83,7 +83,7 @@ func refresh_servers():
 	discovered_servers.clear()
 	server_list.clear()
 	join_button.disabled = true
-	status_label.text = "Searching for servers"
+	status_label.text = "Searching"
 	searching = true
 	animate_search_label()
 	
@@ -97,22 +97,22 @@ func refresh_servers():
 	
 	searching = false
 	if discovered_servers.is_empty():
-		status_label.text = "No servers found (try manual connect)"
+		status_label.text = "No servers found"
 	else:
-		status_label.text = "Search complete (" + str(discovered_servers.size()) + " found)"
+		status_label.text = "Search done (" + str(discovered_servers.size()) + " found)"
 
 func animate_search_label() -> void:
 	await get_tree().process_frame  # allow UI to update
 	var dot_count := 0
 	while searching:
 		dot_count = (dot_count + 1) % 4  # cycles 0–3
-		status_label.text = "Searching for servers" + ".".repeat(dot_count)
+		status_label.text = "Searching" + ".".repeat(dot_count)
 		await get_tree().create_timer(0.5).timeout
 		
 
 func _on_back_button_pressed():
 	ServerDiscovery.stop_discovery_client()
-	get_tree().change_scene_to_file("res://Scenes/main_menu.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Menus/start_screen.tscn")
 
 func _exit_tree():
 	ServerDiscovery.stop_discovery_client()

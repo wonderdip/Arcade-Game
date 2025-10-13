@@ -1,0 +1,98 @@
+[gd_scene load_steps=7 format=3 uid="uid://coy4pdcfa33cf"]
+
+[ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="1_u4q3l"]
+[ext_resource type="Script" uid="uid://cormkrc826hhi" path="res://Scripts/server_maker.gd" id="2_fi4rl"]
+[ext_resource type="Texture2D" uid="uid://ic27ga3or3yx" path="res://Assets/Start Screen/TopViewCourt.png" id="3_xb0mg"]
+[ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="4_aw7ix"]
+
+[sub_resource type="Theme" id="Theme_fwjh7"]
+default_font = ExtResource("1_u4q3l")
+default_font_size = 20
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_o41or"]
+shader = ExtResource("4_aw7ix")
+shader_parameter/vignette_intensity = 0.7
+shader_parameter/vignette_opacity = 0.30000001425
+shader_parameter/vignette_rgb = Color(0, 0, 0, 1)
+shader_parameter/overlay_mode = true
+
+[node name="ServerMaker" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_fwjh7")
+script = ExtResource("2_fi4rl")
+
+[node name="BGCourt" type="Sprite2D" parent="."]
+modulate = Color(0.6, 0.6, 0.6, 1)
+scale = Vector2(2, 2)
+texture = ExtResource("3_xb0mg")
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_o41or")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -72.0
+offset_right = 128.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -101.0
+offset_top = -70.0
+offset_right = 101.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Server Name"
+horizontal_alignment = 1
+
+[node name="ServerName" type="LineEdit" parent="VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Name..."
+
+[node name="SpinBox" type="SpinBox" parent="VBoxContainer"]
+layout_mode = 2
+min_value = 2.0
+max_value = 4.0
+value = 2.0
+prefix = "Max Players:"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Confirm" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/align_to_largest_stylebox = 175
+text = "Create"
+
+[node name="Back" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="value_changed" from="VBoxContainer/SpinBox" to="." method="_on_spin_box_value_changed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Confirm" to="." method="_on_confirm_pressed"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/Back" to="." method="_on_back_pressed"]

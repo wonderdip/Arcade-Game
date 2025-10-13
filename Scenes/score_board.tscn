@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://dvtr6ublg51mt"]
 
 [ext_resource type="Script" uid="uid://b047t4pmh66y0" path="res://Scripts/score_board.gd" id="1_8vx40"]
-[ext_resource type="Texture2D" uid="uid://bsykhyyt11t6o" path="res://Assets/ScoreBoard.png" id="1_kcejm"]
-[ext_resource type="Texture2D" uid="uid://bao18c7obqvt6" path="res://Assets/Numbers-Sheet.png" id="2_8vx40"]
+[ext_resource type="Texture2D" uid="uid://bsykhyyt11t6o" path="res://Assets/World/ScoreBoard.png" id="1_kcejm"]
+[ext_resource type="Texture2D" uid="uid://bao18c7obqvt6" path="res://Assets/World/Numbers-Sheet.png" id="2_8vx40"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_8vx40"]
 properties/0/path = NodePath("PlayerOneScore:frame")

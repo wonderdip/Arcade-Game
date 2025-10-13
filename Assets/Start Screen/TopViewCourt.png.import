@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c4hb1weoybdb7"
-path="res://.godot/imported/Court-Sheet.png-69eceb7682d70ec6c87d116ec405498f.ctex"
+uid="uid://ic27ga3or3yx"
+path="res://.godot/imported/TopViewCourt.png-4397314869e56ebe30876f9c0c6aa977.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Court-Sheet.png"
-dest_files=["res://.godot/imported/Court-Sheet.png-69eceb7682d70ec6c87d116ec405498f.ctex"]
+source_file="res://Assets/Start Screen/TopViewCourt.png"
+dest_files=["res://.godot/imported/TopViewCourt.png-4397314869e56ebe30876f9c0c6aa977.ctex"]
 
 [params]
 
