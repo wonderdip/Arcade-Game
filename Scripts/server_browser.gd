@@ -112,7 +112,7 @@ func animate_search_label() -> void:
 
 func _on_back_button_pressed():
 	ServerDiscovery.stop_discovery_client()
-	get_tree().change_scene_to_file("res://Scenes/Menus/start_screen.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Menus/title_screen.tscn")
 
 func _exit_tree():
 	ServerDiscovery.stop_discovery_client()

@@ -15,21 +15,6 @@ properties/1/replication_mode = 1
 [node name="ScoreBoard" type="Node2D"]
 script = ExtResource("1_8vx40")
 
-[node name="ColorRect" type="ColorRect" parent="."]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -136.0
-offset_top = -12.0
-offset_right = 136.0
-offset_bottom = 12.0
-grow_horizontal = 2
-grow_vertical = 2
-size_flags_horizontal = 4
-color = Color(0, 0, 0, 1)
-
 [node name="Board" type="Sprite2D" parent="."]
 texture = ExtResource("1_kcejm")
 

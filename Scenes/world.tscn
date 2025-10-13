@@ -103,12 +103,10 @@ position = Vector2(128, 48)
 texture = ExtResource("3_o06y3")
 
 [node name="Seats" type="Sprite2D" parent="BackGround"]
-modulate = Color(0.54788595, 0.54788595, 0.54788595, 1)
 position = Vector2(128, 48)
 texture = ExtResource("4_5v1tr")
 
 [node name="Seats" type="Sprite2D" parent="BackGround/Seats"]
-modulate = Color(0.54788595, 0.54788595, 0.54788595, 1)
 position = Vector2(0, 54)
 texture = ExtResource("4_5v1tr")
 
