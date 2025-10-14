@@ -57,7 +57,7 @@ func join_server(ip_address: String, port: int = DEFAULT_PORT) -> void:
 # -------------------------------------------------------------------
 
 func start_client() -> void:
-	get_tree().change_scene_to_file("res://Scenes/server_browser.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
 
 # -------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ func _on_peer_connected(id: int) -> void:
 @rpc("any_peer")
 func _notify_server_full():
 	print("🚫 Server is full! Returning to browser.")
-	get_tree().change_scene_to_file("res://Scenes/server_browser.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
 
 # -------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ func _on_peer_disconnected(id: int) -> void:
 
 func _on_server_disconnected() -> void:
 	print("⚠️ Disconnected from server. Returning to browser.")
-	get_tree().change_scene_to_file("res://Scenes/server_browser.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
 
 func _on_connected_to_server() -> void:
 	print("✅ Connected to server successfully!")
@@ -94,7 +94,7 @@ func _on_connected_to_server() -> void:
 
 func _on_connection_failed() -> void:
 	print("❌ Connection failed. Returning to browser.")
-	get_tree().change_scene_to_file("res://Scenes/server_browser.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
 
 # -------------------------------------------------------------------
 

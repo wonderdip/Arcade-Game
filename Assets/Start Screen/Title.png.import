@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://byabc8xbtfjnq"
-path="res://.godot/imported/BleachersBG.png-2d90e67aef7e52834d496413d6fbf355.ctex"
+uid="uid://lg25kccmrh0u"
+path="res://.godot/imported/Title.png-54ef9e6db1e7e1b105adae4242f127ef.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/BleachersBG.png"
-dest_files=["res://.godot/imported/BleachersBG.png-2d90e67aef7e52834d496413d6fbf355.ctex"]
+source_file="res://Assets/Start Screen/Title.png"
+dest_files=["res://.godot/imported/Title.png-54ef9e6db1e7e1b105adae4242f127ef.ctex"]
 
 [params]
 

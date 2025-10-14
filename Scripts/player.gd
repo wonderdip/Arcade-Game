@@ -103,7 +103,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		speed_mult = 1
 	
-	if direction != 0 and not is_hitting:
+	if direction != 0:
 		velocity.x = move_toward(velocity.x, direction * Speed * speed_mult, Acceleration * delta)
 	else:
 		velocity.x = move_toward(velocity.x, 0, Friction * delta)

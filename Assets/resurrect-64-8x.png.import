@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://jhr0hmkkxwpy"
-path="res://.godot/imported/NetPole.png-657b5d8874eb8b8f7acd8d90f4f5b886.ctex"
+uid="uid://cbcn2ow2si6xg"
+path="res://.godot/imported/resurrect-64-8x.png-0ba753d86e1861d161f131dc2fb763f6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/NetPole.png"
-dest_files=["res://.godot/imported/NetPole.png-657b5d8874eb8b8f7acd8d90f4f5b886.ctex"]
+source_file="res://Assets/resurrect-64-8x.png"
+dest_files=["res://.godot/imported/resurrect-64-8x.png-0ba753d86e1861d161f131dc2fb763f6.ctex"]
 
 [params]
 

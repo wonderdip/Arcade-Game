@@ -1,6 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://btcp30cq4g58t"]
+[gd_scene load_steps=4 format=3 uid="uid://btcp30cq4g58t"]
 
 [ext_resource type="Script" uid="uid://bbc4f660w2d41" path="res://Scripts/main_menu.gd" id="1_28flt"]
+[ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="1_48xlc"]
+
+[sub_resource type="Theme" id="Theme_1ehe0"]
+default_font = ExtResource("1_48xlc")
+default_font_size = 20
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -9,6 +14,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = SubResource("Theme_1ehe0")
 script = ExtResource("1_28flt")
 
 [node name="Server" type="VBoxContainer" parent="."]
@@ -29,6 +35,11 @@ grow_vertical = 2
 layout_mode = 2
 text = "Local Play"
 
+[node name="Solo" type="Button" parent="Server"]
+layout_mode = 2
+text = "Soloplayer
+"
+
 [node name="Server" type="Button" parent="Server"]
 layout_mode = 2
 text = "Create Server"
@@ -37,12 +48,7 @@ text = "Create Server"
 layout_mode = 2
 text = "Join Game"
 
-[node name="Solo" type="Button" parent="Server"]
-layout_mode = 2
-text = "Soloplayer
-"
-
 [connection signal="pressed" from="Server/Local" to="." method="_on_local_pressed"]
+[connection signal="pressed" from="Server/Solo" to="." method="_on_solo_pressed"]
 [connection signal="pressed" from="Server/Server" to="." method="_on_server_pressed"]
 [connection signal="pressed" from="Server/Join" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="Server/Solo" to="." method="_on_solo_pressed"]

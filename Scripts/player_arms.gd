@@ -16,7 +16,7 @@ var hit_bodies: Dictionary = {}  # Tracks last hit time for each ball
 @export var bump_force: float = 10.0
 @export var bump_upward_force: float = -25.0
 @export var set_force: float = 40
-@export var set_upaward_force: float = -50
+@export var set_upward_force: float = -40
 @export var hit_cooldown: float = 0.2
 @export var max_ball_speed: float = 400.0
 
@@ -125,7 +125,7 @@ func _apply_hit_to_ball(body: RigidBody2D):
 
 	# Optional: reduce or cancel downward velocity
 	if ball_vel.y > 0:
-		body.linear_velocity.y = ball_vel.y * 0.2  # or 0 for full reset
+		body.linear_velocity.y = ball_vel.y * 0.1  # or 0 for full reset
 
 	if is_bumping:
 		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
@@ -135,7 +135,7 @@ func _apply_hit_to_ball(body: RigidBody2D):
 		impulse = hit_direction * hit_force + Vector2(0, -downward_force)
 	elif is_setting:
 		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
-		impulse = hit_direction * set_force * 2 + Vector2(0, set_upaward_force)
+		impulse = hit_direction * set_force + Vector2(0, set_upward_force)
 
 	body.apply_impulse(impulse, contact_point - body.global_position)
 
