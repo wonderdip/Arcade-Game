@@ -1,19 +1,33 @@
-[gd_scene load_steps=4 format=3 uid="uid://btcp30cq4g58t"]
+[gd_scene load_steps=6 format=3 uid="uid://btcp30cq4g58t"]
 
 [ext_resource type="Script" uid="uid://bbc4f660w2d41" path="res://Scripts/main_menu.gd" id="1_28flt"]
 [ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="1_48xlc"]
+[ext_resource type="Texture2D" uid="uid://dljn3lm5gefq6" path="res://Assets/UI/Button.png" id="1_penys"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_aur2u"]
+texture = ExtResource("1_penys")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
 
 [sub_resource type="Theme" id="Theme_1ehe0"]
 default_font = ExtResource("1_48xlc")
-default_font_size = 20
+default_font_size = 10
+Button/font_sizes/font_size = 10
+Button/styles/normal = SubResource("StyleBoxTexture_aur2u")
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 theme = SubResource("Theme_1ehe0")
 script = ExtResource("1_28flt")
 
@@ -24,28 +38,37 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -98.0
-offset_top = -61.5
-offset_right = 98.0
-offset_bottom = 61.5
+offset_left = -44.0
+offset_top = -50.0
+offset_right = 44.0
+offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
+alignment = 1
 
 [node name="Local" type="Button" parent="Server"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 text = "Local Play"
 
 [node name="Solo" type="Button" parent="Server"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 text = "Soloplayer
 "
 
 [node name="Server" type="Button" parent="Server"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 text = "Create Server"
 
 [node name="Join" type="Button" parent="Server"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 text = "Join Game"
 
 [connection signal="pressed" from="Server/Local" to="." method="_on_local_pressed"]

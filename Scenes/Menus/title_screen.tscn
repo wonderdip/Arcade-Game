@@ -1,10 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://5mskd276w0y3"]
+[gd_scene load_steps=11 format=3 uid="uid://5mskd276w0y3"]
 
 [ext_resource type="Texture2D" uid="uid://ic27ga3or3yx" path="res://Assets/Start Screen/TopViewCourt.png" id="1_qrrr1"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="2_5l772"]
 [ext_resource type="Texture2D" uid="uid://bdkut3u1wl1b6" path="res://Assets/Start Screen/Overlay.png" id="3_wqk6i"]
-[ext_resource type="Texture2D" uid="uid://m7f8mlud45t1" path="res://Assets/Volleyball.png" id="5_jfetd"]
 [ext_resource type="PackedScene" uid="uid://btcp30cq4g58t" path="res://Scenes/Menus/main_menu.tscn" id="6_6a4bo"]
+[ext_resource type="Texture2D" uid="uid://ckesrjrj7u4gq" path="res://Assets/Start Screen/Volleyball_anim.png" id="6_qrrr1"]
 [ext_resource type="Texture2D" uid="uid://lg25kccmrh0u" path="res://Assets/Start Screen/Title.png" id="7_5l772"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5e717"]
@@ -13,6 +13,28 @@ shader_parameter/vignette_intensity = 0.7
 shader_parameter/vignette_opacity = 0.30000001425
 shader_parameter/vignette_rgb = Color(0, 0, 0, 1)
 shader_parameter/overlay_mode = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5l772"]
+atlas = ExtResource("6_qrrr1")
+region = Rect2(0, 0, 8, 8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wqk6i"]
+atlas = ExtResource("6_qrrr1")
+region = Rect2(8, 0, 8, 8)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_uo7yt"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5l772")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wqk6i")
+}],
+"loop": true,
+"name": &"squish",
+"speed": 1.0
+}]
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -62,21 +84,18 @@ axis_stretch_vertical = 2
 
 [node name="MainMenu" parent="." instance=ExtResource("6_6a4bo")]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
 offset_top = 18.0
 offset_bottom = 18.0
-scale = Vector2(0.5, 0.5)
 
 [node name="Title" type="Sprite2D" parent="."]
 position = Vector2(0, -41)
 texture = ExtResource("7_5l772")
 offset = Vector2(0.5, 0.5)
 
-[node name="Ball" type="Sprite2D" parent="Title"]
+[node name="Ball" type="AnimatedSprite2D" parent="Title"]
 position = Vector2(-39, -9)
 scale = Vector2(2, 2)
-texture = ExtResource("5_jfetd")
+sprite_frames = SubResource("SpriteFrames_uo7yt")
+animation = &"squish"
+autoplay = "squish"
+frame_progress = 0.65984
