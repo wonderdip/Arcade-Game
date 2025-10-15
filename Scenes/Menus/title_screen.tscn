@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://5mskd276w0y3"]
+[gd_scene load_steps=15 format=3 uid="uid://5mskd276w0y3"]
 
 [ext_resource type="Texture2D" uid="uid://ic27ga3or3yx" path="res://Assets/Start Screen/TopViewCourt.png" id="1_qrrr1"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="2_5l772"]
@@ -6,6 +6,10 @@
 [ext_resource type="PackedScene" uid="uid://btcp30cq4g58t" path="res://Scenes/Menus/main_menu.tscn" id="6_6a4bo"]
 [ext_resource type="Texture2D" uid="uid://ckesrjrj7u4gq" path="res://Assets/Start Screen/Volleyball_anim.png" id="6_qrrr1"]
 [ext_resource type="Texture2D" uid="uid://lg25kccmrh0u" path="res://Assets/Start Screen/Title.png" id="7_5l772"]
+[ext_resource type="Texture2D" uid="uid://ddt57j44685qk" path="res://Assets/Start Screen/Title_Blue.png" id="7_wqk6i"]
+[ext_resource type="Texture2D" uid="uid://c1j0ad0roj7p7" path="res://Assets/Start Screen/Title_Red.png" id="8_wqk6i"]
+[ext_resource type="Texture2D" uid="uid://cw6abvsavasq" path="res://Assets/Start Screen/Title_Green.png" id="9_jfetd"]
+[ext_resource type="Texture2D" uid="uid://ct7pj0qo02eid" path="res://Assets/Start Screen/Title_Green2.png" id="10_6a4bo"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5e717"]
 shader = ExtResource("2_5l772")
@@ -93,6 +97,58 @@ texture = ExtResource("7_5l772")
 offset = Vector2(0.5, 0.5)
 
 [node name="Ball" type="AnimatedSprite2D" parent="Title"]
+position = Vector2(-39, -9)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_uo7yt")
+animation = &"squish"
+autoplay = "squish"
+frame_progress = 0.65984
+
+[node name="TitleBlue" type="Sprite2D" parent="."]
+position = Vector2(0, -52)
+texture = ExtResource("7_wqk6i")
+offset = Vector2(0.5, 0.5)
+
+[node name="Ball" type="AnimatedSprite2D" parent="TitleBlue"]
+position = Vector2(-39, -9)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_uo7yt")
+animation = &"squish"
+autoplay = "squish"
+frame_progress = 0.65984
+
+[node name="TitleRed" type="Sprite2D" parent="."]
+position = Vector2(0, -52)
+texture = ExtResource("8_wqk6i")
+offset = Vector2(0.5, 0.5)
+
+[node name="Ball" type="AnimatedSprite2D" parent="TitleRed"]
+position = Vector2(-39, -9)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_uo7yt")
+animation = &"squish"
+autoplay = "squish"
+frame_progress = 0.65984
+
+[node name="TitleGreen" type="Sprite2D" parent="."]
+position = Vector2(0, -52)
+texture = ExtResource("9_jfetd")
+offset = Vector2(0.5, 0.5)
+
+[node name="Ball" type="AnimatedSprite2D" parent="TitleGreen"]
+position = Vector2(-39, -9)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_uo7yt")
+animation = &"squish"
+autoplay = "squish"
+frame_progress = 0.65984
+
+[node name="TitleGreen2" type="Sprite2D" parent="."]
+position = Vector2(0, -52)
+texture = ExtResource("10_6a4bo")
+offset = Vector2(0.5, 0.5)
+
+[node name="Ball" type="AnimatedSprite2D" parent="TitleGreen2"]
 position = Vector2(-39, -9)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_uo7yt")

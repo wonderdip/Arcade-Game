@@ -1,0 +1,18 @@
+Proprietary License — All Rights Reserved  
+Copyright (c) 2025 [Maxime Rioux]
+
+This software and its source code are the intellectual property of [Your Name or Studio Name].  
+All rights are reserved unless explicitly granted in writing.
+
+You may NOT:
+- Copy, redistribute, or sell this software or any of its assets.  
+- Modify or decompile the source code or distribute modified versions.  
+- Use any part of the code or assets in your own projects without permission.
+
+You MAY:
+- Record, stream, or share gameplay footage, screenshots, and reviews of this game  
+  on any platform (e.g., YouTube, Twitch, TikTok, Instagram, etc.),  
+  including monetized content.
+
+This license does not transfer ownership or grant any additional rights beyond those stated above.
+For business or licensing inquiries, contact: [your email or website].
