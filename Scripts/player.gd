@@ -56,6 +56,9 @@ func _physics_process(delta: float) -> void:
 	var hit_just_pressed: bool
 	var bump_pressed: bool
 	var set_pressed: bool
+	var x_axis := Input.get_joy_axis(0, JOY_AXIS_LEFT_X)
+	var y_axis := Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
+	var angle := Vector2(x_axis, y_axis).angle()
 	
 	if is_local_mode:
 		direction = InputManager.get_axis(player_number, "left", "right")
@@ -65,11 +68,13 @@ func _physics_process(delta: float) -> void:
 		set_pressed = InputManager.is_action_pressed(player_number, "set")
 	else:
 		direction = Input.get_axis("left", "right")
-		jump_just_pressed = Input.is_action_just_pressed("jump")
 		hit_just_pressed = Input.is_action_just_pressed("hit")
 		bump_pressed = Input.is_action_pressed("bump")
 		set_pressed = Input.is_action_pressed("set")
-
+		
+		if y_axis < -0.4 and abs(angle + PI/2) < deg_to_rad(60) or Input.is_action_just_pressed("jump"):
+			jump_just_pressed = true
+			
 	# --- Movement and Actions ---
 	if is_blocking:
 		gravity_mult = 1.3

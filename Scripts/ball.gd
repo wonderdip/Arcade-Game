@@ -49,6 +49,7 @@ func _physics_process(_delta: float) -> void:
 	if landing_ray.is_colliding():
 		var hit_point = landing_ray.get_collision_point()
 		landing_sprite.global_position = hit_point
+		landing_sprite.global_rotation = 0
 
 func _integrate_forces(state):
 	# In local mode, always process. In network mode, only on server

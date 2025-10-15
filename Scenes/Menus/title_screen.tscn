@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://5mskd276w0y3"]
+[gd_scene load_steps=17 format=3 uid="uid://5mskd276w0y3"]
 
 [ext_resource type="Texture2D" uid="uid://ic27ga3or3yx" path="res://Assets/Start Screen/TopViewCourt.png" id="1_qrrr1"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="2_5l772"]
@@ -18,26 +18,40 @@ shader_parameter/vignette_opacity = 0.30000001425
 shader_parameter/vignette_rgb = Color(0, 0, 0, 1)
 shader_parameter/overlay_mode = true
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_5l772"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_jfetd"]
 atlas = ExtResource("6_qrrr1")
-region = Rect2(0, 0, 8, 8)
+region = Rect2(0, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_wqk6i"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_6a4bo"]
 atlas = ExtResource("6_qrrr1")
-region = Rect2(8, 0, 8, 8)
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u16dj"]
+atlas = ExtResource("6_qrrr1")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rga2t"]
+atlas = ExtResource("6_qrrr1")
+region = Rect2(48, 0, 16, 16)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_uo7yt"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_5l772")
+"texture": SubResource("AtlasTexture_jfetd")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_wqk6i")
+"texture": SubResource("AtlasTexture_6a4bo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u16dj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rga2t")
 }],
 "loop": true,
 "name": &"squish",
-"speed": 1.0
+"speed": 2.0
 }]
 
 [node name="TitleScreen" type="Control"]
@@ -106,18 +120,16 @@ autoplay = "squish"
 frame_progress = 0.65984
 
 [node name="TitleBlue" type="Sprite2D" parent="."]
-visible = false
-position = Vector2(0, -52)
+position = Vector2(0, -48)
 texture = ExtResource("7_wqk6i")
 offset = Vector2(0.5, 0.5)
 
 [node name="Ball" type="AnimatedSprite2D" parent="TitleBlue"]
 position = Vector2(-39, -9)
-scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_uo7yt")
 animation = &"squish"
 autoplay = "squish"
-frame_progress = 0.65984
+frame_progress = 0.276846
 
 [node name="TitleRed" type="Sprite2D" parent="."]
 visible = false
@@ -134,6 +146,7 @@ autoplay = "squish"
 frame_progress = 0.65984
 
 [node name="TitleGreen" type="Sprite2D" parent="."]
+visible = false
 position = Vector2(0, -46)
 texture = ExtResource("9_jfetd")
 offset = Vector2(0.5, 0.5)
