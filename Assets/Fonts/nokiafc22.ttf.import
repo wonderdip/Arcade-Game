@@ -2,18 +2,18 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://dvo3r5yungatg"
-path="res://.godot/imported/ArcadeFont.ttf-2bfbbdc45abd9df91194abb504172099.fontdata"
+uid="uid://cql3uikf8tstl"
+path="res://.godot/imported/nokiafc22.ttf-a32e9a0d616778ceeb32207c2c9d89a5.fontdata"
 
 [deps]
 
-source_file="res://Assets/Fonts/ArcadeFont.ttf"
-dest_files=["res://.godot/imported/ArcadeFont.ttf-2bfbbdc45abd9df91194abb504172099.fontdata"]
+source_file="res://Assets/Fonts/nokiafc22.ttf"
+dest_files=["res://.godot/imported/nokiafc22.ttf-a32e9a0d616778ceeb32207c2c9d89a5.fontdata"]
 
 [params]
 
 Rendering=null
-antialiasing=1
+antialiasing=0
 generate_mipmaps=false
 disable_embedded_bitmaps=true
 multichannel_signed_distance_field=false
@@ -23,9 +23,9 @@ allow_system_fallback=true
 force_autohinter=false
 modulate_color_glyphs=false
 hinting=1
-subpixel_positioning=4
+subpixel_positioning=0
 keep_rounding_remainders=true
-oversampling=1.0
+oversampling=0.0
 Fallbacks=null
 fallbacks=[]
 Compress=null

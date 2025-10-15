@@ -140,17 +140,16 @@ position = Vector2(262, 49)
 shape = SubResource("RectangleShape2D_k7acu")
 
 [node name="Pole" type="StaticBody2D" parent="."]
-position = Vector2(128, 104)
-scale = Vector2(1, 1.1428572)
+position = Vector2(128, 103)
 collision_layer = 32
 collision_mask = 2
 physics_material_override = SubResource("PhysicsMaterial_5ukr8")
 
 [node name="Pole" type="Sprite2D" parent="Pole"]
 z_index = 1
-position = Vector2(0, 1.75)
-scale = Vector2(1, 0.9375)
+position = Vector2(-8, -30)
 texture = ExtResource("2_5a7ea")
+centered = false
 
 [node name="Ball Collision" type="CollisionShape2D" parent="Pole"]
 position = Vector2(0, 6.9999995)

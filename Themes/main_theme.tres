@@ -1,0 +1,19 @@
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://colk31q20bk6u"]
+
+[ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="1_ybks7"]
+[ext_resource type="Texture2D" uid="uid://dljn3lm5gefq6" path="res://Assets/UI/Button.png" id="2_o2ta1"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_aur2u"]
+content_margin_top = 4.0
+content_margin_bottom = 4.0
+texture = ExtResource("2_o2ta1")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+
+[resource]
+Button/font_sizes/font_size = 8
+Button/fonts/font = ExtResource("1_ybks7")
+Button/styles/normal = SubResource("StyleBoxTexture_aur2u")
+VBoxContainer/constants/separation = 2

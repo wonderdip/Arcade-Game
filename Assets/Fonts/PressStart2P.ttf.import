@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://ds5yv02oct5us"
-path="res://.godot/imported/PressStart2P-Regular.ttf-ff06fea3c86e7e3aa64800176250a704.fontdata"
+uid="uid://dgadsxyftctpi"
+path="res://.godot/imported/PressStart2P.ttf-f0631593d02bf0d3d2b54b7b6df06277.fontdata"
 
 [deps]
 
-source_file="res://Assets/Fonts/PressStart2P-Regular.ttf"
-dest_files=["res://.godot/imported/PressStart2P-Regular.ttf-ff06fea3c86e7e3aa64800176250a704.fontdata"]
+source_file="res://Assets/Fonts/PressStart2P.ttf"
+dest_files=["res://.godot/imported/PressStart2P.ttf-f0631593d02bf0d3d2b54b7b6df06277.fontdata"]
 
 [params]
 
@@ -20,16 +20,16 @@ multichannel_signed_distance_field=false
 msdf_pixel_range=8
 msdf_size=48
 allow_system_fallback=true
-force_autohinter=true
+force_autohinter=false
 modulate_color_glyphs=false
-hinting=2
+hinting=1
 subpixel_positioning=4
 keep_rounding_remainders=true
-oversampling=2.5
+oversampling=0.0
 Fallbacks=null
 fallbacks=[]
 Compress=null
-compress=false
+compress=true
 preload=[]
 language_support={}
 script_support={}
