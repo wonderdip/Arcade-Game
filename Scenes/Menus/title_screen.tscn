@@ -88,7 +88,7 @@ offset_top = 18.0
 offset_bottom = 18.0
 
 [node name="Title" type="Sprite2D" parent="."]
-position = Vector2(0, -41)
+position = Vector2(0, -52)
 texture = ExtResource("7_5l772")
 offset = Vector2(0.5, 0.5)
 

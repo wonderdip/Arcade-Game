@@ -249,6 +249,7 @@ collision_priority = 20.0
 safe_margin = 0.2
 script = ExtResource("1_cvnsp")
 Speed = 140.0
+JumpForce = -240.0
 Friction = 1300.0
 low_jump_multiplier = 3.0
 

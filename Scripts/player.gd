@@ -4,13 +4,12 @@ extends CharacterBody2D
 @export var JumpForce: float = -220.0
 @export var Acceleration: float = 1200.0
 @export var Friction: float = 1000.0
-
-@export var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
+@export var gravity: float = 980
 @export var fall_multiplier: float = 1.5
 @export var low_jump_multiplier: float = 1.5
 var peak_gravity_scale: float = 0.5
 var peak_threshold: float = 80.0
-var block_gravity_mult: float
+var gravity_mult: float
 var speed_mult: float
 
 var is_hitting: bool = false
@@ -53,7 +52,6 @@ func _physics_process(delta: float) -> void:
 
 	# --- Input Handling ---
 	var direction: float
-	var jump_pressed: bool
 	var jump_just_pressed: bool
 	var hit_just_pressed: bool
 	var bump_pressed: bool
@@ -61,36 +59,30 @@ func _physics_process(delta: float) -> void:
 	
 	if is_local_mode:
 		direction = InputManager.get_axis(player_number, "left", "right")
-		jump_pressed = InputManager.is_action_pressed(player_number, "jump")
 		jump_just_pressed = InputManager.is_action_just_pressed(player_number, "jump")
 		hit_just_pressed = InputManager.is_action_just_pressed(player_number, "hit")
 		bump_pressed = InputManager.is_action_pressed(player_number, "bump")
 		set_pressed = InputManager.is_action_pressed(player_number, "set")
 	else:
 		direction = Input.get_axis("left", "right")
-		jump_pressed = Input.is_action_pressed("jump")
 		jump_just_pressed = Input.is_action_just_pressed("jump")
 		hit_just_pressed = Input.is_action_just_pressed("hit")
 		bump_pressed = Input.is_action_pressed("bump")
 		set_pressed = Input.is_action_pressed("set")
 
 	# --- Movement and Actions ---
-	# Apply gravity with floaty jump feel
 	if is_blocking:
-		block_gravity_mult = 1.3  # increase this for lower jumps
+		gravity_mult = 1.3
 	else:
-		block_gravity_mult = 1
+		gravity_mult = 1
 
+	# Apply gravity
 	if velocity.y < 0:
-		if not jump_pressed:
-			velocity.y += gravity * low_jump_multiplier * block_gravity_mult * delta
-		elif abs(velocity.y) < peak_threshold:
-			velocity.y += gravity * peak_gravity_scale * block_gravity_mult * delta
-		else:
-			velocity.y += gravity * 0.5 * block_gravity_mult * delta
+		# Going up
+		velocity.y += gravity * 0.6 * gravity_mult * delta  # lighter gravity on ascent
 	else:
-		velocity.y += gravity * fall_multiplier * block_gravity_mult * delta
-
+		# Going down
+		velocity.y += gravity * fall_multiplier * gravity_mult * delta
 
 	# Handle jump
 	if jump_just_pressed and is_on_floor():
