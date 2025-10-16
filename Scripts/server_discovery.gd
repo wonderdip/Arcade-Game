@@ -47,9 +47,7 @@ func start_broadcasting(server_name: String, game_port: int, max_players: int = 
 	}
 	
 	is_broadcasting = true
-	print("🔊 Server UDP broadcasting enabled on port %d (game port: %d)" % [BROADCAST_PORT, game_port])
-	print("🌐 Local IPs: ", IP.get_local_addresses())
-
+	print("UDP broadcasting enabled on port %d (game port: %d)" % [BROADCAST_PORT, game_port])
 
 # -----------------------------
 # CLIENT SIDE
@@ -76,7 +74,7 @@ func start_discovery_client():
 	
 	# Start periodic discovery
 	discovery_timer.start()
-	print("📡 Started discovery client")
+	print("Started discovery client")
 
 
 func send_discovery_request():
@@ -91,9 +89,9 @@ func send_discovery_request():
 		udp_client.set_dest_address(bcast, BROADCAST_PORT)
 		var result = udp_client.put_packet(data)
 		if result == OK:
-			print("➡️ Sent discovery request to %s:%d" % [bcast, BROADCAST_PORT])
+			print("Sent discovery request to %s:%d" % [bcast, BROADCAST_PORT])
 		else:
-			print("❌ Failed to send to %s: %s" % [bcast, result])
+			print("Failed to send to %s: %s" % [bcast, result])
 
 
 # -----------------------------
@@ -104,8 +102,7 @@ func stop_broadcasting():
 		udp_server.close()
 		udp_server = null
 	is_broadcasting = false
-	print("🛑 Stopped broadcasting")
-
+	print("Stopped broadcasting")
 
 func stop_discovery_client():
 	if udp_client:
@@ -113,12 +110,8 @@ func stop_discovery_client():
 		udp_client = null
 	discovery_timer.stop()
 	is_discovering = false
-	print("🛑 Stopped discovery client")
+	print("Stopped discovery client")
 
-
-# -----------------------------
-# MAIN LOOP
-# -----------------------------
 func _process(_delta):
 	# SERVER: respond to discovery requests
 	if is_broadcasting and udp_server and udp_server.get_available_packet_count() > 0:
@@ -130,7 +123,7 @@ func _process(_delta):
 			var message = JSON.parse_string(message_str)
 			
 			if message and message.get("type") == "discovery_request":
-				print("📨 Discovery request from: %s:%d" % [sender_ip, sender_port])
+				print("Discovery request from: %s:%d" % [sender_ip, sender_port])
 				_send_server_info(sender_ip, sender_port)
 
 	# CLIENT: receive server info responses
@@ -143,7 +136,7 @@ func _process(_delta):
 			
 			if server_info and server_info.get("type") == "server_info":
 				server_info.ip = sender_ip
-				print("✅ Found server: '%s' at %s:%d (Players: %d/%d)" % [
+				print("Found server: '%s' at %s:%d (Players: %d/%d)" % [
 					server_info.get("name", "Unnamed"),
 					sender_ip,
 					server_info.get("port", 0),
@@ -168,9 +161,9 @@ func _send_server_info(target_ip: String, target_port: int):
 	var result = udp_server.put_packet(JSON.stringify(response).to_utf8_buffer())
 	
 	if result == OK:
-		print("📤 Sent server info to %s:%d" % [target_ip, target_port])
+		print("Sent server info to %s:%d" % [target_ip, target_port])
 	else:
-		print("❌ Failed to send server info: %s" % result)
+		print("Failed to send server info: %s" % result)
 
 
 func _on_discovery_timer_timeout():
@@ -215,17 +208,15 @@ func _get_broadcast_addresses() -> Array:
 			if broadcast_16 not in result:
 				result.append(broadcast_16)
 	
-	print("🌐 Broadcasting to addresses: ", result)
-	print("🏠 Your local IPs: ", IP.get_local_addresses())
+	print("Broadcasting to addresses: ", result)
 	return result
 
-
 # Update player count dynamically
+# called by networkhandler
 func update_player_count(count: int):
 	if current_server_info.has("players"):
 		current_server_info.players = count
-		print("👥 Updated player count to: %d" % count)
-
+		print("Player count is: %d" % count)
 
 func _exit_tree():
 	stop_broadcasting()

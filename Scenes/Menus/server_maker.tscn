@@ -2,7 +2,7 @@
 
 [ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="1_u4q3l"]
 [ext_resource type="Script" uid="uid://cormkrc826hhi" path="res://Scripts/server_maker.gd" id="2_fi4rl"]
-[ext_resource type="Texture2D" uid="uid://ic27ga3or3yx" path="res://Assets/Start Screen/TopViewCourt.png" id="3_xb0mg"]
+[ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="3_xb0mg"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="4_aw7ix"]
 
 [sub_resource type="Theme" id="Theme_fwjh7"]

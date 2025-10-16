@@ -22,16 +22,14 @@ func start_server(server_name_param: String = "", port: int = DEFAULT_PORT) -> v
 		retry_count += 1
 
 	if error != OK:
-		push_error("❌ Failed to create server: %s" % error)
+		push_error("Failed to create server: %s" % error)
 		return
 
 	multiplayer.multiplayer_peer = peer
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
-	var local_ips = IP.get_local_addresses()
-	print("✅ Server started on port %d" % port)
-	print("🌐 Local IPs: ", local_ips)
+	print("Server started on port %d" % port, IP)
 
 	# Start broadcasting AFTER server is created
 	ServerDiscovery.start_broadcasting(server_name, port, MAX_CLIENTS)
@@ -41,12 +39,12 @@ func start_server(server_name_param: String = "", port: int = DEFAULT_PORT) -> v
 # -------------------------------------------------------------------
 
 func join_server(ip_address: String, port: int = DEFAULT_PORT) -> void:
-	print("🔌 Attempting to connect to server at %s:%d" % [ip_address, port])
+	print("Attempting to connect to server at %s:%d" % [ip_address, port])
 
 	peer = ENetMultiplayerPeer.new()
 	var error = peer.create_client(ip_address, port)
 	if error != OK:
-		push_error("❌ Failed to connect: %s" % error)
+		push_error("Failed to connect: %s" % error)
 		return
 
 	multiplayer.multiplayer_peer = peer
@@ -62,41 +60,36 @@ func start_client() -> void:
 # -------------------------------------------------------------------
 
 func _on_peer_connected(id: int) -> void:
-	print("🟢 Peer connected:", id)
+	print("Peer connected:", id)
 	var player_count = multiplayer.get_peers().size() + 1  # +1 = server itself
 	ServerDiscovery.update_player_count(player_count)
 
 	if player_count > MAX_CLIENTS:
-		print("⚠️ Server full! Disconnecting peer:", id)
 		rpc_id(id, "_notify_server_full")
 		await get_tree().create_timer(0.1).timeout
 		peer.disconnect_peer(id)
 
 @rpc("any_peer")
 func _notify_server_full():
-	print("🚫 Server is full! Returning to browser.")
+	print("Server is full! Returning to browser.")
 	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
 
-# -------------------------------------------------------------------
-
 func _on_peer_disconnected(id: int) -> void:
-	print("🔴 Peer disconnected:", id)
+	print("Peer disconnected:", id)
 	var player_count = multiplayer.get_peers().size() + 1
 	ServerDiscovery.update_player_count(player_count)
 
 func _on_server_disconnected() -> void:
-	print("⚠️ Disconnected from server. Returning to browser.")
+	print("Disconnected from server. Returning to browser.")
 	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
 
 func _on_connected_to_server() -> void:
-	print("✅ Connected to server successfully!")
+	print("Connected to server successfully!")
 	get_tree().change_scene_to_file("res://Scenes/world.tscn")
 
 func _on_connection_failed() -> void:
-	print("❌ Connection failed. Returning to browser.")
+	print("Connection failed. Returning to browser.")
 	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
-
-# -------------------------------------------------------------------
 
 func _exit_tree() -> void:
 	if peer:
