@@ -45,7 +45,6 @@ func _on_server_list_item_selected(index: int):
 	var server_info = server_list.get_item_metadata(index)
 	if server_info:
 		selected_server_ip = server_info.ip
-		join_button.disabled = false
 		print("Selected server:", server_info)
 		
 func _on_join_button_pressed():
@@ -82,7 +81,6 @@ func _on_refresh_button_pressed():
 func refresh_servers():
 	discovered_servers.clear()
 	server_list.clear()
-	join_button.disabled = true
 	status_label.text = "Searching"
 	searching = true
 	animate_search_label()

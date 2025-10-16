@@ -1,8 +1,11 @@
-[gd_resource type="Theme" load_steps=6 format=3 uid="uid://colk31q20bk6u"]
+[gd_resource type="Theme" load_steps=11 format=3 uid="uid://colk31q20bk6u"]
 
 [ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="1_ybks7"]
 [ext_resource type="Texture2D" uid="uid://3c45c3q2lfmt" path="res://Assets/UI/Button_Pressed-Hover.png" id="2_jg5j1"]
 [ext_resource type="Texture2D" uid="uid://dljn3lm5gefq6" path="res://Assets/UI/Button.png" id="2_o2ta1"]
+[ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="4_jg5j1"]
+[ext_resource type="Texture2D" uid="uid://c1un7pyyiq0vy" path="res://Assets/UI/Panel.png" id="4_kcyw7"]
+[ext_resource type="FontFile" uid="uid://dgadsxyftctpi" path="res://Assets/Fonts/PressStart2P.ttf" id="5_2f3ak"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2f3ak"]
 texture = ExtResource("2_jg5j1")
@@ -20,10 +23,33 @@ texture_margin_top = 6.0
 texture_margin_right = 6.0
 texture_margin_bottom = 9.0
 
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_j453h"]
+texture = ExtResource("4_kcyw7")
+texture_margin_left = 5.0
+texture_margin_top = 5.0
+texture_margin_right = 5.0
+texture_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jg5j1"]
+content_margin_right = 20.0
+texture = ExtResource("2_o2ta1")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 9.0
+
 [resource]
 Button/font_sizes/font_size = 8
 Button/fonts/font = ExtResource("1_ybks7")
 Button/styles/hover = SubResource("StyleBoxTexture_2f3ak")
 Button/styles/normal = SubResource("StyleBoxTexture_aur2u")
 Button/styles/pressed = SubResource("StyleBoxTexture_2f3ak")
+ItemList/font_sizes/font_size = 8
+ItemList/fonts/font = ExtResource("5_2f3ak")
+ItemList/styles/panel = SubResource("StyleBoxTexture_j453h")
+Label/font_sizes/font_size = 20
+Label/fonts/font = ExtResource("4_jg5j1")
+LineEdit/font_sizes/font_size = 8
+LineEdit/fonts/font = ExtResource("5_2f3ak")
+LineEdit/styles/normal = SubResource("StyleBoxTexture_jg5j1")
 VBoxContainer/constants/separation = 2
