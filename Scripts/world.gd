@@ -5,6 +5,7 @@ extends Node2D
 @onready var score_board: Node2D = $ScoreBoard
 @onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
 @onready var ball_timer: Timer = $BallTimer
+@onready var camera_2d: Camera2D = $Camera2D
 
 var active_ball: Node2D = null
 var ball_spawned: bool = false
@@ -14,6 +15,7 @@ var local_player_manager: Node = null
 var spawned_players: Array = []
 
 func _ready() -> void:
+	CamShake.camera2d = camera_2d
 	# Check if we're in network mode
 	is_network_mode = multiplayer.multiplayer_peer != null
 	if is_network_mode:

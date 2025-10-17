@@ -22,7 +22,6 @@ func _on_server_discovered(server_info: Dictionary):
 	discovered_servers[server_key] = server_info
 	_update_server_list()
 
-	
 func _update_server_list():
 	server_list.clear()
 	if discovered_servers.is_empty():
@@ -49,6 +48,7 @@ func _on_server_list_item_selected(index: int):
 		
 func _on_join_button_pressed():
 	var selected_items = server_list.get_selected_items()
+	AudioManager.click_sound()
 	if selected_items.size() == 0:
 		print("No server selected.")
 		return
@@ -56,9 +56,11 @@ func _on_join_button_pressed():
 	var server_info = server_list.get_item_metadata(selected_index)
 	ServerDiscovery.stop_discovery_client()
 	Networkhandler.join_server(server_info.ip, server_info.port)
+	
 
 func _on_manual_connect_pressed():
 	var ip_text = manual_ip_input.text.strip_edges()
+	AudioManager.click_sound()
 	if ip_text.is_empty():
 		status_label.text = "Enter IP"
 		return
@@ -77,6 +79,7 @@ func _on_manual_connect_pressed():
 
 func _on_refresh_button_pressed():
 	refresh_servers()
+	AudioManager.click_sound()
 
 func refresh_servers():
 	discovered_servers.clear()
@@ -119,6 +122,7 @@ func animate_search_label() -> void:
 func _on_back_button_pressed():
 	ServerDiscovery.stop_discovery_client()
 	get_tree().change_scene_to_file("res://Scenes/Menus/title_screen.tscn")
+	AudioManager.click_sound()
 
 func _exit_tree():
 	ServerDiscovery.stop_discovery_client()

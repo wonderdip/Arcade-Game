@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://dp22kc0mg2ipx"]
+
+[ext_resource type="Script" uid="uid://bte2dcievitpi" path="res://Scripts/audio_manager.gd" id="1_sm2tf"]
+[ext_resource type="AudioStream" uid="uid://7gkmw5gm7i03" path="res://Assets/SFX/blipSelect.wav" id="2_4tj6f"]
+
+[node name="AudioManager" type="Node"]
+script = ExtResource("1_sm2tf")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_4tj6f")

@@ -37,7 +37,7 @@ func _ready():
 		freeze = false
 		sleeping = false
 		
-	elif multiplayer.is_server():
+	elif multiplayer.is_server() or multiplayer.multiplayer_peer:
 		# Network mode - only server simulates
 		freeze = false
 		sleeping = false
