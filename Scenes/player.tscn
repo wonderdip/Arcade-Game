@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://cf3plcg7m0wcg"]
+[gd_scene load_steps=34 format=3 uid="uid://cf3plcg7m0wcg"]
 
 [ext_resource type="Script" uid="uid://kbx36j4fsn6t" path="res://Scripts/player.gd" id="1_cvnsp"]
 [ext_resource type="Texture2D" uid="uid://cjw067oe2ia60" path="res://Assets/Characters/Block sprite-Sheet.png" id="2_fkybt"]
@@ -43,15 +43,7 @@ region = Rect2(0, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_8erm5"]
 atlas = ExtResource("2_vgqql")
-region = Rect2(32, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_f1ek2"]
-atlas = ExtResource("2_vgqql")
-region = Rect2(96, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_tx1dd"]
-atlas = ExtResource("2_vgqql")
-region = Rect2(128, 0, 32, 32)
+region = Rect2(64, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gymyn"]
 atlas = ExtResource("2_vgqql")
@@ -64,10 +56,6 @@ region = Rect2(224, 0, 32, 32)
 [sub_resource type="AtlasTexture" id="AtlasTexture_ukyrk"]
 atlas = ExtResource("2_vgqql")
 region = Rect2(256, 0, 32, 32)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_7dp3o"]
-atlas = ExtResource("2_vgqql")
-region = Rect2(288, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_vgqql"]
 atlas = ExtResource("3_fkybt")
@@ -155,13 +143,13 @@ animations = [{
 "texture": SubResource("AtlasTexture_3smsa")
 }, {
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_3smsa")
+}, {
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_8erm5")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_f1ek2")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_tx1dd")
+"texture": SubResource("AtlasTexture_8erm5")
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gymyn")
@@ -173,7 +161,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_ukyrk")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_7dp3o")
+"texture": SubResource("AtlasTexture_ukyrk")
 }],
 "loop": true,
 "name": &"Idle",
@@ -256,13 +244,16 @@ low_jump_multiplier = 3.0
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -1)
 sprite_frames = SubResource("SpriteFrames_pu2lt")
-animation = &"Set"
+animation = &"Idle"
+frame_progress = 0.6248014
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(-1, 0)
 shape = SubResource("CapsuleShape2D_ukyrk")
 
 [node name="Player Arms" parent="." instance=ExtResource("6_x3wgy")]
+visible = false
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_3smsa")
