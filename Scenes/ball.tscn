@@ -67,3 +67,5 @@ texture = ExtResource("1_d60mj")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_ij5cq")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

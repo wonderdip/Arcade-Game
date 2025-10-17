@@ -8,7 +8,7 @@ extends Node2D
 @onready var camera_2d: Camera2D = $Camera2D
 
 var active_ball: Node2D = null
-var ball_spawned: bool = false
+@export var ball_spawned: bool = false
 var is_network_mode: bool = false
 var is_solo_mode: bool = false
 var local_player_manager: Node = null

@@ -30,17 +30,23 @@ func _enter_tree() -> void:
 
 func _ready():
 	normal_linear_damp = linear_damp
-	body_entered.connect(_on_body_entered)
 	
 	if is_local_mode:
 		# Local mode - always simulate physics
 		freeze = false
 		sleeping = false
-		
-	elif multiplayer.is_server() or multiplayer.multiplayer_peer:
-		# Network mode - only server simulates
+	elif multiplayer.is_server():
+		# Network mode - server simulates fully
 		freeze = false
 		sleeping = false
+	else:
+		# IMPORTANT: Clients also need physics simulation for collision detection
+		# But we'll only let the server modify the velocity (via sync)
+		freeze = false
+		sleeping = false
+		# Make client physics "lighter" - it's mostly for collision detection
+		contact_monitor = true
+		max_contacts_reported = 4
 
 func _physics_process(_delta: float) -> void:
 	# Keep the raycast pointing straight down in world space
@@ -54,6 +60,8 @@ func _physics_process(_delta: float) -> void:
 func _integrate_forces(state):
 	# In local mode, always process. In network mode, only on server
 	if not is_local_mode and not multiplayer.is_server():
+		# Clients don't modify velocity - that's synced from server
+		# But they still need physics running for collision detection
 		return
 		
 	# Cap velocity to prevent ball from going crazy

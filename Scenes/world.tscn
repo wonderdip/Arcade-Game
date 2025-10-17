@@ -63,6 +63,9 @@ size = Vector2(128, 17)
 properties/0/path = NodePath("ScoreBoard:last_point")
 properties/0/spawn = true
 properties/0/replication_mode = 1
+properties/1/path = NodePath(".:ball_spawned")
+properties/1/spawn = true
+properties/1/replication_mode = 1
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7yui6"]
 shader = ExtResource("11_ikia7")
