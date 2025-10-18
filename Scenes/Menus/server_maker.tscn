@@ -1,13 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://coy4pdcfa33cf"]
+[gd_scene load_steps=6 format=3 uid="uid://coy4pdcfa33cf"]
 
-[ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="1_u4q3l"]
+[ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_xb0mg"]
 [ext_resource type="Script" uid="uid://cormkrc826hhi" path="res://Scripts/server_maker.gd" id="2_fi4rl"]
 [ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="3_xb0mg"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="4_aw7ix"]
-
-[sub_resource type="Theme" id="Theme_fwjh7"]
-default_font = ExtResource("1_u4q3l")
-default_font_size = 20
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_o41or"]
 shader = ExtResource("4_aw7ix")
@@ -25,7 +21,7 @@ anchor_right = 0.5
 anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
-theme = SubResource("Theme_fwjh7")
+theme = ExtResource("1_xb0mg")
 script = ExtResource("2_fi4rl")
 
 [node name="BGCourt" type="Sprite2D" parent="."]
@@ -57,15 +53,14 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -101.0
-offset_top = -70.0
+offset_top = -56.5
 offset_right = 101.0
-offset_bottom = 72.0
+offset_bottom = 56.5
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Title" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 30
 text = "Server Name"
 horizontal_alignment = 1
 
@@ -86,7 +81,7 @@ alignment = 1
 
 [node name="Confirm" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
-theme_override_constants/align_to_largest_stylebox = 175
+theme_override_font_sizes/font_size = 8
 text = "Create"
 
 [node name="Back" type="Button" parent="VBoxContainer/HBoxContainer"]

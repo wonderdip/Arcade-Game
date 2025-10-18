@@ -244,8 +244,9 @@ low_jump_multiplier = 3.0
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -1)
 sprite_frames = SubResource("SpriteFrames_pu2lt")
-animation = &"Idle"
-frame_progress = 0.6248014
+animation = &"Run"
+frame = 6
+frame_progress = 0.43458602
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false

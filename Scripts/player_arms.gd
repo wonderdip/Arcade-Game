@@ -1,7 +1,6 @@
 extends Area2D
 
 @onready var anim: AnimationPlayer = $AnimationPlayer
-@onready var arm_sprite: Sprite2D = $ArmSprite
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 var is_hitting: bool = false
@@ -41,17 +40,13 @@ func swing():
 		is_hitting = true
 		hit_bodies.clear()
 		collision_shape.disabled = false
-		visible = true
 		anim.play("Hit")
-	else:
-		print("tried to hit weww")
 
 func bump():
 	if not is_bumping and not is_hitting and not is_blocking and not is_setting:
 		is_bumping = true
 		hit_bodies.clear()
 		collision_shape.disabled = false
-		visible = true
 		anim.play("Bump") 
 
 func block():
@@ -59,7 +54,6 @@ func block():
 		is_blocking = true
 		hit_bodies.clear()
 		collision_shape.disabled = false
-		visible = true
 		anim.play("Block")
 
 func setting():
@@ -67,7 +61,6 @@ func setting():
 		is_setting = true
 		hit_bodies.clear()
 		collision_shape.disabled = false
-		visible = true
 		anim.play("Set")
 
 func stop_setting():
