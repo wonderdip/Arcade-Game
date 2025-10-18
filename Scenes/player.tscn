@@ -230,6 +230,9 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath("Sprite:flip_h")
 properties/3/spawn = true
 properties/3/replication_mode = 1
+properties/4/path = NodePath(".:player_number")
+properties/4/spawn = true
+properties/4/replication_mode = 1
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 collision_mask = 156
@@ -237,16 +240,13 @@ collision_priority = 20.0
 safe_margin = 0.2
 script = ExtResource("1_cvnsp")
 Speed = 140.0
-JumpForce = -240.0
+JumpForce = -250.0
 Friction = 1300.0
-low_jump_multiplier = 3.0
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -1)
 sprite_frames = SubResource("SpriteFrames_pu2lt")
-animation = &"Run"
-frame = 6
-frame_progress = 0.43458602
+animation = &"Set"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false

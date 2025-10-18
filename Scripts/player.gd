@@ -19,9 +19,10 @@ var is_blocking: bool = false
 var in_blockzone: bool = false
 
 # Player identification
-var player_number: int = -1  # Set this when spawning
-var device_id: int = -1      # Set by InputManager, optional for controller
+@export var player_number: int = -1  # exported so replication can see it at spawn
+var device_id: int = -1
 var input_type: String = ""  # "keyboard" or "controller"
+
 var is_local_mode: bool = false
 
 @onready var sprite: AnimatedSprite2D = $Sprite
@@ -29,31 +30,33 @@ var is_local_mode: bool = false
 
 func _enter_tree() -> void:
 	is_local_mode = Networkhandler.is_local
-	if !is_local_mode:
-		set_multiplayer_authority(name.to_int())
+	# IMPORTANT: do NOT call set_multiplayer_authority here.
+	# Authority must be set on the instance by the server BEFORE add_child (in the spawner).
 
 func _ready() -> void:
+	# Debug output to help verify what's happening on each peer
+	print("[Player._ready] name=", name,
+		  " player_number=", player_number,
+		  " authority=", get_multiplayer_authority(),
+		  " unique_id=", multiplayer.get_unique_id(),
+		  " is_server=", multiplayer.is_server(),
+		  " pos=", global_position)
+
 	player_arms.visible = false
-	if !is_local_mode:
-		# Network multiplayer mode
-		var peer_id = name.to_int()
-		if multiplayer.get_unique_id() == peer_id:
-			if multiplayer.is_server():
-				global_position = Vector2(40, 112)
-			elif player_number == 1:
-				global_position = Vector2(216, 112)
-			elif player_number == 2:
-				global_position = Vector2(40, 112)
-			else:
-				global_position = Vector2(216, 112)
+
+	# Only run authority-local logic if this instance is authoritative locally
+	if get_multiplayer_authority() == multiplayer.get_unique_id():
+		# This instance is authoritative for local input
+		# Setup local-only state (if any) here
+		pass
 
 func _physics_process(delta: float) -> void:
 	if is_local_mode and player_number < 0:
 		return  # Not setup yet
-
+		
 	if not is_local_mode and !is_multiplayer_authority(): 
 		return
-
+		
 	# --- Input Handling ---
 	var direction: float
 	var jump_just_pressed: bool

@@ -22,18 +22,36 @@ func _on_peer_connected(id: int) -> void:
 func spawn_player(id: int, index: int) -> void:
 	var player: Node = network_player.instantiate()
 	player.name = str(id)
-	print(index)
+
+	# --- 1) Assign authority on the instance BEFORE it enters the scene tree.
+	# This must be executed on the server only.
+	if multiplayer.is_server():
+		player.set_multiplayer_authority(id)
+		print("Spawner: set authority", id, "on instance", player.name)
+
+	# --- 2) Set any properties that must be replicated at spawn BEFORE add_child.
+	# Ensure player_number is included in the Player scene's SceneReplicationConfig.
+	player.player_number = index
+
+	# Choose spawn position (use global_position to avoid parent-space ambiguity).
+	var spawn_pos := Vector2.ZERO
 	match index:
 		1:
-			player.position = Vector2(30, 112)   # Left side, host
+			spawn_pos = Vector2(30, 112)   # Left side, host
 		2:
-			player.position = Vector2(226, 112)  # Right side, 1st client
+			spawn_pos = Vector2(226, 112)  # Right side, 1st client
 		3:
-			player.position = Vector2(30, 112)   # Left side, 2nd client
+			spawn_pos = Vector2(30, 112)   # Left side, 2nd client
 		4:
-			player.position = Vector2(226, 112)  # Right side, 3rd client
+			spawn_pos = Vector2(226, 112)  # Right side, 3rd client
 		_:
-			player.position = Vector2(30, 112)   # fallback
-	
+			spawn_pos = Vector2(30, 112)   # fallback
+
+	player.global_position = spawn_pos
+
+	# --- 3) Add to the tree after authority + properties are set.
+	# Use call_deferred with the method name (string) to avoid
+	# "Parent node is busy setting up children" errors.
 	get_node(spawn_path).call_deferred("add_child", player)
-	print("Spawned player", id, "at position", player.position)
+
+	print("Spawner: Spawned player", id, "at position", player.global_position, "player_number=", player.player_number)
