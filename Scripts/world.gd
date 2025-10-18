@@ -153,7 +153,6 @@ func _on_block_zone_body_exited(body: Node2D) -> void:
 	if body is CharacterBody2D and "in_blockzone" in body:
 		body.in_blockzone = false
 
-
 func _on_ball_timer_timeout() -> void:
 	if not ball_spawned:
 		if is_network_mode:

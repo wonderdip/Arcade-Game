@@ -1,6 +1,6 @@
 extends Node
 
-@onready var click_player: AudioStreamPlayer2D = $AudioStreamPlayer2D
+@onready var click_player: AudioStreamPlayer2D = $Click
 
 var current_player: AudioStreamPlayer2D
 

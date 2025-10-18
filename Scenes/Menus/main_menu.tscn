@@ -41,7 +41,7 @@ text = "Local Play"
 [node name="Solo" type="Button" parent="Server"]
 layout_mode = 2
 size_flags_vertical = 4
-text = "Soloplayer
+text = "Singleplayer
 "
 
 [node name="Server" type="Button" parent="Server"]

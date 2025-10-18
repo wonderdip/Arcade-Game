@@ -40,6 +40,10 @@ func _ready() -> void:
 		if multiplayer.get_unique_id() == peer_id:
 			if multiplayer.is_server():
 				global_position = Vector2(40, 112)
+			elif player_number == 1:
+				global_position = Vector2(216, 112)
+			elif player_number == 2:
+				global_position = Vector2(40, 112)
 			else:
 				global_position = Vector2(216, 112)
 
