@@ -1,0 +1,239 @@
+[gd_scene load_steps=18 format=3 uid="uid://wb61ewh1ublu"]
+
+[ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_un4yt"]
+[ext_resource type="Script" uid="uid://btd4pirvmgl2c" path="res://Scripts/settings_menu.gd" id="2_s1iiq"]
+[ext_resource type="Texture2D" uid="uid://dljn3lm5gefq6" path="res://Assets/UI/Button.png" id="3_ojbgt"]
+[ext_resource type="Texture2D" uid="uid://3c45c3q2lfmt" path="res://Assets/UI/Button_Pressed-Hover.png" id="4_ojbgt"]
+[ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="5_17muo"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_17muo"]
+texture = ExtResource("3_ojbgt")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 9.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_ojbgt"]
+load_path = "res://.godot/imported/Button_Pressed-Hover.png-f9db7ddff9f2976dc3bb2f83bb5f68dd.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_vgtnp"]
+texture = SubResource("CompressedTexture2D_ojbgt")
+texture_margin_left = 6.0
+texture_margin_top = 9.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bmgoi"]
+texture = ExtResource("4_ojbgt")
+texture_margin_left = 6.0
+texture_margin_top = 9.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_04fbl"]
+load_path = "res://.godot/imported/Button_Pressed-Hover.png-f9db7ddff9f2976dc3bb2f83bb5f68dd.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4x6bb"]
+texture = SubResource("CompressedTexture2D_04fbl")
+texture_margin_left = 6.0
+texture_margin_top = 9.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_vgtnp"]
+load_path = "res://.godot/imported/Button_Pressed-Hover.png-f9db7ddff9f2976dc3bb2f83bb5f68dd.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_04fbl"]
+texture = SubResource("CompressedTexture2D_vgtnp")
+texture_margin_left = 6.0
+texture_margin_top = 9.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_p17qy"]
+load_path = "res://.godot/imported/Button_Pressed-Hover.png-f9db7ddff9f2976dc3bb2f83bb5f68dd.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lmg47"]
+texture = SubResource("CompressedTexture2D_p17qy")
+texture_margin_left = 6.0
+texture_margin_top = 9.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_4x6bb"]
+load_path = "res://.godot/imported/Button_Pressed-Hover.png-f9db7ddff9f2976dc3bb2f83bb5f68dd.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_p17qy"]
+texture = SubResource("CompressedTexture2D_4x6bb")
+texture_margin_left = 6.0
+texture_margin_top = 9.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
+
+[node name="SettingsMenu" type="Control"]
+z_index = 10
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_un4yt")
+script = ExtResource("2_s1iiq")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -64.0
+offset_right = 120.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 8.0
+offset_top = -49.0
+offset_right = 48.0
+offset_bottom = 50.5
+grow_vertical = 2
+theme_override_constants/separation = 6
+
+[node name="Game" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_17muo")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_vgtnp")
+theme_override_styles/hover = SubResource("StyleBoxTexture_bmgoi")
+text = "Game"
+
+[node name="Video" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_17muo")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_4x6bb")
+theme_override_styles/hover = SubResource("StyleBoxTexture_04fbl")
+text = "Video"
+
+[node name="Audio" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxTexture_17muo")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_lmg47")
+theme_override_styles/hover = SubResource("StyleBoxTexture_p17qy")
+text = "Audio"
+
+[node name="Exit" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+text = "Exit"
+
+[node name="GamePanel" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 51.0
+offset_top = 7.0
+offset_right = 234.0
+offset_bottom = 121.0
+
+[node name="VideoPanel" type="Panel" parent="Panel"]
+layout_mode = 0
+offset_left = 51.0
+offset_top = 7.0
+offset_right = 234.0
+offset_bottom = 121.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/VideoPanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 176.0
+offset_bottom = 106.0
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VideoPanel/ScrollContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Labels" type="VBoxContainer" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="ScreenMode" type="Label" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer/Labels"]
+custom_minimum_size = Vector2(0, 27)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_17muo")
+theme_override_font_sizes/font_size = 8
+text = "Screen Mode"
+vertical_alignment = 1
+
+[node name="FPS" type="Label" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer/Labels"]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_17muo")
+theme_override_font_sizes/font_size = 8
+text = "FPS Limit"
+vertical_alignment = 1
+
+[node name="Vsync" type="Label" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer/Labels"]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_17muo")
+theme_override_font_sizes/font_size = 8
+text = "V-Sync"
+vertical_alignment = 1
+
+[node name="Buttons" type="VBoxContainer" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="ScreenMode" type="OptionButton" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons"]
+layout_mode = 2
+selected = 1
+item_count = 2
+popup/item_0/text = "Fullscreen"
+popup/item_0/id = 0
+popup/item_1/text = "Windowed"
+popup/item_1/id = 1
+
+[node name="FPS" type="SpinBox" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons"]
+layout_mode = 2
+min_value = 30.0
+max_value = 240.0
+step = 10.0
+value = 60.0
+
+[node name="Vysnc" type="CheckBox" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons"]
+layout_mode = 2
+
+[node name="AudioPanel" type="Panel" parent="Panel"]
+visible = false
+layout_mode = 0
+offset_left = 51.0
+offset_top = 7.0
+offset_right = 234.0
+offset_bottom = 121.0
+
+[connection signal="pressed" from="Panel/VBoxContainer/Game" to="." method="_on_game_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Video" to="." method="_on_video_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Audio" to="." method="_on_audio_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/Exit" to="." method="_on_exit_pressed"]
+[connection signal="item_selected" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/ScreenMode" to="." method="_on_screen_mode_item_selected"]
+[connection signal="value_changed" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/FPS" to="." method="_on_fps_value_changed"]
+[connection signal="toggled" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/Vysnc" to="." method="_on_vysnc_toggled"]

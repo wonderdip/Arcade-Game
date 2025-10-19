@@ -10,7 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://cw6abvsavasq" path="res://Assets/Start Screen/Title_Green.png" id="9_jfetd"]
 [ext_resource type="Texture2D" uid="uid://ct7pj0qo02eid" path="res://Assets/Start Screen/Title_Green2.png" id="10_6a4bo"]
 [ext_resource type="Texture2D" uid="uid://xsy4lqxsn2ie" path="res://Assets/Start Screen/Title_Purple.png" id="11_6a4bo"]
-[ext_resource type="PackedScene" uid="uid://c7563e38wevvi" path="res://Scenes/Menus/settings_button.tscn" id="11_u16dj"]
+[ext_resource type="PackedScene" uid="uid://c58nyk17ffnwj" path="res://Scenes/Menus/in_game_ui.tscn" id="11_u16dj"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5e717"]
 shader = ExtResource("2_5l772")
@@ -167,9 +167,5 @@ animation = &"squish"
 autoplay = "squish"
 frame_progress = 0.65984
 
-[node name="Settings button" parent="." instance=ExtResource("11_u16dj")]
+[node name="InGame_UI" parent="." instance=ExtResource("11_u16dj")]
 layout_mode = 1
-offset_left = 106.0
-offset_top = -70.0
-offset_right = 126.0
-offset_bottom = -46.0

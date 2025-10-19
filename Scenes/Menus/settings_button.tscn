@@ -1,7 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7563e38wevvi"]
+[gd_scene load_steps=7 format=3 uid="uid://c7563e38wevvi"]
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_ulix3"]
 [ext_resource type="Texture2D" uid="uid://f6oholow6tg2" path="res://Assets/UI/Settings_Icon.png" id="2_axec5"]
+[ext_resource type="Texture2D" uid="uid://dljn3lm5gefq6" path="res://Assets/UI/Button.png" id="2_md1tf"]
+[ext_resource type="Script" uid="uid://co5s7g4lh02k4" path="res://Scripts/settings_button.gd" id="3_axec5"]
+[ext_resource type="PackedScene" uid="uid://wb61ewh1ublu" path="res://Scenes/Menus/settings_menu.tscn" id="4_t108f"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_b7dnq"]
+texture = ExtResource("2_md1tf")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 9.0
 
 [node name="Settings button" type="Button"]
 custom_minimum_size = Vector2(20, 24)
@@ -17,5 +27,10 @@ offset_bottom = 12.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_ulix3")
+theme_override_styles/disabled = SubResource("StyleBoxTexture_b7dnq")
 icon = ExtResource("2_axec5")
 icon_alignment = 1
+script = ExtResource("3_axec5")
+settings_menu = ExtResource("4_t108f")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]
