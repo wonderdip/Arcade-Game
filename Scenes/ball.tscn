@@ -30,6 +30,12 @@ properties/4/replication_mode = 1
 properties/5/path = NodePath(".:scored")
 properties/5/spawn = true
 properties/5/replication_mode = 1
+properties/6/path = NodePath("LandingRay:rotation")
+properties/6/spawn = true
+properties/6/replication_mode = 1
+properties/7/path = NodePath("Landing Sprite:position")
+properties/7/spawn = true
+properties/7/replication_mode = 1
 
 [node name="Ball" type="RigidBody2D" groups=["ball"]]
 collision_layer = 2

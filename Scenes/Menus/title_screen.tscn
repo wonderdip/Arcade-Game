@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://5mskd276w0y3"]
+[gd_scene load_steps=18 format=3 uid="uid://5mskd276w0y3"]
 
 [ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="1_rga2t"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="2_5l772"]
@@ -10,8 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://cw6abvsavasq" path="res://Assets/Start Screen/Title_Green.png" id="9_jfetd"]
 [ext_resource type="Texture2D" uid="uid://ct7pj0qo02eid" path="res://Assets/Start Screen/Title_Green2.png" id="10_6a4bo"]
 [ext_resource type="Texture2D" uid="uid://xsy4lqxsn2ie" path="res://Assets/Start Screen/Title_Purple.png" id="11_6a4bo"]
-[ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="12_u16dj"]
-[ext_resource type="Texture2D" uid="uid://f6oholow6tg2" path="res://Assets/UI/Settings_Icon.png" id="13_rga2t"]
+[ext_resource type="PackedScene" uid="uid://c7563e38wevvi" path="res://Scenes/Menus/settings_button.tscn" id="11_u16dj"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_5e717"]
 shader = ExtResource("2_5l772")
@@ -58,16 +57,15 @@ animations = [{
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="BGCourt" type="Sprite2D" parent="."]
 modulate = Color(0.6, 0.6, 0.6, 1)
+position = Vector2(128, 72)
 scale = Vector2(2, 2)
 texture = ExtResource("1_rga2t")
 
@@ -106,7 +104,7 @@ autoplay = "squish"
 frame_progress = 0.65984
 
 [node name="TitleBlue" type="Sprite2D" parent="."]
-position = Vector2(0, -48)
+position = Vector2(128, 24)
 texture = ExtResource("7_wqk6i")
 offset = Vector2(0.5, 0.5)
 
@@ -169,17 +167,9 @@ animation = &"squish"
 autoplay = "squish"
 frame_progress = 0.65984
 
-[node name="Settings button" type="Button" parent="."]
-layout_mode = 0
+[node name="Settings button" parent="." instance=ExtResource("11_u16dj")]
+layout_mode = 1
 offset_left = 106.0
 offset_top = -70.0
 offset_right = 126.0
 offset_bottom = -46.0
-theme = ExtResource("12_u16dj")
-icon = ExtResource("13_rga2t")
-icon_alignment = 1
-
-[node name="Sprite2D" type="Sprite2D" parent="Settings button"]
-visible = false
-position = Vector2(10, 9)
-texture = ExtResource("13_rga2t")

@@ -13,7 +13,7 @@ var is_network_mode: bool = false
 var is_solo_mode: bool = false
 var local_player_manager: Node = null
 var spawned_players: Array = []
-
+var total_players
 func _ready() -> void:
 	CamShake.camera2d = camera_2d
 	# Check if we're in network mode
@@ -22,7 +22,8 @@ func _ready() -> void:
 		# Network mode - only server spawns ball after client connects
 		if multiplayer.is_server():
 			multiplayer.peer_connected.connect(_on_peer_connected)
-			var total_players = multiplayer.get_peers().size() + 1
+			multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+			total_players = multiplayer.get_peers().size() + 1
 			if total_players == Networkhandler.MAX_CLIENTS:
 				await get_tree().create_timer(1.0).timeout
 				spawn_ball()
@@ -52,12 +53,14 @@ func _on_local_player_joined(device_id: int, player_number: int, input_type: Str
 		spawn_ball_local()
 
 func _on_peer_connected(id: int) -> void:
-	var total_players = multiplayer.get_peers().size() + 1
+	total_players = multiplayer.get_peers().size() + 1
 	print("Peer connected:", id, "Total players:", total_players)
-	
 	if total_players == Networkhandler.MAX_CLIENTS:
 		await get_tree().create_timer(1.0).timeout
 		spawn_ball()
+		
+func _on_peer_disconnected(_id: int):
+	total_players =- 1
 
 func _physics_process(_delta: float) -> void:
 	# Ball spawning for testing/reset
@@ -154,11 +157,12 @@ func _on_block_zone_body_exited(body: Node2D) -> void:
 		body.in_blockzone = false
 
 func _on_ball_timer_timeout() -> void:
-	if not ball_spawned:
-		if is_network_mode:
-			if multiplayer.is_server():
-				spawn_ball()
-			else:
-				rpc_id(1, "request_ball_spawn")
-		elif Networkhandler.is_local and spawned_players.size() >= 2:
-			spawn_ball_local()
+	if total_players == Networkhandler.MAX_CLIENTS:
+		if not ball_spawned:
+			if is_network_mode:
+				if multiplayer.is_server():
+					spawn_ball()
+				else:
+					rpc_id(1, "request_ball_spawn")
+			elif Networkhandler.is_local and spawned_players.size() >= 2:
+				spawn_ball_local()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=4 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=26 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
 [ext_resource type="Script" uid="uid://bshn1jsaig2fx" path="res://Scripts/world.gd" id="1_fo5ed"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://dvtr6ublg51mt" path="res://Scenes/score_board.tscn" id="10_0fj1v"]
 [ext_resource type="Script" uid="uid://7pu4le1bq5tt" path="res://Scripts/multiplayer_spawner.gd" id="10_ikia7"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="11_ikia7"]
+[ext_resource type="PackedScene" uid="uid://c58nyk17ffnwj" path="res://Scenes/Menus/in_game_ui.tscn" id="12_7yui6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5v1tr"]
 size = Vector2(128, 144)
@@ -214,6 +215,13 @@ color = Color(1, 1, 1, 0)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(128, 72)
+
+[node name="InGame_UI" parent="." instance=ExtResource("12_7yui6")]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
 
 [connection signal="body_entered" from="PlayerOneSide" to="." method="_on_player_one_side_body_entered"]
 [connection signal="body_entered" from="PlayerTwoSide" to="." method="_on_player_two_side_body_entered"]

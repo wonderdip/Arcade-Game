@@ -33,35 +33,30 @@ func _enter_tree() -> void:
 	
 	# In network mode, each peer claims authority for their own player
 	if not is_local_mode:
-		# Wait a tiny bit to ensure multiplayer is ready
 		await get_tree().process_frame
 		
 		# The node name is the peer ID (set by spawner)
 		var peer_id: int = int(name)
-		var my_id: int = multiplayer.get_unique_id()
-		
-		print("Player._enter_tree: name=%s, peer_id=%d, my_id=%d, current_authority=%d" % [name, peer_id, my_id, get_multiplayer_authority()])
 		
 		# Set authority to match the peer ID in the name
 		if get_multiplayer_authority() != peer_id:
 			set_multiplayer_authority(peer_id)
-			print("Player: Set authority to %d for node %s (my_id=%d)" % [peer_id, name, my_id])
 
 func _ready() -> void:
-	print("[Player._ready] name=", name,
+	player_arms.visible = false
+	
+	# Just verify we have proper authority for input
+	if !is_local_mode:
+		if get_multiplayer_authority() == multiplayer.get_unique_id():
+			print("This player instance is controlled locally")
+		
+		print("[Player._ready] name=", name,
 		  " player_number=", player_number,
 		  " authority=", get_multiplayer_authority(),
 		  " unique_id=", multiplayer.get_unique_id(),
 		  " is_server=", multiplayer.is_server(),
 		  " pos=", global_position)
-
-	player_arms.visible = false
-	
-	# Don't try to set position here - it's already replicated from spawn
-	# Just verify we have proper authority for input
-	if get_multiplayer_authority() == multiplayer.get_unique_id():
-		print("This player instance is controlled locally")
-
+		
 func _physics_process(delta: float) -> void:
 	# In local mode, check if player is setup
 	if is_local_mode:

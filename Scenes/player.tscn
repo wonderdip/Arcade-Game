@@ -249,7 +249,6 @@ sprite_frames = SubResource("SpriteFrames_pu2lt")
 animation = &"Set"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
 position = Vector2(-1, 0)
 shape = SubResource("CapsuleShape2D_ukyrk")
 

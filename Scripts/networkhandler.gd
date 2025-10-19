@@ -48,9 +48,14 @@ func join_server(ip_address: String, port: int = DEFAULT_PORT) -> void:
 		return
 
 	multiplayer.multiplayer_peer = peer
-	multiplayer.connected_to_server.connect(_on_connected_to_server)
-	multiplayer.connection_failed.connect(_on_connection_failed)
-	multiplayer.server_disconnected.connect(_on_server_disconnected)
+
+	if not multiplayer.connected_to_server.is_connected(_on_connected_to_server):
+		multiplayer.connected_to_server.connect(_on_connected_to_server)
+	if not multiplayer.connection_failed.is_connected(_on_connection_failed):
+		multiplayer.connection_failed.connect(_on_connection_failed)
+	if not multiplayer.server_disconnected.is_connected(_on_server_disconnected):
+		multiplayer.server_disconnected.connect(_on_server_disconnected)
+
 
 # -------------------------------------------------------------------
 
@@ -81,7 +86,17 @@ func _on_peer_disconnected(id: int) -> void:
 
 func _on_server_disconnected() -> void:
 	print("Disconnected from server. Returning to browser.")
+
+	if peer:
+		peer.close()
+		peer = null
+
+	multiplayer.multiplayer_peer = null
+	ServerDiscovery.stop_discovery_client()
+	ServerDiscovery.stop_broadcasting()
+	
 	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
+
 
 func _on_connected_to_server() -> void:
 	print("Connected to server successfully!")

@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://ct7u5xg8q4twg"]
+
+[ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_e1lsn"]
+[ext_resource type="Texture2D" uid="uid://cy6kkffvrkly8" path="res://Assets/UI/Exit_Icon.png" id="2_4bl5c"]
+[ext_resource type="Script" uid="uid://d3535ocpea1gu" path="res://Scripts/exit_button.gd" id="3_4bl5c"]
+
+[node name="Exit_Button" type="Button"]
+custom_minimum_size = Vector2(20, 24)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -12.0
+offset_right = 10.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_e1lsn")
+icon = ExtResource("2_4bl5c")
+script = ExtResource("3_4bl5c")
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]
