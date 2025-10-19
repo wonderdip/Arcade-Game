@@ -6,7 +6,7 @@ var server_name_input: LineEdit
 
 func _on_server_pressed() -> void:
 	get_tree().change_scene_to_file("res://Scenes/Menus/server_maker.tscn")
-	AudioManager.click_sound()
+	SFXManager.click_sound()
 
 func _on_local_pressed() -> void:
 	# Clear any previous network connections
@@ -17,14 +17,14 @@ func _on_local_pressed() -> void:
 	Networkhandler.is_local = true
 	get_tree().change_scene_to_file("res://Scenes/world.tscn")
 	LocalPlayerManager.ready_to_accept_players = true
-	AudioManager.click_sound()
+	SFXManager.click_sound()
 
 func _on_join_pressed() -> void:
 	Networkhandler.is_local = false
 	Networkhandler.start_client()  # This now opens the server browser
-	AudioManager.click_sound()
+	SFXManager.click_sound()
 
 func _on_solo_pressed() -> void:
 	get_tree().change_scene_to_file("res://Scenes/world.tscn")
 	Networkhandler.is_solo = true
-	AudioManager.click_sound()
+	SFXManager.click_sound()

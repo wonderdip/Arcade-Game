@@ -15,6 +15,7 @@ config_version=5
 config/name="Ican Arcade Game"
 run/main_scene="uid://5mskd276w0y3"
 config/features=PackedStringArray("4.5", "Forward Plus")
+run/max_fps=240
 config/icon="res://icon.svg"
 
 [autoload]
@@ -23,7 +24,7 @@ Networkhandler="*res://Scripts/networkhandler.gd"
 LocalPlayerManager="*res://Scripts/local_player_manager.gd"
 InputManager="*res://Scripts/input_manager.gd"
 ServerDiscovery="*res://Scripts/server_discovery.gd"
-AudioManager="*res://Scenes/audio_manager.tscn"
+SFXManager="*res://Scenes/sfx_manager.tscn"
 FrameFreeze="*res://Scripts/frame_freeze.gd"
 CamShake="*res://Scripts/cam_shake.gd"
 

@@ -11,6 +11,7 @@ signal settings_deleted
 func _ready() -> void:
 	get_tree().connect("node_added", _on_node_added)
 	change_menu(1)
+	fps.value = Engine.max_fps
 	
 func _on_node_added(node: Node) -> void:
 	if node is PopupPanel and node.name.begins_with("@PopupPanel@"):
@@ -62,3 +63,9 @@ func _on_vysnc_toggled(toggled_on: bool) -> void:
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED)
 	else:
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
+
+func _on_master_vol_value_changed(value: int) -> void:
+	pass
+
+func _on_sfx_vol_value_changed(value) -> void:
+	SFXManager.change_sfx_vol(value)
