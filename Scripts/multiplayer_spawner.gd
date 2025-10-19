@@ -3,55 +3,57 @@ extends MultiplayerSpawner
 @export var network_player: PackedScene
 var player_count := 0
 
+# Define spawn positions
+var spawn_positions = {
+	1: Vector2(30, 112),   # Host/Player 1
+	2: Vector2(226, 112),  # First client/Player 2
+	3: Vector2(30, 112),   # Second client/Player 3
+	4: Vector2(226, 112)   # Third client/Player 4
+}
+
 func _ready() -> void:
 	if Networkhandler.is_local:
 		return
 	
-	if multiplayer.is_server():
-		_on_peer_connected(multiplayer.get_unique_id()) # Spawn host player
+	# Only server handles spawning
+	if not multiplayer.is_server():
+		return
 	
+	# Wait a frame before spawning to avoid "parent busy" error
+	await get_tree().process_frame
+	
+	# Spawn host player
+	_on_peer_connected(multiplayer.get_unique_id())
+	
+	# Connect to handle client connections
 	multiplayer.peer_connected.connect(_on_peer_connected)
 
 func _on_peer_connected(id: int) -> void:
-	if !multiplayer.is_server():
+	if not multiplayer.is_server():
 		return
 	
 	player_count += 1
+	print("Spawner: Peer %d connected, assigning player number %d" % [id, player_count])
 	spawn_player(id, player_count)
 
 func spawn_player(id: int, index: int) -> void:
-	var player: Node = network_player.instantiate()
+	# Create player instance
+	var player: CharacterBody2D = network_player.instantiate() as CharacterBody2D
+	
+	# CRITICAL: Set the name to the peer ID so clients know who owns this player
 	player.name = str(id)
-
-	# --- 1) Assign authority on the instance BEFORE it enters the scene tree.
-	# This must be executed on the server only.
-	if multiplayer.is_server():
-		player.set_multiplayer_authority(id)
-		print("Spawner: set authority", id, "on instance", player.name)
-
-	# --- 2) Set any properties that must be replicated at spawn BEFORE add_child.
-	# Ensure player_number is included in the Player scene's SceneReplicationConfig.
+	
+	# Get spawn position
+	var spawn_pos: Vector2 = spawn_positions.get(index, Vector2(30, 112))
+	
+	print("Spawner: Creating player %d at position %v for peer %d" % [index, spawn_pos, id])
+	
+	# Add to tree FIRST - MultiplayerSpawner will handle replication
+	var parent: Node = get_node(spawn_path)
+	parent.add_child(player, true)
+	
+	# Set properties AFTER adding to tree so they're properly synced
 	player.player_number = index
-
-	# Choose spawn position (use global_position to avoid parent-space ambiguity).
-	var spawn_pos := Vector2.ZERO
-	match index:
-		1:
-			spawn_pos = Vector2(30, 112)   # Left side, host
-		2:
-			spawn_pos = Vector2(226, 112)  # Right side, 1st client
-		3:
-			spawn_pos = Vector2(30, 112)   # Left side, 2nd client
-		4:
-			spawn_pos = Vector2(226, 112)  # Right side, 3rd client
-		_:
-			spawn_pos = Vector2(30, 112)   # fallback
-
-	player.global_position = spawn_pos
-
-	# --- 3) Add to the tree after authority + properties are set.
-	# Use call_deferred with the method name (string) to avoid
-	# "Parent node is busy setting up children" errors.
-	get_node(spawn_path).call_deferred("add_child", player)
-
-	print("Spawner: Spawned player", id, "at position", player.global_position, "player_number=", player.player_number)
+	player.position = spawn_pos
+	
+	print("Spawner: Player %d spawned at %v, name=%s, player_number=%d" % [index, spawn_pos, player.name, player.player_number])

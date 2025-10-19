@@ -24,11 +24,13 @@ var is_local_mode: bool = false
 func _enter_tree() -> void:
 	is_local_mode = Networkhandler.is_local
 	
-	# Set the server as the authority for the ball (only in network mode)
-	if not is_local_mode:
+	# CRITICAL FIX: Set the server as the authority for the ball (only in network mode)
+	if not is_local_mode and multiplayer.is_server():
+		# Server is ALWAYS authority 1
 		set_multiplayer_authority(1)
+		print("Ball: Server set as authority")
 
-func _ready():
+func _ready() -> void:
 	normal_linear_damp = linear_damp
 	
 	if is_local_mode:
@@ -39,49 +41,48 @@ func _ready():
 		# Network mode - server simulates fully
 		freeze = false
 		sleeping = false
+		print("Ball: Server ready, physics enabled")
 	else:
-		# IMPORTANT: Clients also need physics simulation for collision detection
-		# But we'll only let the server modify the velocity (via sync)
+		# Clients still need collision detection but don't modify physics
 		freeze = false
 		sleeping = false
-		# Make client physics "lighter" - it's mostly for collision detection
 		contact_monitor = true
 		max_contacts_reported = 4
+		print("Ball: Client ready, authority is ", get_multiplayer_authority())
 
 func _physics_process(_delta: float) -> void:
 	# Keep the raycast pointing straight down in world space
 	landing_ray.global_rotation = 0
 
 	if landing_ray.is_colliding():
-		var hit_point = landing_ray.get_collision_point()
+		var hit_point: Vector2 = landing_ray.get_collision_point()
 		landing_sprite.global_position = hit_point
 		landing_sprite.global_rotation = 0
 
-func _integrate_forces(state):
+func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	# In local mode, always process. In network mode, only on server
 	if not is_local_mode and not multiplayer.is_server():
 		# Clients don't modify velocity - that's synced from server
-		# But they still need physics running for collision detection
 		return
 		
 	# Cap velocity to prevent ball from going crazy
-	var vel = state.linear_velocity
+	var vel: Vector2 = state.linear_velocity
 	if vel.length() > max_velocity:
 		state.linear_velocity = vel.normalized() * max_velocity
 
-func enter_hover_zone():
+func enter_hover_zone() -> void:
 	if not is_hovering:
 		is_hovering = true
 		gravity_scale = hover_gravity_scale
 		linear_damp = hover_linear_damp
 
-func exit_hover_zone():
+func exit_hover_zone() -> void:
 	if is_hovering:
 		is_hovering = false
 		gravity_scale = normal_gravity_scale
 		linear_damp = normal_linear_damp
 
-func _on_body_entered(body: Node):
+func _on_body_entered(body: Node) -> void:
 	# In local mode, always process. In network mode, only on server
 	if not is_local_mode and not multiplayer.is_server():
 		return
@@ -95,5 +96,5 @@ func _on_body_entered(body: Node):
 		scored = true
 		
 		# Keep bouncing but ignore everything except layers 3, 4, 6
-		var allowed_layers = (1 << 2) | (1 << 3) | (1 << 5)
+		var allowed_layers: int = (1 << 2) | (1 << 3) | (1 << 5)
 		collision_mask = allowed_layers

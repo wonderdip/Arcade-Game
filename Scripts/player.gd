@@ -30,11 +30,24 @@ var is_local_mode: bool = false
 
 func _enter_tree() -> void:
 	is_local_mode = Networkhandler.is_local
-	# IMPORTANT: do NOT call set_multiplayer_authority here.
-	# Authority must be set on the instance by the server BEFORE add_child (in the spawner).
+	
+	# In network mode, each peer claims authority for their own player
+	if not is_local_mode:
+		# Wait a tiny bit to ensure multiplayer is ready
+		await get_tree().process_frame
+		
+		# The node name is the peer ID (set by spawner)
+		var peer_id: int = int(name)
+		var my_id: int = multiplayer.get_unique_id()
+		
+		print("Player._enter_tree: name=%s, peer_id=%d, my_id=%d, current_authority=%d" % [name, peer_id, my_id, get_multiplayer_authority()])
+		
+		# Set authority to match the peer ID in the name
+		if get_multiplayer_authority() != peer_id:
+			set_multiplayer_authority(peer_id)
+			print("Player: Set authority to %d for node %s (my_id=%d)" % [peer_id, name, my_id])
 
 func _ready() -> void:
-	# Debug output to help verify what's happening on each peer
 	print("[Player._ready] name=", name,
 		  " player_number=", player_number,
 		  " authority=", get_multiplayer_authority(),
@@ -43,46 +56,55 @@ func _ready() -> void:
 		  " pos=", global_position)
 
 	player_arms.visible = false
-
-	# Only run authority-local logic if this instance is authoritative locally
+	
+	# Don't try to set position here - it's already replicated from spawn
+	# Just verify we have proper authority for input
 	if get_multiplayer_authority() == multiplayer.get_unique_id():
-		# This instance is authoritative for local input
-		# Setup local-only state (if any) here
-		pass
+		print("This player instance is controlled locally")
 
 func _physics_process(delta: float) -> void:
-	if is_local_mode and player_number < 0:
-		return  # Not setup yet
-		
-	if not is_local_mode and !is_multiplayer_authority(): 
-		return
-		
+	# In local mode, check if player is setup
+	if is_local_mode:
+		if player_number < 0:
+			return  # Not setup yet
+	else:
+		# In network mode, only process if we have authority
+		if not is_multiplayer_authority():
+			return
+	
 	# --- Input Handling ---
 	var direction: float
 	var jump_just_pressed: bool
 	var hit_just_pressed: bool
 	var bump_pressed: bool
 	var set_pressed: bool
-	var x_axis := Input.get_joy_axis(0, JOY_AXIS_LEFT_X)
-	var y_axis := Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
-	var angle := Vector2(x_axis, y_axis).angle()
 	
 	if is_local_mode:
+		# Local mode uses InputManager
 		direction = InputManager.get_axis(player_number, "left", "right")
 		jump_just_pressed = InputManager.is_action_just_pressed(player_number, "jump")
 		hit_just_pressed = InputManager.is_action_just_pressed(player_number, "hit")
 		bump_pressed = InputManager.is_action_pressed(player_number, "bump")
 		set_pressed = InputManager.is_action_pressed(player_number, "set")
 	else:
+		# Network mode uses standard Input (each client controls their own player)
+		var x_axis: float = Input.get_joy_axis(0, JOY_AXIS_LEFT_X)
+		var y_axis: float = Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
+		var angle: float = Vector2(x_axis, y_axis).angle()
+		
 		direction = Input.get_axis("left", "right")
 		hit_just_pressed = Input.is_action_just_pressed("hit")
 		bump_pressed = Input.is_action_pressed("bump")
 		set_pressed = Input.is_action_pressed("set")
 		
-		if y_axis < -0.4 and abs(angle + PI/2) < deg_to_rad(60) or Input.is_action_just_pressed("jump"):
+		# Jump with controller or keyboard
+		jump_just_pressed = false
+		if y_axis < -0.4 and abs(angle + PI/2) < deg_to_rad(60):
 			jump_just_pressed = true
-			
-	# --- Movement and Actions ---
+		elif Input.is_action_just_pressed("jump"):
+			jump_just_pressed = true
+	
+	# --- Movement and Actions (rest of the code stays the same) ---
 	if is_blocking:
 		gravity_mult = 1.3
 	else:
@@ -90,10 +112,8 @@ func _physics_process(delta: float) -> void:
 
 	# Apply gravity
 	if velocity.y < 0:
-		# Going up
-		velocity.y += gravity * 0.6 * gravity_mult * delta  # lighter gravity on ascent
+		velocity.y += gravity * 0.6 * gravity_mult * delta
 	else:
-		# Going down
 		velocity.y += gravity * fall_multiplier * gravity_mult * delta
 
 	# Handle jump
