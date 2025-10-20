@@ -12,7 +12,7 @@ var spawn_positions = {
 }
 
 func _ready() -> void:
-	if Networkhandler.is_local:
+	if Networkhandler.is_local or Networkhandler.is_solo:
 		return
 	
 	# Only server handles spawning

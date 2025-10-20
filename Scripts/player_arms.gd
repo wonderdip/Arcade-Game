@@ -164,6 +164,7 @@ func _apply_hit_to_ball(body: RigidBody2D):
 	elif is_hitting or is_blocking:
 		hit_direction = Vector2(1 if facing_right else -1, -0.2).normalized()
 		impulse = hit_direction * hit_force + Vector2(0, -downward_force)
+		AudioManager.play_sound_from_library("hit")
 		CamShake.cam_shake(2, 1, 0.3)
 		FrameFreeze.framefreeze(0.2, 0)
 	elif is_setting:
@@ -195,6 +196,7 @@ func _apply_hit_to_ball_server(body: RigidBody2D, contact_point: Vector2, face_r
 	elif hitting or blocking:
 		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
 		impulse = hit_direction * hit_force + Vector2(0, -downward_force)
+		
 	elif is_set:
 		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()
 		impulse = hit_direction * set_force + Vector2(0, set_upward_force)

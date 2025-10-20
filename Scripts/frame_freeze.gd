@@ -8,4 +8,5 @@ func framefreeze(duration: float, time_scale: float):
 	else:
 		Engine.time_scale = 0
 		await get_tree().create_timer(duration, true, false, true).timeout
+		AudioManager.play_sound_from_library("afterhit")
 		Engine.time_scale = 1.0

@@ -32,7 +32,7 @@ func play_sound_from_library(_tag: String) -> void:
 	var slider_value := music_vol if sound_effect.type == SoundEffect.Type.Music else sfx_vol
 	
 	# Convert 0–100 slider to a nice curve and then to dB
-	var normalized = pow(slider_value / 100.0, 2.5) # linear 0..1 curve shaping
+	var normalized = pow(slider_value / 75.0, 2.5) # linear 0..1 curve shaping
 	var vol_db = linear_to_db(max(normalized, 0.00001)) # avoid log(0)
 	
 	var voice_id : int = polyphonic_playback.play_stream(sound_effect.stream, 0.0, vol_db, 1.0)
