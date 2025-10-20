@@ -114,6 +114,7 @@ func _physics_process(delta: float) -> void:
 	# Handle jump
 	if jump_just_pressed and is_on_floor():
 		velocity.y = JumpForce
+		AudioManager.play_sound_from_library("jump")
 	
 	if is_bumping or is_setting:
 		speed_mult = 0.2

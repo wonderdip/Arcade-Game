@@ -48,7 +48,7 @@ func _on_server_list_item_selected(index: int):
 		
 func _on_join_button_pressed():
 	var selected_items = server_list.get_selected_items()
-	SFXManager.click_sound()
+	AudioManager.play_sound_from_library("click")
 	if selected_items.size() == 0:
 		print("No server selected.")
 		return
@@ -60,7 +60,7 @@ func _on_join_button_pressed():
 
 func _on_manual_connect_pressed():
 	var ip_text = manual_ip_input.text.strip_edges()
-	SFXManager.click_sound()
+	AudioManager.play_sound_from_library("click")
 	if ip_text.is_empty():
 		status_label.text = "Enter IP"
 		return
@@ -79,7 +79,7 @@ func _on_manual_connect_pressed():
 
 func _on_refresh_button_pressed():
 	refresh_servers()
-	SFXManager.click_sound()
+	AudioManager.play_sound_from_library("click")
 
 func refresh_servers():
 	discovered_servers.clear()
@@ -122,7 +122,7 @@ func animate_search_label() -> void:
 func _on_back_button_pressed():
 	ServerDiscovery.stop_discovery_client()
 	get_tree().change_scene_to_file("res://Scenes/Menus/title_screen.tscn")
-	SFXManager.click_sound()
+	AudioManager.play_sound_from_library("click")
 
 func _exit_tree():
 	ServerDiscovery.stop_discovery_client()

@@ -24,7 +24,7 @@ Networkhandler="*res://Scripts/networkhandler.gd"
 LocalPlayerManager="*res://Scripts/local_player_manager.gd"
 InputManager="*res://Scripts/input_manager.gd"
 ServerDiscovery="*res://Scripts/server_discovery.gd"
-SFXManager="*res://Scenes/sfx_manager.tscn"
+AudioManager="*res://Scenes/audio_manager.tscn"
 FrameFreeze="*res://Scripts/frame_freeze.gd"
 CamShake="*res://Scripts/cam_shake.gd"
 
