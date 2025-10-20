@@ -56,7 +56,6 @@ func join_server(ip_address: String, port: int = DEFAULT_PORT) -> void:
 	if not multiplayer.server_disconnected.is_connected(_on_server_disconnected):
 		multiplayer.server_disconnected.connect(_on_server_disconnected)
 
-
 # -------------------------------------------------------------------
 
 func start_client() -> void:

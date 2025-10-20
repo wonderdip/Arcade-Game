@@ -14,11 +14,18 @@ var is_solo_mode: bool = false
 var local_player_manager: Node = null
 var spawned_players: Array = []
 var total_players
+
 func _ready() -> void:
 	CamShake.camera2d = camera_2d
 	# Check if we're in network mode
+	if Networkhandler.is_solo:
+		is_solo_mode = true
+		print("solo player spawning")
+		spawn_solo_player()
+		return
 	is_network_mode = multiplayer.multiplayer_peer != null
-	if is_network_mode:
+	if is_network_mode and not is_solo_mode:
+		print("world in network")
 		# Network mode - only server spawns ball after client connects
 		if multiplayer.is_server():
 			multiplayer.peer_connected.connect(_on_peer_connected)
@@ -29,10 +36,15 @@ func _ready() -> void:
 				spawn_ball()
 	elif Networkhandler.is_local:
 		LocalPlayerManager.player_joined.connect(_on_local_player_joined)
-	elif Networkhandler.is_solo:
-		is_solo_mode = true
 	else:
+		print("no mode")
 		return
+
+func spawn_solo_player():
+	var player = player_scene.instantiate()
+	player.position = Vector2(30, 112)
+	add_child(player)
+	print("solo player spawned")
 
 func _on_local_player_joined(device_id: int, player_number: int, input_type: String):
 	
@@ -70,7 +82,7 @@ func _physics_process(_delta: float) -> void:
 				spawn_ball()
 			else:
 				rpc_id(1, "request_ball_spawn")
-		elif Networkhandler.is_local and spawned_players.size() >= 2:
+		elif (Networkhandler.is_local and spawned_players.size() >= 2) or is_solo_mode:
 			spawn_ball_local()
 
 @rpc("any_peer", "call_remote")
@@ -82,7 +94,6 @@ func spawn_ball() -> void:
 	# Network mode spawning
 	if not multiplayer.is_server():
 		return
-		
 	if active_ball != null and is_instance_valid(active_ball):
 		active_ball.queue_free()
 		await get_tree().process_frame
@@ -114,7 +125,8 @@ func spawn_ball_local() -> void:
 		active_ball.queue_free()
 
 	var ball_instance = ball_scene.instantiate()
-	
+	if is_solo_mode:
+		score_board.last_point = 1
 	if score_board.last_point == 1:
 		ball_instance.global_position = Vector2(30, -40)
 		ball_instance.current_player_side = 1
@@ -122,7 +134,7 @@ func spawn_ball_local() -> void:
 		ball_instance.global_position = Vector2(226, -40)
 		ball_instance.current_player_side = 2
 	
-	add_child(ball_instance)
+	add_child(ball_instance, true)
 	active_ball = ball_instance
 	ball_spawned = true
 	

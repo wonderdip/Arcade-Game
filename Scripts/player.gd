@@ -24,13 +24,13 @@ var device_id: int = -1
 var input_type: String = ""  # "keyboard" or "controller"
 
 var is_local_mode: bool = false
-
+var is_solo_mode: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var player_arms: Node2D = $"Player Arms"
 
 func _enter_tree() -> void:
 	is_local_mode = Networkhandler.is_local
-	
+	is_solo_mode = Networkhandler.is_solo
 	# In network mode, each peer claims authority for their own player
 	if not is_local_mode:
 		await get_tree().process_frame
@@ -46,7 +46,7 @@ func _ready() -> void:
 	player_arms.visible = false
 	
 	# Just verify we have proper authority for input
-	if !is_local_mode:
+	if !is_local_mode and !is_solo_mode:
 		if get_multiplayer_authority() == multiplayer.get_unique_id():
 			print("This player instance is controlled locally")
 		
@@ -62,7 +62,7 @@ func _physics_process(delta: float) -> void:
 	if is_local_mode:
 		if player_number < 0:
 			return  # Not setup yet
-	else:
+	elif !is_solo_mode:
 		# In network mode, only process if we have authority
 		if not is_multiplayer_authority():
 			return

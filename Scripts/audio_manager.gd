@@ -3,6 +3,7 @@ extends AudioStreamPlayer2D
 @export var audio_library: AudioLibrary
 @export var custom_max_polyphony: int = 32
 
+var master_vol: float = 50.0
 var sfx_vol: float = 50.0
 var music_vol: float = 50.0
 
@@ -48,3 +49,6 @@ func change_sfx_vol(volume: float) -> void:
 func change_music_vol(volume: float) -> void:
 	music_vol = clamp(volume, 0.0, 100.0)
 	print("Music volume =", music_vol)
+
+func change_master_vol(volume: float) -> void:
+	master_vol = clamp(volume, 0.0, 100.0)
