@@ -8,6 +8,7 @@ func _on_confirm_pressed() -> void:
 	else:
 		name = server_name.text
 	Networkhandler.is_local = false
+	Networkhandler.is_solo = false
 	Networkhandler.start_server(name)
 
 func _on_spin_box_value_changed(value: int) -> void:

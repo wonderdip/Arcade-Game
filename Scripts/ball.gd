@@ -20,20 +20,22 @@ var scored: bool = false:
 var normal_linear_damp: float = 0.5
 var is_hovering: bool = false
 var is_local_mode: bool = false
-
-func _enter_tree() -> void:
-	is_local_mode = Networkhandler.is_local
-	
-	# CRITICAL FIX: Set the server as the authority for the ball (only in network mode)
-	if not is_local_mode and multiplayer.is_server():
-		# Server is ALWAYS authority 1
-		set_multiplayer_authority(1)
-		print("Ball: Server set as authority")
+var is_solo_mode: bool = false
 
 func _ready() -> void:
 	normal_linear_damp = linear_damp
 	
-	if is_local_mode:
+	is_local_mode = Networkhandler.is_local
+	is_solo_mode = Networkhandler.is_solo
+	
+	# CRITICAL FIX: Set the server as the authority for the ball (only in network mode)
+	if !is_local_mode or !is_solo_mode:
+		if multiplayer.is_server():
+			# Server is ALWAYS authority 1
+			set_multiplayer_authority(1)
+			print("Ball: Server set as authority")
+			
+	if is_local_mode or is_solo_mode:
 		# Local mode - always simulate physics
 		freeze = false
 		sleeping = false
@@ -61,7 +63,7 @@ func _physics_process(_delta: float) -> void:
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	# In local mode, always process. In network mode, only on server
-	if not is_local_mode and not multiplayer.is_server():
+	if (not is_local_mode or not is_solo_mode) and not multiplayer.is_server():
 		# Clients don't modify velocity - that's synced from server
 		return
 		
