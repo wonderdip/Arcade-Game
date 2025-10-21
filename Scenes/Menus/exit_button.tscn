@@ -21,4 +21,8 @@ theme = ExtResource("1_e1lsn")
 icon = ExtResource("2_4bl5c")
 script = ExtResource("3_4bl5c")
 
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
 [connection signal="pressed" from="." to="." method="_on_pressed"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

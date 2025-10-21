@@ -124,7 +124,6 @@ text = "IP Connect"
 
 [node name="InGame_UI" parent="." instance=ExtResource("5_6a1mq")]
 layout_mode = 0
-exit_visibility = false
 
 [connection signal="item_selected" from="ScrollContainer/VBoxContainer/ServerList" to="." method="_on_server_list_item_selected"]
 [connection signal="pressed" from="ScrollContainer/VBoxContainer/HBoxContainer/Refresh" to="." method="_on_refresh_button_pressed"]

@@ -86,6 +86,6 @@ hframes = 12
 
 [node name="InGame_UI" parent="." instance=ExtResource("4_tjffv")]
 layout_mode = 0
-exit_visibility = false
 
+[connection signal="pressed" from="VBoxContainer/Training" to="." method="_on_training_pressed"]
 [connection signal="pressed" from="VBoxContainer/Back" to="." method="_on_back_pressed"]

@@ -4,6 +4,10 @@ extends Control
 var server_name_dialog: AcceptDialog
 var server_name_input: LineEdit
 
+func _ready() -> void:
+	Networkhandler.is_local = false
+	Networkhandler.is_solo = false
+	
 func _on_server_pressed() -> void:
 	get_tree().change_scene_to_file("res://Scenes/Menus/server_maker.tscn")
 	AudioManager.play_sound_from_library("click")
@@ -26,5 +30,4 @@ func _on_join_pressed() -> void:
 
 func _on_solo_pressed() -> void:
 	get_tree().change_scene_to_file("res://Scenes/Menus/singleplayer_menu.tscn")
-	Networkhandler.is_solo = true
 	AudioManager.play_sound_from_library("click")

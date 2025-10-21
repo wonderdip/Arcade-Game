@@ -95,7 +95,6 @@ offset_left = -128.0
 offset_top = -72.0
 offset_right = -128.0
 offset_bottom = -72.0
-exit_visibility = false
 
 [connection signal="value_changed" from="VBoxContainer/SpinBox" to="." method="_on_spin_box_value_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Confirm" to="." method="_on_confirm_pressed"]
