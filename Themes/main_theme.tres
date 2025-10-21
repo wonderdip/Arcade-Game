@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=23 format=3 uid="uid://colk31q20bk6u"]
+[gd_resource type="Theme" load_steps=25 format=3 uid="uid://colk31q20bk6u"]
 
 [ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="1_ybks7"]
 [ext_resource type="Texture2D" uid="uid://3c45c3q2lfmt" path="res://Assets/UI/Button_Pressed-Hover.png" id="2_jg5j1"]
@@ -26,6 +26,19 @@ texture_margin_left = 6.0
 texture_margin_top = 6.0
 texture_margin_right = 6.0
 texture_margin_bottom = 9.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_m7epr"]
+texture = ExtResource("2_jg5j1")
+texture_margin_left = 6.0
+texture_margin_top = 9.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4t5id"]
+texture = ExtResource("2_o2ta1")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_sgyia"]
 texture = ExtResource("5_ac4ce")
@@ -102,6 +115,8 @@ Button/styles/focus = SubResource("StyleBoxEmpty_ac4ce")
 Button/styles/hover = SubResource("StyleBoxTexture_2f3ak")
 Button/styles/normal = SubResource("StyleBoxTexture_aur2u")
 Button/styles/pressed = SubResource("StyleBoxTexture_2f3ak")
+CheckBox/styles/hover_pressed = SubResource("StyleBoxTexture_m7epr")
+CheckBox/styles/pressed = SubResource("StyleBoxTexture_4t5id")
 HSlider/icons/grabber = ExtResource("4_j453h")
 HSlider/icons/grabber_highlight = ExtResource("4_j453h")
 HSlider/styles/grabber_area = SubResource("StyleBoxTexture_sgyia")

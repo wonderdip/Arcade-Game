@@ -170,9 +170,9 @@ func _apply_hit_to_ball(body: RigidBody2D):
 	elif is_setting:
 		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
 		impulse = hit_direction * set_force + Vector2(0, set_upward_force)
-
+	
 	body.apply_impulse(impulse, contact_point - body.global_position)
-
+	collision_shape.set_deferred("disabled", true)
 	# Cap the speed
 	await get_tree().process_frame
 	if body.linear_velocity.length() > max_ball_speed:

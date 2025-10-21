@@ -25,6 +25,6 @@ func _on_join_pressed() -> void:
 	AudioManager.play_sound_from_library("click")
 
 func _on_solo_pressed() -> void:
-	get_tree().change_scene_to_file("res://Scenes/world.tscn")
+	get_tree().change_scene_to_file("res://Scenes/Menus/singleplayer_menu.tscn")
 	Networkhandler.is_solo = true
 	AudioManager.play_sound_from_library("click")

@@ -1,0 +1,91 @@
+[gd_scene load_steps=8 format=3 uid="uid://d6o1ihjh36ay"]
+
+[ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_la613"]
+[ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="2_1iq6m"]
+[ext_resource type="Script" uid="uid://b5hsjbirvdgwc" path="res://Scripts/singleplayer_menu.gd" id="2_vnphq"]
+[ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="3_vnphq"]
+[ext_resource type="PackedScene" uid="uid://c58nyk17ffnwj" path="res://Scenes/Menus/in_game_ui.tscn" id="4_tjffv"]
+[ext_resource type="Texture2D" uid="uid://dp3uy7erc7xvr" path="res://Assets/Characters/jump sprite-Sheet.png" id="5_1iq6m"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dillq"]
+shader = ExtResource("3_vnphq")
+shader_parameter/vignette_intensity = 0.7
+shader_parameter/vignette_opacity = 0.30000001425
+shader_parameter/vignette_rgb = Color(0, 0, 0, 1)
+shader_parameter/overlay_mode = true
+
+[node name="SingleplayerMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_la613")
+script = ExtResource("2_vnphq")
+
+[node name="BGCourt" type="Sprite2D" parent="."]
+modulate = Color(0.6, 0.6, 0.6, 1)
+position = Vector2(128, 72)
+scale = Vector2(2, 2)
+texture = ExtResource("2_1iq6m")
+
+[node name="Vignette" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_dillq")
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -128.0
+offset_top = -72.0
+offset_right = 128.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(1, 1, 1, 0)
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 12.0
+offset_right = 227.0
+offset_bottom = 35.0
+text = "Singleplayer Modes"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = 23.0
+offset_top = 41.0
+offset_right = 139.0
+offset_bottom = 113.0
+
+[node name="Tournament" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Tournament Mode"
+
+[node name="Training" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Solo Training"
+
+[node name="Bot" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Bot Mode"
+
+[node name="Back" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Back
+"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(192, 87)
+scale = Vector2(2, 2)
+texture = ExtResource("5_1iq6m")
+hframes = 12
+
+[node name="InGame_UI" parent="." instance=ExtResource("4_tjffv")]
+layout_mode = 0
+exit_visibility = false
+
+[connection signal="pressed" from="VBoxContainer/Back" to="." method="_on_back_pressed"]
