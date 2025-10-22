@@ -86,7 +86,6 @@ func cleanup_anim():
 	collision_shape.disabled = true
 	anim.stop()
 	anim.play("RESET")
-	visible = false
 
 # Called when a body enters the arm's area
 func _on_body_entered(body: Node):
@@ -174,7 +173,8 @@ func _apply_hit_to_ball(body: RigidBody2D):
 		impulse = hit_direction * set_force + Vector2(0, set_upward_force)
 	
 	body.apply_impulse(impulse, contact_point - body.global_position)
-	collision_shape.set_deferred("disabled", true)
+	if is_hitting or is_blocking:
+		collision_shape.set_deferred("disabled", true)
 	# Cap the speed
 	await get_tree().process_frame
 	if body.linear_velocity.length() > max_ball_speed:
@@ -227,16 +227,20 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 		is_hitting = false 
 		hit_bodies.clear() 
 		collision_shape.disabled = true 
-		visible = false 
 		
 	elif anim_name == "Block":
 		is_blocking = false 
 		hit_bodies.clear() 
 		collision_shape.disabled = true 
-		visible = false 
 		
 	elif anim_name == "Bump":
-		bump()
+		# DON'T clean up here - the bump action is held, not one-shot
+		# Just loop the animation if still bumping
+		if is_bumping:
+			anim.play("Bump")
 		
 	elif anim_name == "Set":
-		pass
+		# DON'T clean up here - the set action is held, not one-shot
+		# Just keep the animation ready if still setting
+		if is_setting:
+			anim.play("Set")

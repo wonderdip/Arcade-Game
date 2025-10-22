@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://b337namn6ohc1"]
+
+[ext_resource type="Script" uid="uid://06d31ssg813v" path="res://Scripts/ball_launcher.gd" id="1_3khvl"]
+[ext_resource type="Texture2D" uid="uid://sex1pscpsvly" path="res://Assets/Ball_launcher.png" id="1_tg8jd"]
+[ext_resource type="PackedScene" uid="uid://txgrcwpblspl" path="res://Scenes/ball.tscn" id="2_cx0xm"]
+
+[node name="Ball_Launcher" type="Node2D"]
+script = ExtResource("1_3khvl")
+ball_scene = ExtResource("2_cx0xm")
+launch_speed = 300.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_tg8jd")
+
+[node name="BallSpawnPoint" type="Marker2D" parent="."]
+position = Vector2(0, -15)
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 1.5
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

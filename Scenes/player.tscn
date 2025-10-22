@@ -253,7 +253,6 @@ position = Vector2(-1, 0)
 shape = SubResource("CapsuleShape2D_ukyrk")
 
 [node name="Player Arms" parent="." instance=ExtResource("6_x3wgy")]
-visible = false
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_3smsa")

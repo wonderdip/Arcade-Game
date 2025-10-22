@@ -27,9 +27,8 @@ func _ready() -> void:
 	
 	is_local_mode = Networkhandler.is_local
 	is_solo_mode = Networkhandler.is_solo
-	
 	# CRITICAL FIX: Set the server as the authority for the ball (only in network mode)
-	if !is_local_mode or !is_solo_mode:
+	if !is_local_mode and !is_solo_mode:
 		if multiplayer.is_server():
 			# Server is ALWAYS authority 1
 			set_multiplayer_authority(1)
@@ -63,7 +62,7 @@ func _physics_process(_delta: float) -> void:
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	# In local mode, always process. In network mode, only on server
-	if (not is_local_mode or not is_solo_mode) and not multiplayer.is_server():
+	if (not is_local_mode and not is_solo_mode) and not multiplayer.is_server():
 		# Clients don't modify velocity - that's synced from server
 		return
 		
@@ -100,3 +99,6 @@ func _on_body_entered(body: Node) -> void:
 		# Keep bouncing but ignore everything except layers 3, 4, 6
 		var allowed_layers: int = (1 << 2) | (1 << 3) | (1 << 5)
 		collision_mask = allowed_layers
+
+func delete_self():
+	queue_free()

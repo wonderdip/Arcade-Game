@@ -153,7 +153,7 @@ _data = {
 }
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ism15"]
-radius = 4.3813424
+radius = 4.4
 height = 20.0
 
 [node name="Player Arms" type="Area2D"]
@@ -168,7 +168,6 @@ libraries = {
 }
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-z_index = 2
 position = Vector2(-6, -9)
 rotation = 0.2617994
 scale = Vector2(0.9999998, 0.9999998)

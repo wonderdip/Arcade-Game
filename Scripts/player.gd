@@ -43,7 +43,6 @@ func _enter_tree() -> void:
 			set_multiplayer_authority(peer_id)
 
 func _ready() -> void:
-	player_arms.visible = false
 	
 	# Just verify we have proper authority for input
 	if !is_local_mode and !is_solo_mode:

@@ -147,12 +147,64 @@ layout_mode = 2
 text = "Exit"
 
 [node name="GamePanel" type="Panel" parent="Panel"]
-visible = false
 layout_mode = 0
 offset_left = 51.0
 offset_top = 7.0
 offset_right = 234.0
 offset_bottom = 121.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/GamePanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 176.0
+offset_bottom = 107.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/GamePanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="Labels" type="VBoxContainer" parent="Panel/GamePanel/ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+
+[node name="LauncherOn" type="Label" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Labels"]
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_17muo")
+theme_override_font_sizes/font_size = 8
+text = "Ball Launcher"
+vertical_alignment = 1
+
+[node name="BallLauncher" type="Label" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Labels"]
+custom_minimum_size = Vector2(0, 27)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_17muo")
+theme_override_font_sizes/font_size = 8
+text = "Ball Launcher
+Position"
+vertical_alignment = 1
+
+[node name="Buttons" type="VBoxContainer" parent="Panel/GamePanel/ScrollContainer/HBoxContainer"]
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+
+[node name="LauncherCheck" type="CheckBox" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
+layout_mode = 2
+
+[node name="LauncherOptions" type="OptionButton" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
+custom_minimum_size = Vector2(78, 0)
+layout_mode = 2
+selected = 0
+item_count = 3
+popup/item_0/text = "Position 1"
+popup/item_0/id = 0
+popup/item_1/text = "Position 2"
+popup/item_1/id = 1
+popup/item_2/text = "Position 3"
+popup/item_2/id = 2
 
 [node name="VideoPanel" type="Panel" parent="Panel"]
 visible = false
@@ -225,6 +277,7 @@ value = 60.0
 layout_mode = 2
 
 [node name="AudioPanel" type="Panel" parent="Panel"]
+visible = false
 layout_mode = 0
 offset_left = 51.0
 offset_top = 7.0
@@ -295,6 +348,7 @@ step = 25.0
 [connection signal="pressed" from="Panel/VBoxContainer/Video" to="." method="_on_video_pressed"]
 [connection signal="pressed" from="Panel/VBoxContainer/Audio" to="." method="_on_audio_pressed"]
 [connection signal="pressed" from="Panel/VBoxContainer/Exit" to="." method="_on_exit_pressed"]
+[connection signal="toggled" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/LauncherCheck" to="." method="_on_launcher_check_toggled"]
 [connection signal="item_selected" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/ScreenMode" to="." method="_on_screen_mode_item_selected"]
 [connection signal="value_changed" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/FPS" to="." method="_on_fps_value_changed"]
 [connection signal="toggled" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/Vysnc" to="." method="_on_vysnc_toggled"]
