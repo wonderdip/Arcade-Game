@@ -18,7 +18,10 @@ func change_position(current_pos: int) -> void:
 		rotation = deg_to_rad(-100)
 	elif current_pos == 2:
 		position = Vector2(158, 37)
-		rotation = deg_to_rad(-105)
+		rotation = deg_to_rad(-115)
+	elif current_pos == 3:
+		position = Vector2(55, 100)
+		rotation = deg_to_rad(10)
 
 func launch_ball() -> void:
 	# Create and spawn the ball

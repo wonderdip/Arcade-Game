@@ -349,6 +349,7 @@ step = 25.0
 [connection signal="pressed" from="Panel/VBoxContainer/Audio" to="." method="_on_audio_pressed"]
 [connection signal="pressed" from="Panel/VBoxContainer/Exit" to="." method="_on_exit_pressed"]
 [connection signal="toggled" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/LauncherCheck" to="." method="_on_launcher_check_toggled"]
+[connection signal="item_selected" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/LauncherOptions" to="." method="_on_launcher_options_item_selected"]
 [connection signal="item_selected" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/ScreenMode" to="." method="_on_screen_mode_item_selected"]
 [connection signal="value_changed" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/FPS" to="." method="_on_fps_value_changed"]
 [connection signal="toggled" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/Vysnc" to="." method="_on_vysnc_toggled"]
