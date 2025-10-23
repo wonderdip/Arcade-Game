@@ -21,6 +21,13 @@ signal settings_deleted
 
 var launcher_instance: PackedScene = preload("res://Scenes/ball_launcher.tscn")
 
+@onready var bot_on: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BotOn
+@onready var bot_difficulty: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BotDifficulty
+@onready var bot_check: CheckBox = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotCheck
+@onready var bot_options: OptionButton = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotOptions
+
+var bot_instance: PackedScene = preload("res://Scenes/bot.tscn")
+
 func _ready() -> void:
 	get_tree().connect("node_added", _on_node_added)
 	change_menu(1)
@@ -40,10 +47,15 @@ func _ready() -> void:
 	vsync.button_pressed = (vsync_mode == DisplayServer.VSYNC_ENABLED)
 	
 	if Networkhandler.is_solo:
+		
 		launcher_on.show()
 		launcher_check.show()
 		ball_launcher.show()
 		launcher_options.show()
+		bot_difficulty.show()
+		bot_on.show()
+		bot_options.show()
+		bot_check.show()
 		
 		# Check if launcher already exists and update checkbox and dropdown accordingly
 		var existing_launcher = _find_existing_launcher()
@@ -55,11 +67,17 @@ func _ready() -> void:
 		else:
 			launcher_check.button_pressed = false
 	else:
+		
 		launcher_on.hide()
 		launcher_check.hide()
 		ball_launcher.hide()
 		launcher_options.hide()
-
+		bot_check.hide()
+		bot_difficulty.hide()
+		bot_on.hide()
+		bot_options.hide()
+		
+		
 func _on_node_added(node: Node) -> void:
 	if node is PopupPanel and node.name.begins_with("@PopupPanel@"):
 		node.queue_free()
@@ -165,3 +183,11 @@ func _on_sfx_vol_value_changed(value) -> void:
 
 func _on_music_vol_value_changed(value) -> void:
 	AudioManager.change_music_vol(value)
+
+
+func _on_check_box_toggled(toggled_on: bool) -> void:
+	pass # Replace with function body.
+
+
+func _on_bot_options_item_selected(index: int) -> void:
+	pass # Replace with function body.

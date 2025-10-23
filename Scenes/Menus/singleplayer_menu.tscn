@@ -48,18 +48,18 @@ color = Color(1, 1, 1, 0)
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 0
-offset_left = 14.0
-offset_top = 12.0
-offset_right = 227.0
-offset_bottom = 35.0
+offset_left = 13.0
+offset_top = 20.0
+offset_right = 226.0
+offset_bottom = 43.0
 text = "Singleplayer Modes"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_left = 23.0
-offset_top = 41.0
-offset_right = 139.0
-offset_bottom = 113.0
+offset_left = 28.0
+offset_top = 50.0
+offset_right = 144.0
+offset_bottom = 122.0
 
 [node name="Tournament" type="Button" parent="VBoxContainer"]
 layout_mode = 2
@@ -68,10 +68,6 @@ text = "Tournament Mode"
 [node name="Training" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Solo Training"
-
-[node name="Bot" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-text = "Bot Mode"
 
 [node name="Back" type="Button" parent="VBoxContainer"]
 layout_mode = 2

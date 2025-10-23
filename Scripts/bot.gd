@@ -18,53 +18,19 @@ var is_setting: bool = false
 var is_blocking: bool = false
 var in_blockzone: bool = false
 
-# Player identification
-@export var player_number: int = -1  # exported so replication can see it at spawn
-var device_id: int = -1
-var input_type: String = ""  # "keyboard" or "controller"
-
 var is_local_mode: bool = false
 var is_solo_mode: bool = false
-@onready var sprite: AnimatedSprite2D = $Sprite
+@onready var sprite: AnimatedSprite2D = $BotAnim
 @onready var player_arms: Node2D = $"Player Arms"
 
 func _enter_tree() -> void:
 	is_local_mode = Networkhandler.is_local
 	is_solo_mode = Networkhandler.is_solo
-	# In network mode, each peer claims authority for their own player
-	if not is_local_mode and not is_solo_mode:
-		await get_tree().process_frame
-		
-		# The node name is the peer ID (set by spawner)
-		var peer_id: int = int(name)
-		
-		# Set authority to match the peer ID in the name
-		if get_multiplayer_authority() != peer_id:
-			set_multiplayer_authority(peer_id)
-
-func _ready() -> void:
 	
-	# Just verify we have proper authority for input
-	if !is_local_mode and !is_solo_mode:
-		if get_multiplayer_authority() == multiplayer.get_unique_id():
-			print("This player instance is controlled locally")
-		
-		print("[Player._ready] name=", name,
-		  " player_number=", player_number,
-		  " authority=", get_multiplayer_authority(),
-		  " unique_id=", multiplayer.get_unique_id(),
-		  " is_server=", multiplayer.is_server(),
-		  " pos=", global_position)
+func _ready() -> void:
+	pass
 		
 func _physics_process(delta: float) -> void:
-	# In local mode, check if player is setup
-	if is_local_mode:
-		if player_number < 0:
-			return  # Not setup yet
-	elif !is_solo_mode:
-		# In network mode, only process if we have authority
-		if not is_multiplayer_authority():
-			return
 	
 	# --- Input Handling ---
 	var direction: float
@@ -73,30 +39,11 @@ func _physics_process(delta: float) -> void:
 	var bump_pressed: bool
 	var set_pressed: bool
 	
-	if is_local_mode:
-		# Local mode uses InputManager
-		direction = InputManager.get_axis(player_number, "left", "right")
-		jump_just_pressed = InputManager.is_action_just_pressed(player_number, "jump")
-		hit_just_pressed = InputManager.is_action_just_pressed(player_number, "hit")
-		bump_pressed = InputManager.is_action_pressed(player_number, "bump")
-		set_pressed = InputManager.is_action_pressed(player_number, "set")
-	else:
-		# Network mode uses standard Input (each client controls their own player)
-		var x_axis: float = Input.get_joy_axis(0, JOY_AXIS_LEFT_X)
-		var y_axis: float = Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
-		var angle: float = Vector2(x_axis, y_axis).angle()
-		
-		direction = Input.get_axis("left", "right")
-		hit_just_pressed = Input.is_action_just_pressed("hit")
-		bump_pressed = Input.is_action_pressed("bump")
-		set_pressed = Input.is_action_pressed("set")
-		
-		# Jump with controller or keyboard
-		jump_just_pressed = false
-		if y_axis < -0.4 and abs(angle + PI/2) < deg_to_rad(60):
-			jump_just_pressed = true
-		elif Input.is_action_just_pressed("jump"):
-			jump_just_pressed = true
+	direction = Input.get_axis("left", "right")
+	hit_just_pressed = Input.is_action_just_pressed("hit")
+	bump_pressed = Input.is_action_pressed("bump")
+	set_pressed = Input.is_action_pressed("set")
+	jump_just_pressed = Input.is_action_just_pressed("jump")
 	
 	# --- Movement and Actions (rest of the code stays the same) ---
 	if is_blocking:
@@ -189,11 +136,3 @@ func _physics_process(delta: float) -> void:
 		player_arms.sprite_direction(direction)
 
 	move_and_slide()
-
-func setup_local_player(dev_id: int, p_number: int, inp_type: String):
-	player_number = p_number
-	device_id = dev_id
-	input_type = inp_type
-	print("Player %d setup with device %d (%s)" % [player_number, device_id, input_type])
-	# Register with InputManager if local mode
-	InputManager.register_player(player_number, input_type, device_id)
