@@ -162,6 +162,7 @@ func _apply_hit_to_ball(body: RigidBody2D):
 	if is_bumping:
 		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
 		impulse = hit_direction * bump_force + Vector2(0, bump_upward_force)
+		AudioManager.play_sound_from_library("bump")
 	elif is_hitting or is_blocking:
 		hit_direction = Vector2(1 if facing_right else -1, -0.2).normalized()
 		impulse = hit_direction * hit_force + Vector2(0, -downward_force)
@@ -171,6 +172,7 @@ func _apply_hit_to_ball(body: RigidBody2D):
 	elif is_setting:
 		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
 		impulse = hit_direction * set_force + Vector2(0, set_upward_force)
+		AudioManager.play_sound_from_library("set")
 	
 	body.apply_impulse(impulse, contact_point - body.global_position)
 	if is_hitting or is_blocking:

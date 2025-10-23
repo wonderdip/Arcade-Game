@@ -32,7 +32,7 @@ func launch_ball() -> void:
 	new_ball.linear_velocity = direction * launch_speed
 	
 	get_parent().add_child(new_ball, true)
-	
+	AudioManager.play_sound_from_library("balllaunch")
 	# Add to list
 	balls.append(new_ball)
 	

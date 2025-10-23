@@ -139,6 +139,7 @@ func _physics_process(delta: float) -> void:
 			is_bumping = true
 			player_arms.bump()
 			sprite.play("Bump")
+			
 	else:
 		if is_bumping:
 			is_bumping = false
