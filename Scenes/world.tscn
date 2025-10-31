@@ -14,10 +14,10 @@
 [ext_resource type="PackedScene" uid="uid://c58nyk17ffnwj" path="res://Scenes/Menus/in_game_ui.tscn" id="12_7yui6"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5v1tr"]
-size = Vector2(128, 144)
+size = Vector2(128, 30)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0fj1v"]
-size = Vector2(128, 144)
+size = Vector2(128, 30)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5a7ea"]
 texture = ExtResource("2_go701")
@@ -79,19 +79,21 @@ shader_parameter/overlay_mode = true
 script = ExtResource("1_fo5ed")
 
 [node name="PlayerOneSide" type="Area2D" parent="."]
+z_index = 1
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerOneSide"]
-position = Vector2(64, 62)
+position = Vector2(64, 119)
 shape = SubResource("RectangleShape2D_5v1tr")
 
 [node name="PlayerTwoSide" type="Area2D" parent="."]
+z_index = 1
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerTwoSide"]
-position = Vector2(192, 62)
+position = Vector2(192, 119)
 shape = SubResource("RectangleShape2D_0fj1v")
 
 [node name="BackGround" type="Node2D" parent="."]
