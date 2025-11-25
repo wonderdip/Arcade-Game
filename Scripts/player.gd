@@ -8,11 +8,12 @@ extends CharacterBody2D
 @export var fall_multiplier: float = 1.5
 @export var low_jump_multiplier: float = 1.5
 
-@export_enum("P1", "P2") var character: String = "P1"
+@export_enum("P1", "P2", "P3") var character: String = "P1"
 
 var CHARACTER_FRAMES := {
 	"P1": preload("res://Assets/Characters/Player Sprite Frames/P1.tres"),
-	"P2": preload("res://Assets/Characters/Player Sprite Frames/P2.tres")
+	"P2": preload("res://Assets/Characters/Player Sprite Frames/P2.tres"),
+	"P3": preload("res://Assets/Characters/Player Sprite Frames/P3.tres")
 }
 var peak_gravity_scale: float = 0.5
 var peak_threshold: float = 80.0
