@@ -1,0 +1,39 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://cou5b6r4lq1sh"]
+
+[resource]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"Block",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"Bump",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Hit",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"Idle",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": false,
+"name": &"Jump",
+"speed": 5.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"Run",
+"speed": 12.0
+}, {
+"frames": [],
+"loop": true,
+"name": &"Set",
+"speed": 5.0
+}]
