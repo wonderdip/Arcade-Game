@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b7i0opriskteg"
-path="res://.godot/imported/arms sprite-Sheet.png-e6f8a46f48b1409d44c610a79011197a.ctex"
+uid="uid://cpv88bc3aiepp"
+path="res://.godot/imported/idle sprite-Sheet.png-d050594758153029699dba3e36223f91.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Characters/arms sprite-Sheet.png"
-dest_files=["res://.godot/imported/arms sprite-Sheet.png-e6f8a46f48b1409d44c610a79011197a.ctex"]
+source_file="res://Assets/Characters/P1 Animations/idle sprite-Sheet.png"
+dest_files=["res://.godot/imported/idle sprite-Sheet.png-d050594758153029699dba3e36223f91.ctex"]
 
 [params]
 

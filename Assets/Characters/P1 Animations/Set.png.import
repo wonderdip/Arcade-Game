@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://x2ls60nh58q5"
-path="res://.godot/imported/Bump.png-395e450b9d96af6b1a11a51bfbcfc134.ctex"
+uid="uid://ciso04j1s5u5c"
+path="res://.godot/imported/Set.png-0628b77f2eb41c93a87e55ea8ac4519d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Characters/Bump.png"
-dest_files=["res://.godot/imported/Bump.png-395e450b9d96af6b1a11a51bfbcfc134.ctex"]
+source_file="res://Assets/Characters/P1 Animations/Set.png"
+dest_files=["res://.godot/imported/Set.png-0628b77f2eb41c93a87e55ea8ac4519d.ctex"]
 
 [params]
 

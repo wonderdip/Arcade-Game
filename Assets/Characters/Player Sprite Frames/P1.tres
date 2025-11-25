@@ -1,11 +1,11 @@
 [gd_resource type="SpriteFrames" load_steps=29 format=3 uid="uid://bk3k5somqmidn"]
 
-[ext_resource type="Texture2D" uid="uid://cjw067oe2ia60" path="res://Assets/Characters/Block sprite-Sheet.png" id="1_hjgho"]
-[ext_resource type="Texture2D" uid="uid://x2ls60nh58q5" path="res://Assets/Characters/Bump.png" id="2_on6oo"]
-[ext_resource type="Texture2D" uid="uid://dp3uy7erc7xvr" path="res://Assets/Characters/jump sprite-Sheet.png" id="3_s40b4"]
-[ext_resource type="Texture2D" uid="uid://cpv88bc3aiepp" path="res://Assets/Characters/idle sprite-Sheet.png" id="4_vi65a"]
-[ext_resource type="Texture2D" uid="uid://ciy5qth1k2307" path="res://Assets/Characters/run sprite-Sheet.png" id="5_itj1t"]
-[ext_resource type="Texture2D" uid="uid://ciso04j1s5u5c" path="res://Assets/Characters/Set.png" id="6_a3paw"]
+[ext_resource type="Texture2D" uid="uid://cjw067oe2ia60" path="res://Assets/Characters/P1 Animations/Block sprite-Sheet.png" id="1_hjgho"]
+[ext_resource type="Texture2D" uid="uid://x2ls60nh58q5" path="res://Assets/Characters/P1 Animations/Bump.png" id="2_on6oo"]
+[ext_resource type="Texture2D" uid="uid://dp3uy7erc7xvr" path="res://Assets/Characters/P1 Animations/jump sprite-Sheet.png" id="3_s40b4"]
+[ext_resource type="Texture2D" uid="uid://cpv88bc3aiepp" path="res://Assets/Characters/P1 Animations/idle sprite-Sheet.png" id="4_vi65a"]
+[ext_resource type="Texture2D" uid="uid://ciy5qth1k2307" path="res://Assets/Characters/P1 Animations/run sprite-Sheet.png" id="5_itj1t"]
+[ext_resource type="Texture2D" uid="uid://ciso04j1s5u5c" path="res://Assets/Characters/P1 Animations/Set.png" id="6_a3paw"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_igrcy"]
 atlas = ExtResource("1_hjgho")

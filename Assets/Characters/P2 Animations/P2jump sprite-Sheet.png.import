@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://6xhfb7vpwk7r"
-path="res://.godot/imported/P2run sprite-Sheet.png-991f3bd1f9921397299ff692741d81a4.ctex"
+uid="uid://uovtnw3aniju"
+path="res://.godot/imported/P2jump sprite-Sheet.png-7ab9739f398c3f58b80e1e2e5a7ee62f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Characters/P2run sprite-Sheet.png"
-dest_files=["res://.godot/imported/P2run sprite-Sheet.png-991f3bd1f9921397299ff692741d81a4.ctex"]
+source_file="res://Assets/Characters/P2 Animations/P2jump sprite-Sheet.png"
+dest_files=["res://.godot/imported/P2jump sprite-Sheet.png-7ab9739f398c3f58b80e1e2e5a7ee62f.ctex"]
 
 [params]
 

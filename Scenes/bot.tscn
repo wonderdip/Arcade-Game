@@ -1,12 +1,12 @@
 [gd_scene load_steps=33 format=3 uid="uid://veqwgi21gh56"]
 
-[ext_resource type="Texture2D" uid="uid://cjw067oe2ia60" path="res://Assets/Characters/Block sprite-Sheet.png" id="1_ctndb"]
+[ext_resource type="Texture2D" uid="uid://cjw067oe2ia60" path="res://Assets/Characters/P1 Animations/Block sprite-Sheet.png" id="1_ctndb"]
 [ext_resource type="Script" uid="uid://dsa78jbiiy2en" path="res://Scripts/bot.gd" id="1_dd6s3"]
-[ext_resource type="Texture2D" uid="uid://x2ls60nh58q5" path="res://Assets/Characters/Bump.png" id="2_6div5"]
-[ext_resource type="Texture2D" uid="uid://dp3uy7erc7xvr" path="res://Assets/Characters/jump sprite-Sheet.png" id="3_dd6s3"]
-[ext_resource type="Texture2D" uid="uid://cpv88bc3aiepp" path="res://Assets/Characters/idle sprite-Sheet.png" id="4_t4dwd"]
-[ext_resource type="Texture2D" uid="uid://ciy5qth1k2307" path="res://Assets/Characters/run sprite-Sheet.png" id="5_xqdiq"]
-[ext_resource type="Texture2D" uid="uid://ciso04j1s5u5c" path="res://Assets/Characters/Set.png" id="6_mep28"]
+[ext_resource type="Texture2D" uid="uid://x2ls60nh58q5" path="res://Assets/Characters/P1 Animations/Bump.png" id="2_6div5"]
+[ext_resource type="Texture2D" uid="uid://dp3uy7erc7xvr" path="res://Assets/Characters/P1 Animations/jump sprite-Sheet.png" id="3_dd6s3"]
+[ext_resource type="Texture2D" uid="uid://cpv88bc3aiepp" path="res://Assets/Characters/P1 Animations/idle sprite-Sheet.png" id="4_t4dwd"]
+[ext_resource type="Texture2D" uid="uid://ciy5qth1k2307" path="res://Assets/Characters/P1 Animations/run sprite-Sheet.png" id="5_xqdiq"]
+[ext_resource type="Texture2D" uid="uid://ciso04j1s5u5c" path="res://Assets/Characters/P1 Animations/Set.png" id="6_mep28"]
 [ext_resource type="PackedScene" uid="uid://b3gw6epw21u3s" path="res://Scenes/player_arms.tscn" id="8_t4dwd"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_igrcy"]

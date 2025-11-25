@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ciso04j1s5u5c"
-path="res://.godot/imported/Set.png-572fdc450bbd59582fe5dbe606bfc633.ctex"
+uid="uid://cjw067oe2ia60"
+path="res://.godot/imported/Block sprite-Sheet.png-e7f0a79e2905f39ced79e6975331dbf8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Characters/Set.png"
-dest_files=["res://.godot/imported/Set.png-572fdc450bbd59582fe5dbe606bfc633.ctex"]
+source_file="res://Assets/Characters/P1 Animations/Block sprite-Sheet.png"
+dest_files=["res://.godot/imported/Block sprite-Sheet.png-e7f0a79e2905f39ced79e6975331dbf8.ctex"]
 
 [params]
 

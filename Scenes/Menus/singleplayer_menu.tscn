@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://b5hsjbirvdgwc" path="res://Scripts/singleplayer_menu.gd" id="2_vnphq"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="3_vnphq"]
 [ext_resource type="PackedScene" uid="uid://c58nyk17ffnwj" path="res://Scenes/Menus/in_game_ui.tscn" id="4_tjffv"]
-[ext_resource type="Texture2D" uid="uid://dp3uy7erc7xvr" path="res://Assets/Characters/jump sprite-Sheet.png" id="5_1iq6m"]
+[ext_resource type="Texture2D" uid="uid://dp3uy7erc7xvr" path="res://Assets/Characters/P1 Animations/jump sprite-Sheet.png" id="5_1iq6m"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dillq"]
 shader = ExtResource("3_vnphq")

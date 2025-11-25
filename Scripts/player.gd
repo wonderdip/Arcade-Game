@@ -7,6 +7,13 @@ extends CharacterBody2D
 @export var gravity: float = 980
 @export var fall_multiplier: float = 1.5
 @export var low_jump_multiplier: float = 1.5
+
+@export_enum("P1", "P2") var character: String = "P1"
+
+var CHARACTER_FRAMES := {
+	"P1": preload("res://Assets/Characters/Player Sprite Frames/P1.tres"),
+	"P2": preload("res://Assets/Characters/Player Sprite Frames/P2.tres")
+}
 var peak_gravity_scale: float = 0.5
 var peak_threshold: float = 80.0
 var gravity_mult: float
@@ -43,7 +50,7 @@ func _enter_tree() -> void:
 			set_multiplayer_authority(peer_id)
 
 func _ready() -> void:
-	
+	sprite.sprite_frames = CHARACTER_FRAMES[character]
 	# Just verify we have proper authority for input
 	if !is_local_mode and !is_solo_mode:
 		if get_multiplayer_authority() == multiplayer.get_unique_id():
