@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://coy4pdcfa33cf"]
+[gd_scene load_steps=8 format=3 uid="uid://coy4pdcfa33cf"]
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_xb0mg"]
 [ext_resource type="Script" uid="uid://cormkrc826hhi" path="res://Scripts/server_maker.gd" id="2_fi4rl"]
 [ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="3_xb0mg"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="4_aw7ix"]
 [ext_resource type="PackedScene" uid="uid://c58nyk17ffnwj" path="res://Scenes/Menus/in_game_ui.tscn" id="5_aw7ix"]
+[ext_resource type="Script" uid="uid://d1v7jwlj2xfc4" path="res://Scripts/spinbox.gd" id="5_o41or"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_o41or"]
 shader = ExtResource("4_aw7ix")
@@ -75,6 +76,7 @@ min_value = 2.0
 max_value = 4.0
 value = 2.0
 prefix = "Max Players:"
+script = ExtResource("5_o41or")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -82,11 +84,13 @@ alignment = 1
 
 [node name="Confirm" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
+focus_neighbor_right = NodePath("../Back")
 theme_override_font_sizes/font_size = 8
 text = "Create"
 
 [node name="Back" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
+focus_neighbor_left = NodePath("../Confirm")
 text = "Back"
 
 [node name="InGame_UI" parent="." instance=ExtResource("5_aw7ix")]

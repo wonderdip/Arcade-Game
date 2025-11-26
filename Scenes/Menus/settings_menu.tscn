@@ -1,10 +1,11 @@
-[gd_scene load_steps=18 format=3 uid="uid://wb61ewh1ublu"]
+[gd_scene load_steps=19 format=3 uid="uid://wb61ewh1ublu"]
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_un4yt"]
 [ext_resource type="Script" uid="uid://btd4pirvmgl2c" path="res://Scripts/settings_menu.gd" id="2_s1iiq"]
 [ext_resource type="Texture2D" uid="uid://dljn3lm5gefq6" path="res://Assets/UI/Button.png" id="3_ojbgt"]
 [ext_resource type="Texture2D" uid="uid://3c45c3q2lfmt" path="res://Assets/UI/Button_Pressed-Hover.png" id="4_ojbgt"]
 [ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="5_17muo"]
+[ext_resource type="Script" uid="uid://d1v7jwlj2xfc4" path="res://Scripts/spinbox.gd" id="6_bmgoi"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_17muo"]
 texture = ExtResource("3_ojbgt")
@@ -123,9 +124,6 @@ theme_override_constants/separation = 6
 
 [node name="Game" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_left = NodePath(".")
-focus_neighbor_top = NodePath("../Exit")
-focus_neighbor_bottom = NodePath("../Video")
 theme_override_styles/normal = SubResource("StyleBoxTexture_17muo")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_vgtnp")
 theme_override_styles/hover = SubResource("StyleBoxTexture_bmgoi")
@@ -133,9 +131,6 @@ text = "Game"
 
 [node name="Video" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_left = NodePath(".")
-focus_neighbor_top = NodePath("../Game")
-focus_neighbor_bottom = NodePath("../Audio")
 theme_override_styles/normal = SubResource("StyleBoxTexture_17muo")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_4x6bb")
 theme_override_styles/hover = SubResource("StyleBoxTexture_04fbl")
@@ -143,10 +138,6 @@ text = "Video"
 
 [node name="Audio" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_left = NodePath(".")
-focus_neighbor_top = NodePath("../Video")
-focus_neighbor_right = NodePath("../../AudioPanel/ScrollContainer/HBoxContainer/VBoxContainer/MasterVol")
-focus_neighbor_bottom = NodePath("../Exit")
 theme_override_styles/normal = SubResource("StyleBoxTexture_17muo")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_lmg47")
 theme_override_styles/hover = SubResource("StyleBoxTexture_p17qy")
@@ -154,9 +145,6 @@ text = "Audio"
 
 [node name="Exit" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
-focus_neighbor_left = NodePath(".")
-focus_neighbor_top = NodePath("../Audio")
-focus_neighbor_bottom = NodePath("../Game")
 text = "Exit"
 
 [node name="GamePanel" type="Panel" parent="Panel"]
@@ -222,7 +210,6 @@ layout_mode = 2
 
 [node name="LauncherCheck" type="CheckBox" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
 layout_mode = 2
-focus_neighbor_right = NodePath(".")
 
 [node name="LauncherOptions" type="OptionButton" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
 custom_minimum_size = Vector2(78, 0)
@@ -305,10 +292,6 @@ layout_mode = 2
 
 [node name="ScreenMode" type="OptionButton" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons"]
 layout_mode = 2
-focus_neighbor_left = NodePath("../../../../../VBoxContainer/Video")
-focus_neighbor_top = NodePath(".")
-focus_neighbor_right = NodePath(".")
-focus_neighbor_bottom = NodePath("../FPS")
 selected = 0
 item_count = 2
 popup/item_0/text = "Windowed"
@@ -322,6 +305,7 @@ min_value = 30.0
 max_value = 240.0
 step = 10.0
 value = 60.0
+script = ExtResource("6_bmgoi")
 
 [node name="Vysnc" type="CheckBox" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons"]
 layout_mode = 2

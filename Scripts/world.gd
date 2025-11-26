@@ -14,6 +14,7 @@ var is_solo_mode: bool = false
 var local_player_manager: Node = null
 var spawned_players: Array = []
 var total_players
+var settings_opened: bool = false
 
 func _ready() -> void:
 	CamShake.camera2d = camera_2d
@@ -84,6 +85,14 @@ func _physics_process(_delta: float) -> void:
 				rpc_id(1, "request_ball_spawn")
 		elif (Networkhandler.is_local and spawned_players.size() >= 2) or is_solo_mode:
 			spawn_ball_local()
+	if Input.is_action_just_pressed("settings") and settings_opened == false:
+		var settings_button = $InGame_UI.get_node("VBoxContainer/Settings button")
+		settings_button.open_settings()
+		settings_button.open_settings().connect("settings_deleted", _on_settings_deleted)
+		settings_opened = true
+		
+func _on_settings_deleted():
+	settings_opened = false
 
 @rpc("any_peer", "call_remote")
 func request_ball_spawn():
