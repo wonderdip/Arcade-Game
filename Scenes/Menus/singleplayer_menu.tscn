@@ -78,7 +78,7 @@ text = "Back
 position = Vector2(192, 87)
 scale = Vector2(2, 2)
 texture = ExtResource("5_1iq6m")
-hframes = 12
+hframes = 6
 
 [node name="InGame_UI" parent="." instance=ExtResource("4_tjffv")]
 layout_mode = 0

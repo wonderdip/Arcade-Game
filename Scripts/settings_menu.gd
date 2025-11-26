@@ -2,6 +2,11 @@ extends Control
 
 signal settings_deleted
 
+@onready var game: Button = $Panel/VBoxContainer/Game
+@onready var video: Button = $Panel/VBoxContainer/Video
+@onready var audio: Button = $Panel/VBoxContainer/Audio
+@onready var exit: Button = $Panel/VBoxContainer/Exit
+
 @onready var game_panel: Panel = $Panel/GamePanel
 @onready var video_panel: Panel = $Panel/VideoPanel
 @onready var audio_panel: Panel = $Panel/AudioPanel
@@ -29,6 +34,8 @@ var launcher_instance: PackedScene = preload("res://Scenes/ball_launcher.tscn")
 var bot_instance: PackedScene = preload("res://Scenes/bot.tscn")
 
 func _ready() -> void:
+	game.grab_focus()
+	
 	get_tree().connect("node_added", _on_node_added)
 	change_menu(1)
 	

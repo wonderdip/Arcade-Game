@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://b0ecpwqk6t3o5"]
+[gd_scene load_steps=9 format=3 uid="uid://b0ecpwqk6t3o5"]
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_md8e5"]
 [ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="2_iol66"]
+[ext_resource type="Script" uid="uid://52lhjsnvwgde" path="res://Scripts/character_screen.gd" id="2_rlcns"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="3_mfqh0"]
 [ext_resource type="Texture2D" uid="uid://cjvsnh1i2t2dp" path="res://Assets/Characters/Face Cards/P1 Face card.png" id="4_iol66"]
 [ext_resource type="Texture2D" uid="uid://57h2dau1qxpt" path="res://Assets/Characters/Face Cards/P2 face card.png" id="5_mfqh0"]
@@ -22,6 +23,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_md8e5")
+script = ExtResource("2_rlcns")
 
 [node name="BGCourt" type="Sprite2D" parent="."]
 modulate = Color(0.6, 0.6, 0.6, 1)
@@ -99,3 +101,7 @@ custom_minimum_size = Vector2(32, 35)
 layout_mode = 2
 size_flags_horizontal = 4
 icon = ExtResource("6_i0nom")
+
+[connection signal="pressed" from="Panel/VBoxContainer/HBoxContainer/P1" to="." method="_on_p_1_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/HBoxContainer/P2" to="." method="_on_p_2_pressed"]
+[connection signal="pressed" from="Panel/VBoxContainer/HBoxContainer/P3" to="." method="_on_p_3_pressed"]

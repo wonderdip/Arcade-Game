@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://cf3plcg7m0wcg"]
 
 [ext_resource type="Script" uid="uid://kbx36j4fsn6t" path="res://Scripts/player.gd" id="1_cvnsp"]
-[ext_resource type="SpriteFrames" uid="uid://bvkcjqhf4juqo" path="res://Assets/Characters/Player Sprite Frames/P3.tres" id="2_6t5aa"]
+[ext_resource type="SpriteFrames" uid="uid://bk3k5somqmidn" path="res://Assets/Characters/Player Sprite Frames/P1.tres" id="2_6t5aa"]
 [ext_resource type="PackedScene" uid="uid://b3gw6epw21u3s" path="res://Scenes/player_arms.tscn" id="6_x3wgy"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ukyrk"]
@@ -38,14 +38,15 @@ player_number = 1
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -1)
 sprite_frames = ExtResource("2_6t5aa")
-animation = &"Run"
-frame_progress = 0.26047492
+animation = &"Hit"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(-1, 0)
 shape = SubResource("CapsuleShape2D_ukyrk")
 
 [node name="Player Arms" parent="." instance=ExtResource("6_x3wgy")]
+visible = false
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_3smsa")

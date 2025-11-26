@@ -12,6 +12,7 @@ var searching := false
 
 func _ready():
 	# Start searching for servers when the scene loads
+	join_button.grab_focus()
 	ServerDiscovery.server_discovered.connect(_on_server_discovered)
 	ServerDiscovery.start_discovery_client()
 	refresh_servers()

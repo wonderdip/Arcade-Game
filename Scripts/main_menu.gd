@@ -4,9 +4,12 @@ extends Control
 var server_name_dialog: AcceptDialog
 var server_name_input: LineEdit
 
+@onready var local: Button = $Server/Local
+
 func _ready() -> void:
 	Networkhandler.is_local = false
 	Networkhandler.is_solo = false
+	local.grab_focus()
 	
 func _on_server_pressed() -> void:
 	get_tree().change_scene_to_file("res://Scenes/Menus/server_maker.tscn")

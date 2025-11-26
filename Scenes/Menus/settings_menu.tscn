@@ -123,6 +123,9 @@ theme_override_constants/separation = 6
 
 [node name="Game" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath("../Exit")
+focus_neighbor_bottom = NodePath("../Video")
 theme_override_styles/normal = SubResource("StyleBoxTexture_17muo")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_vgtnp")
 theme_override_styles/hover = SubResource("StyleBoxTexture_bmgoi")
@@ -130,6 +133,9 @@ text = "Game"
 
 [node name="Video" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath("../Game")
+focus_neighbor_bottom = NodePath("../Audio")
 theme_override_styles/normal = SubResource("StyleBoxTexture_17muo")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_4x6bb")
 theme_override_styles/hover = SubResource("StyleBoxTexture_04fbl")
@@ -137,6 +143,10 @@ text = "Video"
 
 [node name="Audio" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath("../Video")
+focus_neighbor_right = NodePath("../../AudioPanel/ScrollContainer/HBoxContainer/VBoxContainer/MasterVol")
+focus_neighbor_bottom = NodePath("../Exit")
 theme_override_styles/normal = SubResource("StyleBoxTexture_17muo")
 theme_override_styles/pressed = SubResource("StyleBoxTexture_lmg47")
 theme_override_styles/hover = SubResource("StyleBoxTexture_p17qy")
@@ -144,6 +154,9 @@ text = "Audio"
 
 [node name="Exit" type="Button" parent="Panel/VBoxContainer"]
 layout_mode = 2
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath("../Audio")
+focus_neighbor_bottom = NodePath("../Game")
 text = "Exit"
 
 [node name="GamePanel" type="Panel" parent="Panel"]
@@ -209,6 +222,7 @@ layout_mode = 2
 
 [node name="LauncherCheck" type="CheckBox" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
 layout_mode = 2
+focus_neighbor_right = NodePath(".")
 
 [node name="LauncherOptions" type="OptionButton" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
 custom_minimum_size = Vector2(78, 0)
@@ -291,6 +305,10 @@ layout_mode = 2
 
 [node name="ScreenMode" type="OptionButton" parent="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons"]
 layout_mode = 2
+focus_neighbor_left = NodePath("../../../../../VBoxContainer/Video")
+focus_neighbor_top = NodePath(".")
+focus_neighbor_right = NodePath(".")
+focus_neighbor_bottom = NodePath("../FPS")
 selected = 0
 item_count = 2
 popup/item_0/text = "Windowed"

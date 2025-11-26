@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=35 format=3 uid="uid://colk31q20bk6u"]
+[gd_resource type="Theme" load_steps=33 format=3 uid="uid://colk31q20bk6u"]
 
 [ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="1_ybks7"]
 [ext_resource type="Texture2D" uid="uid://3c45c3q2lfmt" path="res://Assets/UI/Button_Pressed-Hover.png" id="2_jg5j1"]
@@ -8,8 +8,6 @@
 [ext_resource type="Texture2D" uid="uid://c1un7pyyiq0vy" path="res://Assets/UI/Panel.png" id="4_kcyw7"]
 [ext_resource type="Texture2D" uid="uid://chgir14s8a6yd" path="res://Assets/UI/ButtonNo3D.png" id="5_ac4ce"]
 [ext_resource type="Texture2D" uid="uid://ch1iwi0j14x2s" path="res://Assets/UI/Tabs.png" id="7_j453h"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ac4ce"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2f3ak"]
 texture = ExtResource("2_jg5j1")
@@ -105,13 +103,6 @@ texture_margin_top = 6.0
 texture_margin_right = 6.0
 texture_margin_bottom = 6.0
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jm2r0"]
-texture = ExtResource("5_ac4ce")
-texture_margin_left = 6.0
-texture_margin_top = 6.0
-texture_margin_right = 6.0
-texture_margin_bottom = 6.0
-
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tbuye"]
 texture = ExtResource("7_j453h")
 texture_margin_left = 6.0
@@ -169,7 +160,6 @@ texture_margin_bottom = 6.0
 [resource]
 Button/font_sizes/font_size = 8
 Button/fonts/font = ExtResource("1_ybks7")
-Button/styles/focus = SubResource("StyleBoxEmpty_ac4ce")
 Button/styles/hover = SubResource("StyleBoxTexture_2f3ak")
 Button/styles/normal = SubResource("StyleBoxTexture_aur2u")
 Button/styles/pressed = SubResource("StyleBoxTexture_w1xvu")
@@ -182,7 +172,6 @@ CheckButton/styles/normal = SubResource("StyleBoxTexture_m7gij")
 HSlider/icons/grabber = ExtResource("4_j453h")
 HSlider/icons/grabber_highlight = ExtResource("4_j453h")
 HSlider/styles/grabber_area = SubResource("StyleBoxTexture_sgyia")
-HSlider/styles/grabber_area_highlight = SubResource("StyleBoxTexture_jm2r0")
 HSlider/styles/slider = SubResource("StyleBoxTexture_tbuye")
 ItemList/font_sizes/font_size = 8
 ItemList/fonts/font = ExtResource("1_ybks7")

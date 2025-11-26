@@ -13,3 +13,4 @@ func _on_pressed() -> void:
 
 func enable():
 	disabled = false
+	grab_focus()

@@ -2,6 +2,9 @@ extends Control
 
 @onready var server_name: LineEdit = $VBoxContainer/ServerName
 
+func _ready() -> void:
+	server_name.grab_focus()
+	
 func _on_confirm_pressed() -> void:
 	if server_name.text.strip_edges().length() == 0:
 		name = "Unnamed Server"
