@@ -37,10 +37,10 @@ var settings_button: Button = null
 var exit_button_ui: Button = null
 
 func _ready() -> void:
-	game.grab_focus()
+	video.grab_focus()
 	
 	get_tree().connect("node_added", _on_node_added)
-	change_menu(1)
+	change_menu(2)
 	
 	# Setup FPS SpinBox for controller input
 	_setup_spinbox_controller_input(fps)
@@ -60,6 +60,9 @@ func _ready() -> void:
 	vsync.button_pressed = (vsync_mode == DisplayServer.VSYNC_ENABLED)
 	
 	if Networkhandler.is_solo:
+		change_menu(1)
+		game.show()
+		game.grab_focus()
 		launcher_on.show()
 		launcher_check.show()
 		ball_launcher.show()
@@ -68,6 +71,7 @@ func _ready() -> void:
 		bot_on.show()
 		bot_options.show()
 		bot_check.show()
+		_setup_focus_neighbors()
 		
 		var existing_launcher = _find_existing_launcher()
 		if existing_launcher:
@@ -77,6 +81,7 @@ func _ready() -> void:
 		else:
 			launcher_check.button_pressed = false
 	else:
+		game.hide()
 		launcher_on.hide()
 		launcher_check.hide()
 		ball_launcher.hide()
@@ -97,10 +102,10 @@ func _process(_delta: float) -> void:
 	if !exit.has_focus() and Input.is_action_just_pressed("exit_ui") and !fps.has_focus():
 		exit.grab_focus()
 	
-	elif exit.has_focus() and Input.is_action_just_pressed("exit_ui"):
-		_restore_background_ui()
-		emit_signal("settings_deleted")
-		queue_free()
+	#elif exit.has_focus() and Input.is_action_just_pressed("exit_ui"):
+		#_restore_background_ui()
+		#emit_signal("settings_deleted")
+		#queue_free()
 		
 func _disable_background_ui():
 	# Find the InGame_UI node and disable its buttons
@@ -243,9 +248,10 @@ func _on_audio_pressed() -> void:
 	change_menu(3)
 
 func _on_exit_pressed() -> void:
+	queue_free()
 	_restore_background_ui()
 	emit_signal("settings_deleted")
-	queue_free()
+	print("deleted")
 
 func change_menu(current_menu: int):
 	game_panel.visible = current_menu == 1

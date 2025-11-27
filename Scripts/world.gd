@@ -6,6 +6,8 @@ extends Node2D
 @onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
 @onready var ball_timer: Timer = $BallTimer
 @onready var camera_2d: Camera2D = $Camera2D
+@onready var settings_button = $"InGame_UI/VBoxContainer/Settings button"
+@onready var in_game_ui: Control = $InGame_UI
 
 var active_ball: Node2D = null
 @export var ball_spawned: bool = false
@@ -18,6 +20,7 @@ var settings_opened: bool = false
 
 func _ready() -> void:
 	CamShake.camera2d = camera_2d
+	in_game_ui.grab_focus()
 	# Check if we're in network mode
 	if Networkhandler.is_solo:
 		is_solo_mode = true
@@ -45,6 +48,7 @@ func spawn_solo_player():
 	var player = player_scene.instantiate()
 	player.position = Vector2(30, 112)
 	add_child(player)
+	
 	print("solo player spawned")
 
 func _on_local_player_joined(device_id: int, player_number: int, input_type: String):
@@ -77,23 +81,26 @@ func _on_peer_disconnected(_id: int):
 
 func _physics_process(_delta: float) -> void:
 	# Ball spawning for testing/reset
-	if (Input.is_action_just_pressed("spawnball_1") or Input.is_action_just_pressed("spawnball_2")) and ball_spawned == false:
+	if (Input.is_action_just_pressed("spawnball_1") or Input.is_action_just_pressed("spawnball_2")) and !ball_spawned  and !settings_opened:
 		if is_network_mode:
 			if multiplayer.is_server():
 				spawn_ball()
 			else:
 				rpc_id(1, "request_ball_spawn")
-		elif (Networkhandler.is_local and spawned_players.size() >= 2) or is_solo_mode:
+		elif (Networkhandler.is_local and spawned_players.size() >= 2 and !settings_opened) or is_solo_mode:
 			spawn_ball_local()
+			print(settings_opened)
 	if Input.is_action_just_pressed("settings") and settings_opened == false:
-		var settings_button = $InGame_UI.get_node("VBoxContainer/Settings button")
 		settings_button.open_settings()
 		settings_button.open_settings().connect("settings_deleted", _on_settings_deleted)
+		
 		settings_opened = true
+		print(settings_opened)
 		
 func _on_settings_deleted():
 	settings_opened = false
-
+	
+	
 @rpc("any_peer", "call_remote")
 func request_ball_spawn():
 	if multiplayer.is_server():

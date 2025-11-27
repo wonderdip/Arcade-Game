@@ -8,6 +8,8 @@ var is_local: bool = false
 var is_solo: bool = false
 var server_name: String = ""
 
+var settings_opened: bool = false
+
 func start_server(server_name_param: String = "", port: int = DEFAULT_PORT) -> void:
 	if server_name_param != "":
 		server_name = server_name_param

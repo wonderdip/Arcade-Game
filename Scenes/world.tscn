@@ -232,3 +232,5 @@ grow_vertical = 2
 [connection signal="body_entered" from="Block Zone" to="." method="_on_block_zone_body_entered"]
 [connection signal="body_exited" from="Block Zone" to="." method="_on_block_zone_body_exited"]
 [connection signal="timeout" from="BallTimer" to="." method="_on_ball_timer_timeout"]
+
+[editable path="InGame_UI"]

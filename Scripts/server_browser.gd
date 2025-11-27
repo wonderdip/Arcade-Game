@@ -3,8 +3,6 @@ extends Control
 @onready var server_list: ItemList = $ScrollContainer/VBoxContainer/ServerList
 @onready var join_button: Button = $ScrollContainer/VBoxContainer/HBoxContainer/JoinButton
 @onready var status_label: Label = $ScrollContainer/VBoxContainer/StatusLabel
-@onready var manual_ip_input: LineEdit = $ScrollContainer/VBoxContainer/ManualConnect/IPInput
-@onready var manual_connect_button: Button = $ScrollContainer/VBoxContainer/ManualConnect/ConnectButton
 
 var discovered_servers = {}  # Dictionary to store server info
 var selected_server_ip = ""
@@ -58,25 +56,6 @@ func _on_join_button_pressed():
 	ServerDiscovery.stop_discovery_client()
 	Networkhandler.join_server(server_info.ip, server_info.port)
 	
-
-func _on_manual_connect_pressed():
-	var ip_text = manual_ip_input.text.strip_edges()
-	AudioManager.play_sound_from_library("click")
-	if ip_text.is_empty():
-		status_label.text = "Enter IP"
-		return
-	
-	# Parse IP and port (format: "10.0.0.218" or "10.0.0.218:41677")
-	var parts = ip_text.split(":")
-	var ip = parts[0]
-	var port = Networkhandler.DEFAULT_PORT
-	
-	if parts.size() > 1:
-		port = int(parts[1])
-	
-	print("Manual connect to: %s:%d" % [ip, port])
-	ServerDiscovery.stop_discovery_client()
-	Networkhandler.join_server(ip, port)
 
 func _on_refresh_button_pressed():
 	refresh_servers()

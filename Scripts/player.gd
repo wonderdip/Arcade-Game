@@ -15,6 +15,7 @@ var CHARACTER_FRAMES := {
 	"P2": preload("res://Assets/Characters/Player Sprite Frames/P2.tres"),
 	"P3": preload("res://Assets/Characters/Player Sprite Frames/P3.tres")
 }
+
 var peak_gravity_scale: float = 0.5
 var peak_threshold: float = 80.0
 var gravity_mult: float
@@ -33,6 +34,8 @@ var input_type: String = ""  # "keyboard" or "controller"
 
 var is_local_mode: bool = false
 var is_solo_mode: bool = false
+var settings_opened: bool = false
+
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var player_arms: Node2D = $"Player Arms"
 
@@ -65,7 +68,10 @@ func _ready() -> void:
 		  " pos=", global_position)
 		
 func _physics_process(delta: float) -> void:
-	# In local mode, check if player is setup
+	# Freeze movement if settings menu is open globally
+	if Networkhandler.settings_opened:
+		return
+		
 	if is_local_mode:
 		if player_number < 0:
 			return  # Not setup yet
