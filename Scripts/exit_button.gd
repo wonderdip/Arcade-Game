@@ -9,6 +9,7 @@ func _on_pressed() -> void:
 		get_tree().change_scene_to_file("res://Scenes/Menus/title_screen.tscn")
 		Networkhandler.is_local = false
 		Networkhandler.is_solo = false
+		LocalPlayerManager.reset()
 	elif Networkhandler.is_solo:
 		get_tree().change_scene_to_file("res://Scenes/Menus/singleplayer_menu.tscn")
 		Networkhandler.is_solo = false

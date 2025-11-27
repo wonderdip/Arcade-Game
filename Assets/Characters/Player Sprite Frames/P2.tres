@@ -1,8 +1,28 @@
-[gd_resource type="SpriteFrames" load_steps=21 format=3 uid="uid://c3u44m78synme"]
+[gd_resource type="SpriteFrames" load_steps=26 format=3 uid="uid://c3u44m78synme"]
 
 [ext_resource type="Texture2D" uid="uid://uovtnw3aniju" path="res://Assets/Characters/P2 Animations/P2jump sprite-Sheet.png" id="1_6nfk8"]
 [ext_resource type="Texture2D" uid="uid://5v20fv2h4ufp" path="res://Assets/Characters/P2 Animations/P2idle sprite-Sheet.png" id="1_ji5la"]
 [ext_resource type="Texture2D" uid="uid://6xhfb7vpwk7r" path="res://Assets/Characters/P2 Animations/P2run sprite-Sheet.png" id="1_ru21l"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3rxr7"]
+atlas = ExtResource("1_6nfk8")
+region = Rect2(32, 0, 32, 37)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0c44n"]
+atlas = ExtResource("1_6nfk8")
+region = Rect2(64, 0, 32, 37)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hcpxd"]
+atlas = ExtResource("1_6nfk8")
+region = Rect2(96, 0, 32, 37)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_okhx8"]
+atlas = ExtResource("1_6nfk8")
+region = Rect2(128, 0, 32, 37)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5ug32"]
+atlas = ExtResource("1_6nfk8")
+region = Rect2(160, 0, 32, 37)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gquqm"]
 atlas = ExtResource("1_ji5la")
@@ -84,10 +104,25 @@ animations = [{
 "name": &"Bump",
 "speed": 5.0
 }, {
-"frames": [],
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3rxr7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0c44n")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hcpxd")
+}, {
+"duration": 10.0,
+"texture": SubResource("AtlasTexture_okhx8")
+}, {
+"duration": 10.0,
+"texture": SubResource("AtlasTexture_5ug32")
+}],
 "loop": false,
 "name": &"Hit",
-"speed": 5.0
+"speed": 12.0
 }, {
 "frames": [{
 "duration": 1.0,

@@ -20,7 +20,7 @@ var settings_opened: bool = false
 
 func _ready() -> void:
 	CamShake.camera2d = camera_2d
-	in_game_ui.grab_focus()
+	
 	# Check if we're in network mode
 	if Networkhandler.is_solo:
 		is_solo_mode = true
