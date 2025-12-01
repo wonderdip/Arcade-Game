@@ -85,7 +85,7 @@ func exit_hover_zone() -> void:
 
 func _on_body_entered(body: Node) -> void:
 	# In local mode, always process. In network mode, only on server
-	if not is_local_mode and not multiplayer.is_server():
+	if (not is_local_mode and not is_solo_mode) and not multiplayer.is_server():
 		return
 		
 	if scored:
