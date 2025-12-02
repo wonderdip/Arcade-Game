@@ -23,24 +23,26 @@ var current_selection: CharacterStat
 func _ready() -> void:
 	p_1.grab_focus()
 	current_selection = characters.get(0)
-	change_sliders()
+	change_values()
 	
 func _on_p_1_pressed() -> void:
 	current_selection = characters.get(0)
-	change_sliders()
+	change_values()
 	
 func _on_p_2_pressed() -> void:
 	current_selection = characters.get(1)
+	change_values()
 	
 func _on_p_3_pressed() -> void:
 	current_selection = characters.get(2)
-
-func change_sliders():
+	change_values()
+	
+func change_values():
 	speed_slider.value = current_selection.Speed
 	jumping_slider.value = current_selection.Jumping
 	hitting_slider.value = current_selection.Hitting
 	setting_slider.value = current_selection.Setting
-	recieving_slider.value = current_selection.Recieving * 2
+	recieving_slider.value = current_selection.Recieving
 	blocking_slider.value = current_selection.Blocking
 	
 	player_choice.text = "Choose: " + current_selection.name
