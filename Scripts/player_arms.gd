@@ -11,11 +11,11 @@ var facing_right: bool = true
 var hit_bodies: Dictionary = {}  # Tracks last hit time for each ball
 
 @export var hit_force: float = 50.0
-@export var downward_force: float = -20.0
+@export var downward_force: float = 20.0
 @export var bump_force: float = 10.0
-@export var bump_upward_force: float = -25.0
+@export var bump_upward_force: float = 25.0
 @export var set_force: float = 40
-@export var set_upward_force: float = -40
+@export var set_upward_force: float = 40
 @export var hit_cooldown: float = 0.2
 @export var max_ball_speed: float = 400.0
 
@@ -161,17 +161,17 @@ func _apply_hit_to_ball(body: RigidBody2D):
 
 	if is_bumping:
 		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
-		impulse = hit_direction * bump_force + Vector2(0, bump_upward_force)
+		impulse = hit_direction * bump_force + Vector2(0, -bump_upward_force)
 		AudioManager.play_sound_from_library("bump")
 	elif is_hitting or is_blocking:
 		hit_direction = Vector2(1 if facing_right else -1, -0.2).normalized()
-		impulse = hit_direction * hit_force + Vector2(0, -downward_force)
+		impulse = hit_direction * hit_force + Vector2(0, downward_force)
 		AudioManager.play_sound_from_library("hit")
 		CamShake.cam_shake(2, 1, 0.3)
 		FrameFreeze.framefreeze(0.2, 0)
 	elif is_setting:
 		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
-		impulse = hit_direction * set_force + Vector2(0, set_upward_force)
+		impulse = hit_direction * set_force + Vector2(0, -set_upward_force)
 		AudioManager.play_sound_from_library("set")
 	
 	body.apply_impulse(impulse, contact_point - body.global_position)
@@ -196,16 +196,16 @@ func _apply_hit_to_ball_server(body: RigidBody2D, contact_point: Vector2, face_r
 
 	if bumping:
 		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()
-		impulse = hit_direction * bump_force + Vector2(0, bump_upward_force)
+		impulse = hit_direction * bump_force + Vector2(0, -bump_upward_force)
 	elif hitting or blocking:
 		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
-		impulse = hit_direction * hit_force + Vector2(0, -downward_force)
+		impulse = hit_direction * hit_force + Vector2(0, downward_force)
 		AudioManager.play_sound_from_library("hit")
 		CamShake.cam_shake(2, 1, 0.3)
 		FrameFreeze.framefreeze(0.2, 0)
 	elif is_set:
 		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()
-		impulse = hit_direction * set_force + Vector2(0, set_upward_force)
+		impulse = hit_direction * set_force + Vector2(0, -set_upward_force)
 
 	body.apply_impulse(impulse, contact_point - body.global_position)
 

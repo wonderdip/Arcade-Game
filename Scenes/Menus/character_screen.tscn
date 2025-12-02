@@ -1,12 +1,17 @@
-[gd_scene load_steps=9 format=3 uid="uid://b0ecpwqk6t3o5"]
+[gd_scene load_steps=14 format=3 uid="uid://b0ecpwqk6t3o5"]
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_md8e5"]
 [ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="2_iol66"]
 [ext_resource type="Script" uid="uid://52lhjsnvwgde" path="res://Scripts/character_screen.gd" id="2_rlcns"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="3_mfqh0"]
+[ext_resource type="Script" uid="uid://bvpsymxfy7ynm" path="res://Scripts/character.gd" id="3_sad5p"]
+[ext_resource type="Resource" uid="uid://23m2engd5lfq" path="res://Scripts/Resources/P1.tres" id="4_hgap6"]
 [ext_resource type="Texture2D" uid="uid://cjvsnh1i2t2dp" path="res://Assets/Characters/Face Cards/P1 Face card.png" id="4_iol66"]
 [ext_resource type="Texture2D" uid="uid://57h2dau1qxpt" path="res://Assets/Characters/Face Cards/P2 face card.png" id="5_mfqh0"]
 [ext_resource type="Texture2D" uid="uid://c5ywn67kjdbpu" path="res://Assets/Characters/Face Cards/P3 Face card.png" id="6_i0nom"]
+[ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="8_67ffs"]
+[ext_resource type="Theme" uid="uid://bjp5cysiu7jyt" path="res://Themes/small_sliders.tres" id="9_hgap6"]
+[ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="10_s0fgj"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i0nom"]
 shader = ExtResource("3_mfqh0")
@@ -24,6 +29,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_md8e5")
 script = ExtResource("2_rlcns")
+characters = Array[ExtResource("3_sad5p")]([ExtResource("4_hgap6")])
 
 [node name="BGCourt" type="Sprite2D" parent="."]
 modulate = Color(0.6, 0.6, 0.6, 1)
@@ -47,7 +53,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(1, 1, 1, 0)
 
-[node name="Panel" type="Panel" parent="."]
+[node name="BasePanel" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -61,7 +67,7 @@ offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+[node name="BaseVbox" type="VBoxContainer" parent="BasePanel"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -69,40 +75,184 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -112.0
-offset_top = -56.0
+offset_top = -61.0
 offset_right = 112.0
 offset_bottom = 56.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="Panel/VBoxContainer"]
+[node name="Title" type="Label" parent="BasePanel/BaseVbox"]
 layout_mode = 2
 text = "Choose your Player"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="BasePanel/BaseVbox"]
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+
+[node name="CharVboc" type="VBoxContainer" parent="BasePanel/BaseVbox/HBoxContainer"]
+layout_mode = 2
+
+[node name="FirstRow" type="HBoxContainer" parent="BasePanel/BaseVbox/HBoxContainer/CharVboc"]
+layout_mode = 2
+
+[node name="P1" type="Button" parent="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow"]
+custom_minimum_size = Vector2(32, 30)
+layout_mode = 2
+size_flags_vertical = 0
+icon = ExtResource("4_iol66")
+icon_alignment = 1
+
+[node name="P2" type="Button" parent="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+icon = ExtResource("5_mfqh0")
+
+[node name="SecondRow" type="HBoxContainer" parent="BasePanel/BaseVbox/HBoxContainer/CharVboc"]
+layout_mode = 2
+
+[node name="P3" type="Button" parent="BasePanel/BaseVbox/HBoxContainer/CharVboc/SecondRow"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+icon = ExtResource("6_i0nom")
+
+[node name="PlayerChoice" type="Button" parent="BasePanel/BaseVbox/HBoxContainer/CharVboc"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+text = "Choose: "
+
+[node name="Stats" type="VBoxContainer" parent="BasePanel/BaseVbox/HBoxContainer"]
+custom_minimum_size = Vector2(104, 97)
+layout_mode = 2
+
+[node name="Statlabelpanel" type="Panel" parent="BasePanel/BaseVbox/HBoxContainer/Stats"]
+custom_minimum_size = Vector2(146, 26)
+layout_mode = 2
+
+[node name="Stats" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statlabelpanel"]
+layout_mode = 0
+offset_top = 3.0
+offset_right = 146.0
+offset_bottom = 21.0
+theme_override_fonts/font = ExtResource("8_67ffs")
+text = "Stats"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/VBoxContainer"]
+[node name="Statspanel" type="Panel" parent="BasePanel/BaseVbox/HBoxContainer/Stats"]
+custom_minimum_size = Vector2(0, 69)
 layout_mode = 2
-size_flags_horizontal = 0
 
-[node name="P1" type="Button" parent="Panel/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(32, 35)
+[node name="HBoxContainer" type="HBoxContainer" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 3.0
+offset_right = 139.0
+offset_bottom = 66.0
+
+[node name="LeftSide" type="VBoxContainer" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer"]
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
-size_flags_horizontal = 4
-icon = ExtResource("4_iol66")
+theme = ExtResource("9_hgap6")
+theme_override_constants/separation = -6
 
-[node name="P2" type="Button" parent="Panel/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(32, 35)
+[node name="Speed" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
+custom_minimum_size = Vector2(0, 15)
 layout_mode = 2
-size_flags_horizontal = 4
-icon = ExtResource("5_mfqh0")
+theme_override_fonts/font = ExtResource("10_s0fgj")
+theme_override_font_sizes/font_size = 8
+text = "Speed"
+horizontal_alignment = 1
+vertical_alignment = 1
 
-[node name="P3" type="Button" parent="Panel/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(32, 35)
+[node name="SpeedSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
 layout_mode = 2
-size_flags_horizontal = 4
-icon = ExtResource("6_i0nom")
+size_flags_vertical = 4
+min_value = 1.0
+max_value = 99.0
+value = 50.0
+rounded = true
+scrollable = false
 
-[connection signal="pressed" from="Panel/VBoxContainer/HBoxContainer/P1" to="." method="_on_p_1_pressed"]
-[connection signal="pressed" from="Panel/VBoxContainer/HBoxContainer/P2" to="." method="_on_p_2_pressed"]
-[connection signal="pressed" from="Panel/VBoxContainer/HBoxContainer/P3" to="." method="_on_p_3_pressed"]
+[node name="Hitting" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("10_s0fgj")
+theme_override_font_sizes/font_size = 8
+text = "Hitting"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HittingSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
+layout_mode = 2
+value = 50.0
+
+[node name="Recieiving" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("10_s0fgj")
+theme_override_font_sizes/font_size = 8
+text = "Recieiving"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RecievingSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
+layout_mode = 2
+value = 50.0
+
+[node name="RightSide" type="VBoxContainer" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer"]
+custom_minimum_size = Vector2(64, 0)
+layout_mode = 2
+theme = ExtResource("9_hgap6")
+theme_override_constants/separation = -6
+
+[node name="Jumping" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("10_s0fgj")
+theme_override_font_sizes/font_size = 8
+text = "Jumping"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="JumpingSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
+layout_mode = 2
+size_flags_vertical = 4
+min_value = 1.0
+max_value = 99.0
+value = 50.0
+rounded = true
+scrollable = false
+
+[node name="Blocking" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("10_s0fgj")
+theme_override_font_sizes/font_size = 8
+text = "Blocking"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BlockingSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
+layout_mode = 2
+value = 50.0
+
+[node name="Setting" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
+custom_minimum_size = Vector2(0, 15)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("10_s0fgj")
+theme_override_font_sizes/font_size = 8
+text = "Setting"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SettingSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
+layout_mode = 2
+value = 50.0
+
+[connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow/P1" to="." method="_on_p_1_pressed"]
+[connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow/P2" to="." method="_on_p_2_pressed"]
+[connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/SecondRow/P3" to="." method="_on_p_3_pressed"]

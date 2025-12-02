@@ -374,6 +374,7 @@ theme_override_constants/separation = 2
 [node name="MasterVol" type="HSlider" parent="Panel/AudioPanel/ScrollContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
+focus_neighbor_top = NodePath("../../../../../VBoxContainer/Audio")
 step = 25.0
 
 [node name="MusicVol" type="HSlider" parent="Panel/AudioPanel/ScrollContainer/HBoxContainer/VBoxContainer"]
@@ -384,6 +385,7 @@ step = 25.0
 [node name="SFXVol" type="HSlider" parent="Panel/AudioPanel/ScrollContainer/HBoxContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
+focus_neighbor_bottom = NodePath("../../../../../VBoxContainer/Exit")
 step = 25.0
 
 [connection signal="pressed" from="Panel/VBoxContainer/Game" to="." method="_on_game_pressed"]

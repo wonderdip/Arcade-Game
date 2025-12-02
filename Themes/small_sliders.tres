@@ -1,0 +1,44 @@
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://bjp5cysiu7jyt"]
+
+[ext_resource type="Texture2D" uid="uid://m7f8mlud45t1" path="res://Assets/Volleyball.png" id="1_mars4"]
+[ext_resource type="Texture2D" uid="uid://bpe2ts3r4qo02" path="res://Assets/UI/SmallerButton.png" id="2_yr818"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_sad5p"]
+load_path = "res://.godot/imported/SmallerButton.png-2ea46ae27b2a59b91b2a1233f245a8bc.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_uxdc5"]
+texture = SubResource("CompressedTexture2D_sad5p")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_2begp"]
+load_path = "res://.godot/imported/SmallerButton.png-2ea46ae27b2a59b91b2a1233f245a8bc.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4wy24"]
+texture = SubResource("CompressedTexture2D_2begp")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_gge8i"]
+load_path = "res://.godot/imported/SmallerButtonnormal.png-7cca61684abe641fde053db2dd2cbc9b.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_li78l"]
+texture = SubResource("CompressedTexture2D_gge8i")
+texture_margin_left = 2.0
+texture_margin_top = 2.0
+texture_margin_right = 2.0
+texture_margin_bottom = 2.0
+
+[resource]
+HSlider/constants/center_grabber = 1
+HSlider/icons/grabber = ExtResource("1_mars4")
+HSlider/icons/grabber_disabled = ExtResource("1_mars4")
+HSlider/icons/grabber_highlight = ExtResource("1_mars4")
+HSlider/icons/tick = ExtResource("2_yr818")
+HSlider/styles/grabber_area = SubResource("StyleBoxTexture_uxdc5")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxTexture_4wy24")
+HSlider/styles/slider = SubResource("StyleBoxTexture_li78l")

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CharacterStat" load_steps=3 format=3 uid="uid://23m2engd5lfq"]
+
+[ext_resource type="Script" uid="uid://bvpsymxfy7ynm" path="res://Scripts/character.gd" id="1_i6hbs"]
+[ext_resource type="SpriteFrames" uid="uid://bk3k5somqmidn" path="res://Assets/Characters/Player Sprite Frames/P1.tres" id="2_pw2g4"]
+
+[resource]
+script = ExtResource("1_i6hbs")
+sprite_frame = ExtResource("2_pw2g4")
+Speed = 70
+Jumping = 63
+Setting = 40
+Recieving = 25
+Blocking = 50
+Hitting = 50
+metadata/_custom_type_script = "uid://bvpsymxfy7ynm"

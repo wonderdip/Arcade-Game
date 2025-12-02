@@ -1,8 +1,9 @@
-[gd_resource type="Theme" load_steps=33 format=3 uid="uid://colk31q20bk6u"]
+[gd_resource type="Theme" load_steps=36 format=3 uid="uid://colk31q20bk6u"]
 
 [ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="1_ybks7"]
 [ext_resource type="Texture2D" uid="uid://3c45c3q2lfmt" path="res://Assets/UI/Button_Pressed-Hover.png" id="2_jg5j1"]
 [ext_resource type="Texture2D" uid="uid://dljn3lm5gefq6" path="res://Assets/UI/Button.png" id="2_o2ta1"]
+[ext_resource type="Texture2D" uid="uid://cy2r6hplu17v" path="res://Assets/Volleyball_Medium.png" id="4_f1m61"]
 [ext_resource type="Texture2D" uid="uid://dnu708blmbgd7" path="res://Assets/Volleyball_Big.png" id="4_j453h"]
 [ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="4_jg5j1"]
 [ext_resource type="Texture2D" uid="uid://c1un7pyyiq0vy" path="res://Assets/UI/Panel.png" id="4_kcyw7"]
@@ -103,6 +104,16 @@ texture_margin_top = 6.0
 texture_margin_right = 6.0
 texture_margin_bottom = 6.0
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_f1m61"]
+load_path = "res://.godot/imported/ButtonNo3D.png-5ba481b8082a5019ca242154884653a2.ctex"
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_jm2r0"]
+texture = SubResource("CompressedTexture2D_f1m61")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_tbuye"]
 texture = ExtResource("7_j453h")
 texture_margin_left = 6.0
@@ -169,9 +180,11 @@ CheckBox/styles/pressed = SubResource("StyleBoxTexture_4t5id")
 CheckButton/styles/hover = SubResource("StyleBoxTexture_x86mo")
 CheckButton/styles/hover_pressed = SubResource("StyleBoxTexture_rp1ca")
 CheckButton/styles/normal = SubResource("StyleBoxTexture_m7gij")
-HSlider/icons/grabber = ExtResource("4_j453h")
+HSlider/icons/grabber = ExtResource("4_f1m61")
 HSlider/icons/grabber_highlight = ExtResource("4_j453h")
+HSlider/icons/tick = ExtResource("5_ac4ce")
 HSlider/styles/grabber_area = SubResource("StyleBoxTexture_sgyia")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxTexture_jm2r0")
 HSlider/styles/slider = SubResource("StyleBoxTexture_tbuye")
 ItemList/font_sizes/font_size = 8
 ItemList/fonts/font = ExtResource("1_ybks7")

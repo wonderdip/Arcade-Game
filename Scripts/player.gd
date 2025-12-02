@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @export var Speed: float = 200.0
-@export var JumpForce: float = -220.0
+@export var JumpForce: float = 220.0
 @export var Acceleration: float = 1200.0
 @export var Friction: float = 1000.0
 @export var gravity: float = 980
@@ -126,7 +126,7 @@ func _physics_process(delta: float) -> void:
 
 	# Handle jump
 	if jump_just_pressed and is_on_floor():
-		velocity.y = JumpForce
+		velocity.y = -JumpForce
 		AudioManager.play_sound_from_library("jump")
 	
 	if is_bumping or is_setting:
