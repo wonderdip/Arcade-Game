@@ -20,7 +20,10 @@ var controller_count: int = 0
 var player_1_actions: Array = ["bump_1", "hit_1", "jump_1", "left_1", "right_1"]
 var player_2_actions: Array = ["bump_2", "hit_2", "jump_2", "left_2", "right_2"]
 
-var character: CharacterStat
+# Character selection storage
+var character: CharacterStat  # For solo mode
+var player1_character: CharacterStat  # For local multiplayer
+var player2_character: CharacterStat  # For local multiplayer
 
 func _ready():
 	set_process_input(true)
@@ -99,9 +102,31 @@ func get_spawn_position(player_number: int) -> Vector2:
 		return spawn_positions[player_number - 1]
 	return Vector2.ZERO
 
+# Get the appropriate character for a player number
+func get_player_character(player_number: int) -> CharacterStat:
+	if player_number == 1 and player1_character != null:
+		return player1_character
+	elif player_number == 2 and player2_character != null:
+		return player2_character
+	elif character != null:  # Fallback to solo character
+		return character
+	return null
+
+# Store character selection for a specific player
+func set_player_character(player_number: int, char: CharacterStat) -> void:
+	if player_number == 1:
+		player1_character = char
+		print("Player 1 character set to: ", char.name)
+	elif player_number == 2:
+		player2_character = char
+		print("Player 2 character set to: ", char.name)
+
 func reset():
 	registered_devices.clear()
 	player_count = 0
 	keyboard_count = 0
 	controller_count = 0
 	ready_to_accept_players = false
+	player1_character = null
+	player2_character = null
+	character = null

@@ -10,11 +10,8 @@ extends CharacterBody2D
 
 @export_enum("P1", "P2", "P3") var character: String = "P1"
 
-var CHARACTER_FRAMES := {
-	"P1": preload("res://Assets/Characters/Player Sprite Frames/P1.tres"),
-	"P2": preload("res://Assets/Characters/Player Sprite Frames/P2.tres"),
-	"P3": preload("res://Assets/Characters/Player Sprite Frames/P3.tres")
-}
+var fallbackframe := preload("res://Assets/Characters/Player Sprite Frames/P1.tres")
+
 
 var peak_gravity_scale: float = 0.5
 var peak_threshold: float = 80.0
@@ -54,7 +51,9 @@ func _enter_tree() -> void:
 			set_multiplayer_authority(peer_id)
 
 func _ready() -> void:
-	sprite.sprite_frames = PlayerManager.character.sprite_frame
+	# Load character based on mode
+	load_character()
+	
 	# Just verify we have proper authority for input
 	if !is_local_mode and !is_solo_mode:
 		if get_multiplayer_authority() == multiplayer.get_unique_id():
@@ -66,6 +65,30 @@ func _ready() -> void:
 		  " unique_id=", multiplayer.get_unique_id(),
 		  " is_server=", multiplayer.is_server(),
 		  " pos=", global_position)
+
+func load_character():
+	var char_stat: CharacterStat = null
+	
+	if is_solo_mode:
+		# Solo mode - use the single character selection
+		char_stat = PlayerManager.character
+	elif is_local_mode:
+		# Local mode - use player-specific character
+		char_stat = PlayerManager.get_player_character(player_number)
+	
+	# If we have a character stat, apply it
+	if char_stat != null:
+		sprite.sprite_frames = char_stat.sprite_frame
+		
+		# Apply character stats
+		Speed = char_stat.Speed * 2.0
+		JumpForce = char_stat.Jumping * 4.0
+		
+		print("Loaded character %s for player %d" % [char_stat.name, player_number])
+	else:
+		# Fallback to default P3 frames
+		sprite.sprite_frames = fallbackframe
+		print("Warning: No character assigned for player %d, using default" % player_number)
 		
 func _physics_process(delta: float) -> void:
 	# Freeze movement if settings menu is open globally
@@ -212,3 +235,5 @@ func setup_local_player(dev_id: int, p_number: int, inp_type: String):
 	print("Player %d setup with device %d (%s)" % [player_number, device_id, input_type])
 	# Register with InputManager if local mode
 	InputManager.register_player(player_number, input_type, device_id)
+	# Load character after player number is set
+	load_character()

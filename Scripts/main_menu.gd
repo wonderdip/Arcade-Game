@@ -22,8 +22,7 @@ func _on_local_pressed() -> void:
 		multiplayer.multiplayer_peer = null
 	
 	Networkhandler.is_local = true
-	get_tree().change_scene_to_file("res://Scenes/world.tscn")
-	PlayerManager.ready_to_accept_players = true
+	get_tree().change_scene_to_file("res://Scenes/Menus/character_screen.tscn")
 	AudioManager.play_sound_from_library("click")
 
 func _on_join_pressed() -> void:
