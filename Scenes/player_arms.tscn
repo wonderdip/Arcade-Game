@@ -153,7 +153,7 @@ _data = {
 }
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ism15"]
-radius = 4.4
+radius = 4.5
 height = 20.0
 
 [node name="Player Arms" type="Area2D"]

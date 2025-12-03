@@ -33,13 +33,12 @@ script = ExtResource("1_cvnsp")
 Speed = 140.0
 JumpForce = 250.0
 Friction = 1300.0
+character = "P3"
 player_number = 1
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = ExtResource("2_6t5aa")
-animation = &"Idle"
-frame = 5
-frame_progress = 0.20499776
+animation = &"Block"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 visible = false

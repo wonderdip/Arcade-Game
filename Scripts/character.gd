@@ -9,3 +9,4 @@ class_name CharacterStat
 @export_range(1, 50, 1) var Recieving: int # do * 2
 @export_range(1, 100, 1) var Blocking: int
 @export_range(1, 100, 1) var Hitting: int
+@export var Player_Number: int = 1

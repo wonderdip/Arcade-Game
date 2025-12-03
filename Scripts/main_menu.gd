@@ -23,7 +23,7 @@ func _on_local_pressed() -> void:
 	
 	Networkhandler.is_local = true
 	get_tree().change_scene_to_file("res://Scenes/world.tscn")
-	LocalPlayerManager.ready_to_accept_players = true
+	PlayerManager.ready_to_accept_players = true
 	AudioManager.play_sound_from_library("click")
 
 func _on_join_pressed() -> void:

@@ -47,3 +47,13 @@ func change_values():
 	
 	player_choice.text = "Choose: " + current_selection.name
 	
+func _on_player_choice_pressed() -> void:
+	if Networkhandler.is_local:
+		PlayerManager.ready_to_accept_players = true
+		get_tree().change_scene_to_file("res://Scenes/world.tscn")
+		AudioManager.play_sound_from_library("click")
+		
+	if Networkhandler.is_solo:
+		PlayerManager.character = current_selection
+		get_tree().change_scene_to_file("res://Scenes/world.tscn")
+		AudioManager.play_sound_from_library("click")

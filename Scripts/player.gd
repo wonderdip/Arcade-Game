@@ -54,7 +54,7 @@ func _enter_tree() -> void:
 			set_multiplayer_authority(peer_id)
 
 func _ready() -> void:
-	sprite.sprite_frames = CHARACTER_FRAMES[character]
+	sprite.sprite_frames = PlayerManager.character.sprite_frame
 	# Just verify we have proper authority for input
 	if !is_local_mode and !is_solo_mode:
 		if get_multiplayer_authority() == multiplayer.get_unique_id():

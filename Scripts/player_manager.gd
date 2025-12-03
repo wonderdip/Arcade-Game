@@ -20,6 +20,8 @@ var controller_count: int = 0
 var player_1_actions: Array = ["bump_1", "hit_1", "jump_1", "left_1", "right_1"]
 var player_2_actions: Array = ["bump_2", "hit_2", "jump_2", "left_2", "right_2"]
 
+var character: CharacterStat
+
 func _ready():
 	set_process_input(true)
 	await get_tree().process_frame

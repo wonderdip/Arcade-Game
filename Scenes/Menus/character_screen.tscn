@@ -260,3 +260,4 @@ value = 50.0
 [connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow/P1" to="." method="_on_p_1_pressed"]
 [connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow/P2" to="." method="_on_p_2_pressed"]
 [connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/SecondRow/P3" to="." method="_on_p_3_pressed"]
+[connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/PlayerChoice" to="." method="_on_player_choice_pressed"]

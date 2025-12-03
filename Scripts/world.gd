@@ -39,7 +39,7 @@ func _ready() -> void:
 				await get_tree().create_timer(1.0).timeout
 				spawn_ball()
 	elif Networkhandler.is_local:
-		LocalPlayerManager.player_joined.connect(_on_local_player_joined)
+		PlayerManager.player_joined.connect(_on_local_player_joined)
 	else:
 		print("no mode")
 		return
@@ -56,7 +56,7 @@ func _on_local_player_joined(device_id: int, player_number: int, input_type: Str
 	# Spawn the player
 	var player = player_scene.instantiate()
 	player.name = "Player_" + str(player_number)
-	player.position = LocalPlayerManager.get_spawn_position(player_number)
+	player.position = PlayerManager.get_spawn_position(player_number)
 	add_child(player)
 	
 	# Setup the player with their device and input type
