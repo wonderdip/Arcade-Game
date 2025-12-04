@@ -113,13 +113,13 @@ func get_player_character(player_number: int) -> CharacterStat:
 	return null
 
 # Store character selection for a specific player
-func set_player_character(player_number: int, char: CharacterStat) -> void:
+func set_player_character(player_number: int, player_char: CharacterStat) -> void:
 	if player_number == 1:
-		player1_character = char
-		print("Player 1 character set to: ", char.name)
+		player1_character = player_char
+		print("Player 1 character set to: ", player_char.name)
 	elif player_number == 2:
-		player2_character = char
-		print("Player 2 character set to: ", char.name)
+		player2_character = player_char
+		print("Player 2 character set to: ", player_char.name)
 
 func reset():
 	registered_devices.clear()

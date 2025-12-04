@@ -1,6 +1,8 @@
 extends Area2D
+
 @onready var anim: AnimationPlayer = $AnimationPlayer
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+
 var is_hitting: bool = false
 var is_bumping: bool = false
 var is_blocking: bool = false
@@ -146,133 +148,111 @@ func _on_body_exited(body: Node):
 		hit_bodies[body] = current_time - hit_cooldown + 0.05
 
 func _apply_hit_to_ball(body: RigidBody2D):
-	var impulse: Vector2
-	var hit_direction: Vector2
 	var contact_point = collision_shape.global_position
-	# Get current velocity before hit
-	var ball_vel = body.linear_velocity
+
+	var impulse = calculate_ball_hit(
+		body,
+		contact_point,
+		facing_right,
+		is_hitting,
+		is_bumping,
+		is_blocking,
+		is_setting,
+		ball_control
+	)
+
+	body.apply_impulse(impulse, contact_point - body.global_position)
+
+	# Cap speed
+	await get_tree().process_frame
+	if body.linear_velocity.length() > max_ball_speed:
+		body.linear_velocity = body.linear_velocity.normalized() * max_ball_speed
+
+func _apply_hit_to_ball_server(body: RigidBody2D, contact_point: Vector2, face_right: bool, hitting: bool, bumping: bool, blocking: bool, is_set: bool):
+	var impulse = calculate_ball_hit(
+		body,
+		contact_point,
+		face_right,
+		hitting,
+		bumping,
+		blocking,
+		is_set,
+		ball_control
+	)
+
+	body.apply_impulse(impulse, contact_point - body.global_position)
+
+	# Cap speed
+	await get_tree().process_frame
+	if body.linear_velocity.length() > max_ball_speed:
+		body.linear_velocity = body.linear_velocity.normalized() * max_ball_speed
+
+		
+func calculate_ball_hit(
+	body: RigidBody2D,
+	_contact_point: Vector2,
+	face_right: bool,
+	hitting: bool,
+	bumping: bool,
+	blocking: bool,
+	is_set: bool,
+	ball_control_val: float
+) -> Vector2:
 	
-	# Calculate effective control based on ball speed
+	var hit_direction: Vector2
+	var ball_vel = body.linear_velocity
 	var ball_speed = ball_vel.length()
 	
-	# Apply control when bumping or setting
-	if is_bumping or is_setting:
-		# Only apply control if ball is above threshold speed
+	if bumping or is_set:
 		if ball_speed > control_speed_threshold:
-			
-			# Higher control = more velocity cancellation (especially horizontal)
-			var damping_factor = 1.0 - ball_control
+			var damping_factor = 1.0 - ball_control_val
 			body.linear_velocity.x *= damping_factor
 			
 			if ball_vel.y > 0:
-				var vertical_damping = lerp(0.1, 0.0, ball_control)  # At max control, completely cancel downward motion
+				var vertical_damping = lerp(0.1, 0.0, ball_control_val * 0.8)
 				body.linear_velocity.y = ball_vel.y * vertical_damping
+				
 	else:
-		# Normal passes with no damp
 		if ball_vel.y > 0:
 			body.linear_velocity.y = ball_vel.y * 0.1
-	
-	if is_bumping:
-		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
-		# With higher control, reduce horizontal force and increase vertical control
-		var horizontal_modifier = lerp(1.0, 0.5, ball_control)
-		var adjusted_bump_force = bump_force * horizontal_modifier
-		impulse = hit_direction * adjusted_bump_force + Vector2(0, -bump_upward_force)
-		AudioManager.play_sound_from_library("bump")
+			
+	if bumping:
+		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()
 		
-	elif is_hitting or is_blocking:
-		hit_direction = Vector2(1 if facing_right else -1, -0.2).normalized()
-		impulse = hit_direction * hit_force + Vector2(0, downward_force)
+		var max_random_angle = 50.0
+		var angle_randomness = lerp(max_random_angle, 0.0, ball_control_val)
+		var random_angle = deg_to_rad(randf_range(-angle_randomness, angle_randomness))
+		var final_direction = hit_direction.rotated(random_angle)
+		
+		var horizontal_modifier = lerp(1.0, 0.5, ball_control_val)
+		var adjusted_bump_force = bump_force * horizontal_modifier
+		
+		AudioManager.play_sound_from_library("bump")
+		return final_direction * adjusted_bump_force + Vector2(0, -bump_upward_force)
+		
+	elif hitting or blocking:
+		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
 		AudioManager.play_sound_from_library("hit")
 		CamShake.cam_shake(2, 1, 0.3)
 		FrameFreeze.framefreeze(0.2, 0)
+		return hit_direction * hit_force + Vector2(0, downward_force)
 		
-	elif is_setting:
-		hit_direction = Vector2(0.2 if facing_right else -0.2, -1).normalized()
+	elif is_set:
+		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()
 		
 		var horizontal_speed = abs(ball_vel.x)
 		var horizontal_modifier = 1.0
 		
 		if horizontal_speed > control_speed_threshold:
-			# Smooth speed factor based on ball speed
 			var speed_factor = clamp(horizontal_speed / (control_speed_threshold * 2.0), 0.0, 1.0)
-			
-			# Exponential curve makes low control MUCH weaker
-			var effective_control = pow(ball_control * speed_factor, 2.0)
-		
-			# More drastic scaling (1.0 → 0.3 instead of 1 → 0.5)
+			var effective_control = pow(ball_control_val * speed_factor, 2.0)
 			horizontal_modifier = lerp(1.0, 0.1, effective_control)
-		
+			
 		var adjusted_set_force = set_force * horizontal_modifier
-		impulse = hit_direction * adjusted_set_force + Vector2(0, -set_upward_force)
 		AudioManager.play_sound_from_library("set")
+		return hit_direction * adjusted_set_force + Vector2(0, -set_upward_force)
 		
-	body.apply_impulse(impulse, contact_point - body.global_position)
-	if is_hitting or is_blocking:
-		collision_shape.set_deferred("disabled", true)
-	
-	# Cap the speed
-	await get_tree().process_frame
-	if body.linear_velocity.length() > max_ball_speed:
-		body.linear_velocity = body.linear_velocity.normalized() * max_ball_speed
-
-# Server-side hit application (used when called via RPC)
-func _apply_hit_to_ball_server(body: RigidBody2D, contact_point: Vector2, face_right: bool, hitting: bool, bumping: bool, blocking: bool, is_set: bool):
-	var impulse: Vector2
-	var hit_direction: Vector2
-	# Get current velocity before hit
-	var ball_vel = body.linear_velocity
-	
-	# Calculate effective control based on ball speed
-	var ball_speed = ball_vel.length()
-	var effective_control = 0.0
-	
-	# Apply control when bumping or setting
-	if bumping or is_set:
-		# Only apply control if ball is above threshold speed
-		if ball_speed > control_speed_threshold:
-			# Scale control based on how much faster than threshold
-			var speed_factor = clamp((ball_speed - control_speed_threshold) / control_speed_threshold, 0.0, 1.0)
-			effective_control = ball_control * speed_factor
-		
-		# Dampen incoming velocity based on control
-		var damping_factor = 1.0 - (effective_control * 0.8)
-		body.linear_velocity.x *= damping_factor
-		
-		# Reduce downward velocity more aggressively with control
-		if ball_vel.y > 0:
-			var vertical_damping = lerp(0.1, 0.0, effective_control)
-			body.linear_velocity.y = ball_vel.y * vertical_damping
-	else:
-		# Optional: reduce or cancel downward velocity
-		if ball_vel.y > 0:
-			body.linear_velocity.y = ball_vel.y * 0.1
-	
-	if bumping:
-		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()
-		var horizontal_modifier = lerp(1.0, 0.5, effective_control)
-		var adjusted_bump_force = bump_force * horizontal_modifier
-		impulse = hit_direction * adjusted_bump_force + Vector2(0, -bump_upward_force)
-		
-	elif hitting or blocking:
-		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
-		impulse = hit_direction * hit_force + Vector2(0, downward_force)
-		AudioManager.play_sound_from_library("hit")
-		CamShake.cam_shake(2, 1, 0.3)
-		FrameFreeze.framefreeze(0.2, 0)
-		
-	elif is_set:
-		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()
-		var horizontal_modifier = lerp(1.0, 0.3, effective_control)
-		var adjusted_set_force = set_force * horizontal_modifier
-		impulse = hit_direction * adjusted_set_force + Vector2(0, -set_upward_force)
-	
-	body.apply_impulse(impulse, contact_point - body.global_position)
-	
-	# Cap the speed
-	await get_tree().process_frame
-	if is_instance_valid(body) and body.linear_velocity.length() > max_ball_speed:
-		body.linear_velocity = body.linear_velocity.normalized() * max_ball_speed
+	return Vector2.ZERO
 
 func sprite_direction(sprite_dir: float):
 	if sprite_dir > 0:
