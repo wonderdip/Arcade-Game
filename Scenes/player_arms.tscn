@@ -161,6 +161,7 @@ collision_layer = 64
 collision_mask = 2
 collision_priority = 30.0
 script = ExtResource("1_f6qgc")
+ball_control = 0.2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

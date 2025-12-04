@@ -83,6 +83,9 @@ func load_character():
 		# Apply character stats
 		Speed = char_stat.Speed * 2.0
 		JumpForce = char_stat.Jumping * 4.0
+		var recv_norm = char_stat.Recieving / 100.0
+		var set_norm  = char_stat.Setting / 100.0
+		player_arms.ball_control = (recv_norm + set_norm) / 2.0
 		
 		print("Loaded character %s for player %d" % [char_stat.name, player_number])
 	else:
@@ -183,7 +186,7 @@ func _physics_process(delta: float) -> void:
 			player_arms.stop_bump()
 			sprite.play("Idle")
 			
-	if set_pressed and is_on_floor() and not is_hitting and not is_bumping:
+	if set_pressed and not is_hitting and not is_bumping:
 		is_setting = true
 		sprite.play("Set")
 		player_arms.setting()
