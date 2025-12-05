@@ -86,9 +86,13 @@ func load_character():
 		var recv_norm = char_stat.Recieving / 100.0
 		var set_norm  = char_stat.Setting / 100.0
 		player_arms.ball_control = (recv_norm + set_norm) / 2.0
-		player_arms.hit_force = char_stat.Hitting
-		player_arms.downward_force = char_stat.Hitting / 2
 		
+		if char_stat.Hitting < 50:
+			player_arms.downward_force = -char_stat.Hitting / 4
+			player_arms.hit_force = char_stat.Hitting * 0.6
+		else:
+			player_arms.downward_force = char_stat.Hitting / 2
+			player_arms.hit_force = char_stat.Hitting
 		print("Loaded character %s for player %d" % [char_stat.name, player_number])
 	else:
 		# Fallback to default P3 frames
