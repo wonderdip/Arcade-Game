@@ -217,12 +217,7 @@ func calculate_ball_hit(
 			body.linear_velocity.y = ball_vel.y * 0.1
 			
 	if bumping:
-		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()
-		
-		var max_random_angle = 50.0
-		var angle_randomness = lerp(max_random_angle, 0.0, ball_control_val)
-		var random_angle = deg_to_rad(randf_range(-angle_randomness, angle_randomness))
-		var final_direction = hit_direction.rotated(random_angle)
+		var final_direction = get_random_direction(face_right, ball_control_val, 40)
 		
 		var horizontal_modifier = lerp(1.0, 0.5, ball_control_val)
 		var adjusted_bump_force = bump_force * horizontal_modifier
@@ -248,12 +243,40 @@ func calculate_ball_hit(
 			var effective_control = pow(ball_control_val * speed_factor, 2.0)
 			horizontal_modifier = lerp(1.0, 0.1, effective_control)
 			
+		var final_direction = get_random_direction(face_right, ball_control_val, 20)
+		
+		horizontal_modifier = lerp(1.0, 0.5, ball_control_val)
 		var adjusted_set_force = set_force * horizontal_modifier
 		AudioManager.play_sound_from_library("set")
-		return hit_direction * adjusted_set_force + Vector2(0, -set_upward_force)
+		return final_direction * adjusted_set_force + Vector2(0, -set_upward_force)
 		
 	return Vector2.ZERO
-
+	
+func get_random_direction(face_right: bool, ball_control_val: float, max_angle: float) -> Vector2:
+	var base_dir := Vector2(0, -1)
+	
+	# Randomness based on control
+	var angle_randomness = max_angle * (1.0 - ball_control_val)
+	# --- BACKWARD CHANCE ---
+	var shank_chance = lerp(0.5, 0.0, ball_control_val)
+	var is_shanking_backward = randf() < shank_chance
+	var backward_bias_deg := 0.0
+	if is_shanking_backward:
+		backward_bias_deg = randf_range(-35.0, -10.0)  # random backward shank range
+		var backward_bias = deg_to_rad(backward_bias_deg)
+		
+		# Random offset around the chosen direction
+		var random_offset = deg_to_rad(randf_range(-angle_randomness, angle_randomness))
+		
+		var local_angle = backward_bias + random_offset
+		var local_direction = base_dir.rotated(local_angle)
+		
+		# Flip horizontally depending on facing direction
+		var side_multiplier = 1 if face_right else -1
+		return Vector2(local_direction.x * side_multiplier, local_direction.y).normalized()
+		
+	return Vector2(0.3 if face_right else -0.3, -1).normalized()
+	
 func sprite_direction(sprite_dir: float):
 	if sprite_dir > 0:
 		if not facing_right:
