@@ -230,6 +230,7 @@ func calculate_ball_hit(
 		AudioManager.play_sound_from_library("hit")
 		CamShake.cam_shake(2, 1, 0.3)
 		FrameFreeze.framefreeze(0.2, 0)
+		body.fire_particle.emitting = true
 		return hit_direction * hit_force + Vector2(0, downward_force)
 		
 	elif is_set:
