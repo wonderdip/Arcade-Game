@@ -9,6 +9,8 @@ signal update_score(current_player_side)
 @onready var landing_ray: RayCast2D = $LandingRay
 @onready var landing_sprite: Sprite2D = $"Landing Sprite"
 @onready var fire_particle: GPUParticles2D = $FireParticle
+@onready var blue_fire_particle: GPUParticles2D = $BlueFireParticle
+
 
 # These need to be synced
 var current_player_side: int = 0:
@@ -26,6 +28,8 @@ var is_solo_mode: bool = false
 func _ready() -> void:
 	normal_linear_damp = linear_damp
 	fire_particle.emitting = false
+	blue_fire_particle.emitting = false
+
 	is_local_mode = Networkhandler.is_local
 	is_solo_mode = Networkhandler.is_solo
 	# CRITICAL FIX: Set the server as the authority for the ball (only in network mode)

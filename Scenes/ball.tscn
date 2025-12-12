@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://txgrcwpblspl"]
+[gd_scene load_steps=17 format=3 uid="uid://txgrcwpblspl"]
 
 [ext_resource type="Texture2D" uid="uid://m7f8mlud45t1" path="res://Assets/Volleyball.png" id="1_d60mj"]
 [ext_resource type="Script" uid="uid://cmmnovr8dmvae" path="res://Scripts/ball.gd" id="1_ij5cq"]
@@ -8,13 +8,12 @@
 friction = 0.5
 bounce = 0.5
 
-[sub_resource type="Curve" id="Curve_376qj"]
-_limits = [-1.0, 1.0, 0.0, 1.0]
-_data = [Vector2(0, 0.9775281), 0.0, 0.0, 0, 0, Vector2(1, -0.9101125), 0.0, 0.0, 0, 0]
-point_count = 2
+[sub_resource type="Gradient" id="Gradient_376qj"]
+offsets = PackedFloat32Array(0.028301887, 0.4811321, 1)
+colors = PackedColorArray(1, 0.41333336, 0.120000005, 1, 1, 0.30700004, 0.23000002, 1, 0.6959999, 0.24000001, 1, 1)
 
-[sub_resource type="CurveTexture" id="CurveTexture_yk4cr"]
-curve = SubResource("Curve_376qj")
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_yk4cr"]
+gradient = SubResource("Gradient_376qj")
 
 [sub_resource type="Curve" id="Curve_aw2wy"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.078651786), 0.0, 0.0, 0, 0]
@@ -35,10 +34,34 @@ radial_accel_max = 39.999996
 scale_min = 12.0
 scale_max = 12.0
 scale_curve = SubResource("CurveTexture_vblhy")
-color = Color(1, 0.13999999, 0.13999999, 1)
-hue_variation_min = 0.09999997
-hue_variation_max = 0.119999975
-hue_variation_curve = SubResource("CurveTexture_yk4cr")
+color_ramp = SubResource("GradientTexture1D_yk4cr")
+
+[sub_resource type="Gradient" id="Gradient_aw2wy"]
+colors = PackedColorArray(0.18, 0.20733333, 1, 1, 0.41103327, 0.177, 0.59, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_vblhy"]
+gradient = SubResource("Gradient_aw2wy")
+
+[sub_resource type="Curve" id="Curve_31idh"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.078651786), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_hk63f"]
+curve = SubResource("Curve_31idh")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vm4s8"]
+particle_flag_disable_z = true
+angle_min = -720.0
+angle_max = 720.0
+radial_velocity_min = 0.99997765
+radial_velocity_max = 1.4999776
+gravity = Vector3(0, -100, 0)
+radial_accel_min = 39.999996
+radial_accel_max = 39.999996
+scale_min = 12.0
+scale_max = 12.0
+scale_curve = SubResource("CurveTexture_hk63f")
+color_ramp = SubResource("GradientTexture1D_vblhy")
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ij5cq"]
 radius = 6.0
@@ -89,8 +112,16 @@ max_velocity = 400.0
 [node name="FireParticle" type="GPUParticles2D" parent="."]
 emitting = false
 amount = 60
+lifetime = 0.5
 one_shot = true
 process_material = SubResource("ParticleProcessMaterial_376qj")
+
+[node name="BlueFireParticle" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 60
+lifetime = 0.5
+one_shot = true
+process_material = SubResource("ParticleProcessMaterial_vm4s8")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("2_376qj")

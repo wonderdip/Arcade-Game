@@ -176,43 +176,43 @@ func _physics_process(delta: float) -> void:
 	# Handle attack
 	if hit_just_pressed and not is_on_floor() and not is_hitting and not is_bumping:
 		is_hitting = true
-		player_arms.swing()
+		player_arms.action("hit")
 		sprite.play("Hit")
 
 	# Handle bump
 	if bump_pressed and is_on_floor() and not is_hitting and not is_setting:
 		if not is_bumping:
 			is_bumping = true
-			player_arms.bump()
+			player_arms.action("bump")
 			sprite.play("Bump")
 			
 	else:
 		if is_bumping:
 			is_bumping = false
-			player_arms.stop_bump()
+			player_arms.action("bump", false)
 			sprite.play("Idle")
 			
 	if set_pressed and not is_hitting and not is_bumping:
 		is_setting = true
 		sprite.play("Set")
-		player_arms.setting()
+		player_arms.action("set")
 	else:
 		if is_setting:
 			is_setting = false
 			sprite.play("Idle")
-			player_arms.stop_setting()
+			player_arms.action("set", false)
 		
 	if in_blockzone and not is_on_floor():
 		is_blocking = true
-		player_arms.block()
+		player_arms.action("block")
 	elif (is_on_floor() or not in_blockzone) and is_blocking:
 		is_blocking = false
-		player_arms.stop_block()
+		player_arms.action("block", false)
 		
 	# Cancel hit if you land
 	if is_on_floor() and is_hitting:
 		is_hitting = false
-		player_arms.stop_hit()
+		player_arms.action("hit", false)
 		sprite.play("Idle")
 
 	# Pick animations

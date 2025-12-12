@@ -178,6 +178,7 @@ min_value = 1.0
 max_value = 99.0
 value = 50.0
 rounded = true
+editable = false
 scrollable = false
 
 [node name="Hitting" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
@@ -192,6 +193,8 @@ vertical_alignment = 1
 [node name="HittingSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
 layout_mode = 2
 value = 50.0
+editable = false
+scrollable = false
 
 [node name="Recieiving" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
 custom_minimum_size = Vector2(0, 15)
@@ -205,6 +208,8 @@ vertical_alignment = 1
 [node name="RecievingSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/LeftSide"]
 layout_mode = 2
 value = 50.0
+editable = false
+scrollable = false
 
 [node name="RightSide" type="VBoxContainer" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer"]
 custom_minimum_size = Vector2(64, 0)
@@ -228,6 +233,7 @@ min_value = 1.0
 max_value = 99.0
 value = 50.0
 rounded = true
+editable = false
 scrollable = false
 
 [node name="Blocking" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
@@ -242,6 +248,8 @@ vertical_alignment = 1
 [node name="BlockingSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
 layout_mode = 2
 value = 50.0
+editable = false
+scrollable = false
 
 [node name="Setting" type="Label" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
 custom_minimum_size = Vector2(0, 15)
@@ -255,6 +263,8 @@ vertical_alignment = 1
 [node name="SettingSlider" type="HSlider" parent="BasePanel/BaseVbox/HBoxContainer/Stats/Statspanel/HBoxContainer/RightSide"]
 layout_mode = 2
 value = 50.0
+editable = false
+scrollable = false
 
 [connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow/P1" to="." method="_on_p_1_pressed"]
 [connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow/P2" to="." method="_on_p_2_pressed"]

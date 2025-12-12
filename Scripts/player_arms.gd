@@ -23,6 +23,7 @@ var hit_bodies: Dictionary = {}  # Tracks last hit time for each ball
 @export var control_speed_threshold: float = 200.0  # Speed above which control kicks in
 
 var is_network_mode: bool = false
+@onready var collision_particle: GPUParticles2D = $CollisionParticle
 
 func _ready():
 	if !Networkhandler.is_solo:
@@ -40,55 +41,36 @@ func _ready():
 	if not body_exited.is_connected(_on_body_exited):
 		body_exited.connect(_on_body_exited)
 
-func swing():
-	if not is_hitting and not is_bumping:
-		is_hitting = true
+func action(action_name: String, start: bool = true):
+	match action_name:
+		"hit":
+			is_hitting = start
+		"bump":
+			is_bumping = start
+		"block":
+			is_blocking = start
+		"set":
+			is_setting = start
+	
+	# Handle the player arms
+	if start:
 		hit_bodies.clear()
 		collision_shape.disabled = false
-		anim.play("Hit")
-
-func bump():
-	if not is_bumping and not is_hitting and not is_blocking and not is_setting:
-		is_bumping = true
+		
+		match action_name:
+			"hit":
+				anim.play("Hit")
+			"bump":
+				anim.play("Bump")
+			"block":
+				anim.play("Block")
+			"set":
+				anim.play("Set")
+	else:
 		hit_bodies.clear()
-		collision_shape.disabled = false
-		anim.play("Bump") 
-
-func block():
-	if not is_hitting and not is_blocking:
-		is_blocking = true
-		hit_bodies.clear()
-		collision_shape.disabled = false
-		anim.play("Block")
-
-func setting():
-	if not is_setting and not is_bumping and not is_hitting and not is_blocking:
-		is_setting = true
-		hit_bodies.clear()
-		collision_shape.disabled = false
-		anim.play("Set")
-
-func stop_setting():
-	is_setting = false
-	cleanup_anim()
-
-func stop_hit():
-	is_hitting = false
-	cleanup_anim()
-
-func stop_bump():
-	is_bumping = false
-	cleanup_anim()
-
-func stop_block():
-	is_blocking = false
-	cleanup_anim()
-
-func cleanup_anim():
-	hit_bodies.clear()
-	collision_shape.disabled = true
-	anim.stop()
-	anim.play("RESET")
+		collision_shape.disabled = true
+		anim.stop()
+		anim.play("RESET")
 
 # Called when a body enters the arm's area
 func _on_body_entered(body: Node):
@@ -223,6 +205,8 @@ func calculate_ball_hit(
 		var adjusted_bump_force = bump_force * horizontal_modifier
 		
 		AudioManager.play_sound_from_library("bump")
+		collision_particle.global_position = _contact_point
+		collision_particle.emitting = true
 		return final_direction * adjusted_bump_force + Vector2(0, -bump_upward_force)
 		
 	elif hitting or blocking:
@@ -249,6 +233,8 @@ func calculate_ball_hit(
 		horizontal_modifier = lerp(1.0, 0.5, ball_control_val)
 		var adjusted_set_force = set_force * horizontal_modifier
 		AudioManager.play_sound_from_library("set")
+		collision_particle.global_position = _contact_point
+		collision_particle.emitting = true
 		return final_direction * adjusted_set_force + Vector2(0, -set_upward_force)
 		
 	return Vector2.ZERO

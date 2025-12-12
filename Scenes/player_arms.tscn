@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://b3gw6epw21u3s"]
+[gd_scene load_steps=12 format=3 uid="uid://b3gw6epw21u3s"]
 
 [ext_resource type="Script" uid="uid://drtktdqtjnlbe" path="res://Scripts/player_arms.gd" id="1_f6qgc"]
 
@@ -156,6 +156,25 @@ _data = {
 radius = 4.5
 height = 20.0
 
+[sub_resource type="Curve" id="Curve_t0651"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_yk4cr"]
+curve = SubResource("Curve_t0651")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_f6qgc"]
+particle_flag_disable_z = true
+angle_min = -720.0
+angle_max = 720.0
+radial_velocity_min = 14.999977
+radial_velocity_max = 39.999977
+gravity = Vector3(0, 0, 0)
+linear_accel_min = -2.2351742e-06
+linear_accel_max = 25.399998
+scale_max = 4.0
+scale_curve = SubResource("CurveTexture_yk4cr")
+
 [node name="Player Arms" type="Area2D"]
 collision_layer = 64
 collision_mask = 2
@@ -174,6 +193,14 @@ rotation = 0.2617994
 scale = Vector2(0.9999998, 0.9999998)
 shape = SubResource("CapsuleShape2D_ism15")
 debug_color = Color(0.99861974, 0, 0.14905396, 0.41960785)
+
+[node name="CollisionParticle" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 30
+lifetime = 0.3
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_f6qgc")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
