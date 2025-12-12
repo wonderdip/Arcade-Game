@@ -80,13 +80,11 @@ func _on_body_entered(body: Node):
 		return
 	if not "scored" in body or body.scored:
 		return
+		
 	var current_time = Time.get_ticks_msec() / 1000.0
+	
 	if body in hit_bodies and current_time - hit_bodies[body] < hit_cooldown:
 		return
-	# Ball must be above the arms
-	if body.global_position.y > collision_shape.global_position.y + 3:
-		return
-	print("Ball collision detected! Network mode: ", is_network_mode)
 	
 	# In network mode, send hit to server
 	if is_network_mode and not multiplayer.is_server():
@@ -131,7 +129,6 @@ func _on_body_exited(body: Node):
 
 func _apply_hit_to_ball(body: RigidBody2D):
 	var contact_point = collision_shape.global_position
-
 	var impulse = calculate_ball_hit(
 		body,
 		contact_point,
@@ -144,7 +141,10 @@ func _apply_hit_to_ball(body: RigidBody2D):
 	)
 
 	body.apply_impulse(impulse, contact_point - body.global_position)
-
+	
+	if is_hitting or is_blocking:
+		collision_shape.call_deferred("disabled", true)
+		
 	# Cap speed
 	await get_tree().process_frame
 	if body.linear_velocity.length() > max_ball_speed:
@@ -209,13 +209,21 @@ func calculate_ball_hit(
 		collision_particle.emitting = true
 		return final_direction * adjusted_bump_force + Vector2(0, -bump_upward_force)
 		
-	elif hitting or blocking:
+	elif hitting:
 		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
 		AudioManager.play_sound_from_library("hit")
 		CamShake.cam_shake(2, 1, 0.3)
 		FrameFreeze.framefreeze(0.2, 0)
 		body.fire_particle.emitting = true
 		return hit_direction * hit_force + Vector2(0, downward_force)
+		
+	elif blocking:
+		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
+		AudioManager.play_sound_from_library("hit")
+		CamShake.cam_shake(2, 1, 0.3)
+		FrameFreeze.framefreeze(0.2, 0)
+		body.fire_particle.emitting = true
+		return hit_direction * (hit_force * 0.75) + Vector2(0, downward_force)
 		
 	elif is_set:
 		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()

@@ -144,7 +144,8 @@ func _physics_process(delta: float) -> void:
 		elif Input.is_action_just_pressed("jump"):
 			jump_just_pressed = true
 	
-	# --- Movement and Actions (rest of the code stays the same) ---
+	animations(direction)
+	
 	if is_blocking:
 		gravity_mult = 1.3
 	else:
@@ -214,8 +215,9 @@ func _physics_process(delta: float) -> void:
 		is_hitting = false
 		player_arms.action("hit", false)
 		sprite.play("Idle")
-
-	# Pick animations
+		
+func animations(direction):
+	
 	if not is_bumping and not is_hitting and not is_setting:
 		if not is_on_floor():
 			if in_blockzone == false:
