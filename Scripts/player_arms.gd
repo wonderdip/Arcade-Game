@@ -55,7 +55,7 @@ func action(action_name: String, start: bool = true):
 	# Handle the player arms
 	if start:
 		hit_bodies.clear()
-		collision_shape.disabled = false
+		collision_shape.set_deferred("disabled", false)  # CHANGED: Use set_deferred for consistency
 		
 		match action_name:
 			"hit":
@@ -68,7 +68,7 @@ func action(action_name: String, start: bool = true):
 				anim.play("Set")
 	else:
 		hit_bodies.clear()
-		collision_shape.disabled = true
+		collision_shape.set_deferred("disabled", true)  # CHANGED: Use set_deferred for consistency
 		anim.stop()
 		anim.play("RESET")
 
@@ -143,7 +143,7 @@ func _apply_hit_to_ball(body: RigidBody2D):
 	body.apply_impulse(impulse, contact_point - body.global_position)
 	
 	if is_hitting or is_blocking:
-		collision_shape.call_deferred("disabled", true)
+		collision_shape.set_deferred("disabled", true)  # CHANGED: Use set_deferred consistently
 		
 	# Cap speed
 	await get_tree().process_frame
@@ -286,21 +286,17 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "Hit": 
 		is_hitting = false 
 		hit_bodies.clear() 
-		collision_shape.disabled = true 
+		collision_shape.set_deferred("disabled", true)
 		
 	elif anim_name == "Block":
 		is_blocking = false 
 		hit_bodies.clear() 
-		collision_shape.disabled = true 
+		collision_shape.set_deferred("disabled", true)
 		
 	elif anim_name == "Bump":
-		# DON'T clean up here - the bump action is held, not one-shot
-		# Just loop the animation if still bumping
 		if is_bumping:
 			anim.play("Bump")
 		
 	elif anim_name == "Set":
-		# DON'T clean up here - the set action is held, not one-shot
-		# Just keep the animation ready if still setting
 		if is_setting:
 			anim.play("Set")

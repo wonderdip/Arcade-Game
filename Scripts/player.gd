@@ -203,7 +203,7 @@ func _physics_process(delta: float) -> void:
 			sprite.play("Idle")
 			player_arms.action("set", false)
 		
-	if in_blockzone and not is_on_floor():
+	if in_blockzone and not is_on_floor() and not is_blocking:
 		is_blocking = true
 		player_arms.action("block")
 	elif (is_on_floor() or not in_blockzone) and is_blocking:

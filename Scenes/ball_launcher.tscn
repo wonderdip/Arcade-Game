@@ -1,22 +1,106 @@
-[gd_scene load_steps=4 format=3 uid="uid://b337namn6ohc1"]
+[gd_scene load_steps=13 format=3 uid="uid://b337namn6ohc1"]
 
 [ext_resource type="Script" uid="uid://06d31ssg813v" path="res://Scripts/ball_launcher.gd" id="1_3khvl"]
-[ext_resource type="Texture2D" uid="uid://sex1pscpsvly" path="res://Assets/Ball_launcher.png" id="1_tg8jd"]
 [ext_resource type="PackedScene" uid="uid://txgrcwpblspl" path="res://Scenes/ball.tscn" id="2_cx0xm"]
+[ext_resource type="Texture2D" uid="uid://dtq157eixqdsn" path="res://Assets/Ball_launcher-Sheet.png" id="3_cx0xm"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y2a2h"]
+atlas = ExtResource("3_cx0xm")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cx0xm"]
+atlas = ExtResource("3_cx0xm")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_h18c6"]
+atlas = ExtResource("3_cx0xm")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8yf2h"]
+atlas = ExtResource("3_cx0xm")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2bxpb"]
+atlas = ExtResource("3_cx0xm")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2806m"]
+atlas = ExtResource("3_cx0xm")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6q0id"]
+atlas = ExtResource("3_cx0xm")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qrce4"]
+atlas = ExtResource("3_cx0xm")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_omqf4"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y2a2h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y2a2h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y2a2h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y2a2h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y2a2h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y2a2h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y2a2h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cx0xm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_h18c6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8yf2h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2bxpb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2806m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6q0id")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qrce4")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
 
 [node name="Ball_Launcher" type="Node2D"]
 script = ExtResource("1_3khvl")
 ball_scene = ExtResource("2_cx0xm")
 launch_speed = 300.0
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-texture = ExtResource("1_tg8jd")
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_omqf4")
+autoplay = "default"
+frame_progress = 9.0834845e-05
 
 [node name="BallSpawnPoint" type="Marker2D" parent="."]
 position = Vector2(0, -15)
 
 [node name="Timer" type="Timer" parent="."]
-wait_time = 1.5
+wait_time = 1.4
 autostart = true
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
