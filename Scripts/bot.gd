@@ -25,6 +25,8 @@ var is_hitting := false
 var is_bumping := false
 var is_setting := false
 var is_blocking := false
+var in_range: bool
+var in_action_range: bool
 
 func _ready() -> void:
 	sprite.play("Idle")
@@ -48,7 +50,7 @@ func _find_ball() -> void:
 func _update_ai(delta: float) -> void:
 	if not is_bot or ball == null:
 		return
-	if ball:
+	if !in_range:
 		return
 		
 	decision_timer -= delta
@@ -63,16 +65,15 @@ func _update_ai(delta: float) -> void:
 	move_dir = sign(target_x - global_position.x)
 
 	# Action decisions
-	var dist := global_position.distance_to(ball.global_position)
 	var ball_falling := ball.linear_velocity.y > 0
 
 	is_bumping = false
 	is_hitting = false
 	is_setting = false
 
-	if dist < 60 and ball_falling and is_on_floor():
+	if in_action_range and ball_falling and is_on_floor():
 		is_bumping = true
-	elif dist < 70 and not is_on_floor():
+	elif in_action_range and not is_on_floor():
 		is_hitting = true
 
 func _predict_ball_x() -> float:
@@ -99,8 +100,10 @@ func _apply_movement(delta: float) -> void:
 func _update_actions() -> void:
 	if is_bumping:
 		player_arms.action("bump")
+		sprite.play("Bump")
 	elif is_hitting:
 		player_arms.action("hit")
+		sprite.play("Hit")
 	else:
 		player_arms.action("bump", false)
 		player_arms.action("hit", false)
@@ -116,3 +119,24 @@ func _update_animation() -> void:
 	if move_dir != 0:
 		sprite.flip_h = move_dir < 0
 		player_arms.sprite_direction(move_dir)
+
+
+func _on_ball_range_body_entered(body: Node2D) -> void:
+	if body is RigidBody2D:
+		if body == get_tree().get_first_node_in_group("ball"):
+			in_range = true
+
+func _on_ball_range_body_exited(body: Node2D) -> void:
+	if body is RigidBody2D:
+		if body == get_tree().get_first_node_in_group("ball"):
+			in_range = false
+
+func _on_action_range_body_entered(body: Node2D) -> void:
+	if body is RigidBody2D:
+		if body == get_tree().get_first_node_in_group("ball"):
+			in_action_range = true
+
+func _on_action_range_body_exited(body: Node2D) -> void:
+	if body is RigidBody2D:
+		if body == get_tree().get_first_node_in_group("ball"):
+			in_action_range = false
