@@ -1,138 +1,118 @@
 extends CharacterBody2D
 
-@export var Speed: float = 200.0
-@export var JumpForce: float = -220.0
-@export var Acceleration: float = 1200.0
-@export var Friction: float = 1000.0
-@export var gravity: float = 980
-@export var fall_multiplier: float = 1.5
-@export var low_jump_multiplier: float = 1.5
-var peak_gravity_scale: float = 0.5
-var peak_threshold: float = 80.0
-var gravity_mult: float
-var speed_mult: float
+@export var speed := 200.0
+@export var jump_force := 220.0
+@export var acceleration := 1200.0
+@export var friction := 1000.0
+@export var gravity := 980.0
+@export var fall_multiplier := 1.5
 
-var is_hitting: bool = false
-var is_bumping: bool = false
-var is_setting: bool = false
-var is_blocking: bool = false
-var in_blockzone: bool = false
-
-var is_local_mode: bool = false
-var is_solo_mode: bool = false
+@export var is_bot := true
+@export var left_bound := 0.0
+@export var right_bound := 640.0
+@export var reaction_time := 0.15
+@export var aim_error := 20.0
 @onready var sprite: AnimatedSprite2D = $BotAnim
 @onready var player_arms: Node2D = $"Player Arms"
+@onready var ball_range: Area2D = $BallRange
+@onready var action_range: Area2D = $ActionRange
 
-func _enter_tree() -> void:
-	is_local_mode = Networkhandler.is_local
-	is_solo_mode = Networkhandler.is_solo
-	
+var ball: RigidBody2D
+var decision_timer := 0.0
+var move_dir := 0.0
+
+var is_hitting := false
+var is_bumping := false
+var is_setting := false
+var is_blocking := false
+
 func _ready() -> void:
-	pass
-		
+	sprite.play("Idle")
+
 func _physics_process(delta: float) -> void:
-	
-	# --- Input Handling ---
-	var direction: float
-	var jump_just_pressed: bool
-	var hit_just_pressed: bool
-	var bump_pressed: bool
-	var set_pressed: bool
-	
-	direction = Input.get_axis("left", "right")
-	hit_just_pressed = Input.is_action_just_pressed("hit")
-	bump_pressed = Input.is_action_pressed("bump")
-	set_pressed = Input.is_action_pressed("set")
-	jump_just_pressed = Input.is_action_just_pressed("jump")
-	
-	# --- Movement and Actions (rest of the code stays the same) ---
-	if is_blocking:
-		gravity_mult = 1.3
-	else:
-		gravity_mult = 1
+	if Networkhandler.settings_opened:
+		return
 
-	# Apply gravity
-	if velocity.y < 0:
-		velocity.y += gravity * 0.6 * gravity_mult * delta
-	else:
-		velocity.y += gravity * fall_multiplier * gravity_mult * delta
+	_find_ball()
+	_update_ai(delta)
+	_apply_gravity(delta)
+	_apply_movement(delta)
+	_update_actions()
+	_update_animation()
+	move_and_slide()
 
-	# Handle jump
-	if jump_just_pressed and is_on_floor():
-		velocity.y = JumpForce
-		AudioManager.play_sound_from_library("jump")
-	
-	if is_bumping or is_setting:
-		speed_mult = 0.2
-	elif is_hitting:
-		speed_mult = 0.4
-	else:
-		speed_mult = 1
-	
-	if direction != 0:
-		velocity.x = move_toward(velocity.x, direction * Speed * speed_mult, Acceleration * delta)
-	else:
-		velocity.x = move_toward(velocity.x, 0, Friction * delta)
+func _find_ball() -> void:
+	if ball == null:
+		ball = get_tree().get_first_node_in_group("ball")
 
-	# Handle attack
-	if hit_just_pressed and not is_on_floor() and not is_hitting and not is_bumping:
+func _update_ai(delta: float) -> void:
+	if not is_bot or ball == null:
+		return
+	if ball:
+		return
+		
+	decision_timer -= delta
+	if decision_timer > 0:
+		return
+
+	decision_timer = reaction_time
+
+	# Movement target
+	var target_x := _predict_ball_x()
+	target_x += randf_range(-aim_error, aim_error)
+	move_dir = sign(target_x - global_position.x)
+
+	# Action decisions
+	var dist := global_position.distance_to(ball.global_position)
+	var ball_falling := ball.linear_velocity.y > 0
+
+	is_bumping = false
+	is_hitting = false
+	is_setting = false
+
+	if dist < 60 and ball_falling and is_on_floor():
+		is_bumping = true
+	elif dist < 70 and not is_on_floor():
 		is_hitting = true
-		player_arms.swing()
-		sprite.play("Hit")
 
-	# Handle bump
-	if bump_pressed and is_on_floor() and not is_hitting and not is_setting:
-		if not is_bumping:
-			is_bumping = true
-			player_arms.bump()
-			sprite.play("Bump")
+func _predict_ball_x() -> float:
+	var time = max(ball.global_position.y - global_position.y, 0.0) / 400.0
+	var predicted = ball.global_position.x + ball.linear_velocity.x * time
+	return clamp(predicted, left_bound, right_bound)
+
+func _apply_gravity(delta: float) -> void:
+	if velocity.y < 0:
+		velocity.y += gravity * delta
 	else:
-		if is_bumping:
-			is_bumping = false
-			player_arms.stop_bump()
-			sprite.play("Idle")
-			
-	if set_pressed and is_on_floor() and not is_hitting and not is_bumping:
-		is_setting = true
-		sprite.play("Set")
-		player_arms.setting()
+		velocity.y += gravity * fall_multiplier * delta
+
+func _apply_movement(delta: float) -> void:
+	if move_dir != 0:
+		velocity.x = move_toward(
+			velocity.x,
+			move_dir * speed,
+			acceleration * delta
+		)
 	else:
-		if is_setting:
-			is_setting = false
-			sprite.play("Idle")
-			player_arms.stop_setting()
-		
-	if in_blockzone and not is_on_floor():
-		is_blocking = true
-		player_arms.block()
-	elif (is_on_floor() or not in_blockzone) and is_blocking:
-		is_blocking = false
-		player_arms.stop_block()
-		
-	# Cancel hit if you land
-	if is_on_floor() and is_hitting:
-		is_hitting = false
-		player_arms.stop_hit()
+		velocity.x = move_toward(velocity.x, 0, friction * delta)
+
+func _update_actions() -> void:
+	if is_bumping:
+		player_arms.action("bump")
+	elif is_hitting:
+		player_arms.action("hit")
+	else:
+		player_arms.action("bump", false)
+		player_arms.action("hit", false)
+
+func _update_animation() -> void:
+	if not is_on_floor():
+		sprite.play("Jump")
+	elif move_dir != 0:
+		sprite.play("Run")
+	else:
 		sprite.play("Idle")
 
-	# Pick animations
-	if not is_bumping and not is_hitting and not is_setting:
-		if not is_on_floor():
-			if in_blockzone == false:
-				sprite.play("Jump")
-			elif in_blockzone == true:
-				sprite.play("Block")
-		elif direction != 0:
-			sprite.play("Run")
-		else:
-			sprite.play("Idle")
-
-	# Flip sprite based on direction
-	if direction != 0:
-		if direction > 0:
-			sprite.flip_h = false
-		elif direction < 0:
-			sprite.flip_h = true
-		player_arms.sprite_direction(direction)
-
-	move_and_slide()
+	if move_dir != 0:
+		sprite.flip_h = move_dir < 0
+		player_arms.sprite_direction(move_dir)

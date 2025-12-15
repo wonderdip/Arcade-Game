@@ -3,7 +3,7 @@ extends AudioStreamPlayer2D
 @export var audio_library: AudioLibrary
 @export var custom_max_polyphony: int = 32
 
-var master_vol: float = 50.0
+var master_vol: float = 100.0
 var sfx_vol: float = 50.0
 var music_vol: float = 50.0
 
@@ -30,16 +30,28 @@ func play_sound_from_library(_tag: String) -> void:
 		return
 	
 	# Choose slider based on effect type
-	var slider_value := music_vol if sound_effect.type == SoundEffect.Type.Music else sfx_vol
+	var type_vol := music_vol if sound_effect.type == SoundEffect.Type.Music else sfx_vol
 	
-	# Convert 0–100 slider to a nice curve and then to dB
-	var normalized = pow(slider_value / 75.0, 2.5) # linear 0..1 curve shaping
-	var vol_db = linear_to_db(max(normalized, 0.00001)) # avoid log(0)
+	# Convert sliders to linear
+	var master_linear := slider_to_linear(master_vol)
+	var type_linear := slider_to_linear(type_vol)
+	var final_linear := master_linear * type_linear
+	
+	if final_linear <= 0.00001:
+		return
+		
+	# Convert to dB (avoid silence math issues)
+	var vol_db := linear_to_db(max(final_linear, 0.00001))
+	vol_db = min(vol_db, -9.0)
 	
 	var voice_id : int = polyphonic_playback.play_stream(sound_effect.stream, 0.0, vol_db, 1.0)
 	if voice_id < 0:
 		printerr("Failed to start stream for", _tag)
 		return
+		
+func slider_to_linear(value: float) -> float:
+	var normalized = clamp(value / 100.0, 0.0, 1.0)
+	return pow(normalized, 1.8) # perceptual curve
 
 func change_sfx_vol(volume: float) -> void:
 	sfx_vol = clamp(volume, 0.0, 100.0)

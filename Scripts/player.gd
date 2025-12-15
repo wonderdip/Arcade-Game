@@ -12,7 +12,6 @@ extends CharacterBody2D
 
 var fallbackframe := preload("res://Assets/Characters/Player Sprite Frames/P1.tres")
 
-
 var peak_gravity_scale: float = 0.5
 var peak_threshold: float = 80.0
 var gravity_mult: float
@@ -189,7 +188,7 @@ func _physics_process(delta: float) -> void:
 			
 	else:
 		if is_bumping:
-			is_bumping = false
+			is_bumping = false 
 			player_arms.action("bump", false)
 			sprite.play("Idle")
 			
