@@ -8,18 +8,18 @@ extends CharacterBody2D
 @export var fall_multiplier := 1.5
 
 @export var is_bot := true
-@export var left_bound := 128.0  # Stay on right side of net
+@export var left_bound := 128.0
 @export var right_bound := 256.0
 @export var reaction_time := 0.15
 @export var aim_error := 20.0
 
-# Difficulty settings
 @export_enum("Easy", "Normal", "Hard", "Expert") var difficulty := "Normal"
 
 @onready var sprite: AnimatedSprite2D = $BotAnim
 @onready var player_arms: Node2D = $"Player Arms"
 @onready var ball_range: Area2D = $BallRange
 @onready var bump_range: Area2D = $BumpRange
+@onready var label: Label = $Label
 
 var ball: RigidBody2D
 var decision_timer := 0.0
@@ -35,7 +35,6 @@ var in_set_range: bool
 var in_hit_range: bool
 var in_blockzone: bool = false
 
-# Enhanced AI state
 var predicted_landing_pos: Vector2
 var should_jump := false
 var action_cooldown := 0.0
@@ -55,11 +54,8 @@ func _ready() -> void:
 func load_character():
 	var char_stat: CharacterStat = null
 	
-	# If we have a character stat, apply it
 	if char_stat != null:
 		sprite.sprite_frames = char_stat.sprite_frame
-		
-		# Apply character stats
 		speed = char_stat.Speed * 2.0
 		jump_force = char_stat.Jumping * 4.0
 		var recv_norm = char_stat.Recieving / 100.0
@@ -73,7 +69,6 @@ func load_character():
 			player_arms.downward_force = char_stat.Hitting / 2
 			player_arms.hit_force = char_stat.Hitting
 	else:
-		# Fallback to default P3 frames
 		sprite.sprite_frames = fallbackframe
 		
 func _apply_difficulty_settings() -> void:
@@ -98,10 +93,8 @@ func _apply_difficulty_settings() -> void:
 
 func _physics_process(delta: float) -> void:
 	_find_ball()
-	
 	if Networkhandler.settings_opened:
 		return
-			
 			
 	_update_ai(delta)
 	_apply_gravity(delta)
@@ -125,7 +118,6 @@ func _update_ai(delta: float) -> void:
 		return
 		
 	if not in_range:
-		# Return to center-back position when ball is far
 		var defensive_position = (left_bound + right_bound) / 2 - 20
 		var distance_to_position = abs(defensive_position - global_position.x)
 		if distance_to_position > 5:
@@ -135,7 +127,6 @@ func _update_ai(delta: float) -> void:
 		should_jump = false
 		return
 		
-	# Don't make new decisions while executing an action
 	if action_hold_timer > 0:
 		var horiz_distance = abs(ball.global_position.x - global_position.x)
 		
@@ -151,26 +142,21 @@ func _update_ai(delta: float) -> void:
 
 	decision_timer = reaction_time
 
-	# Track ball position
 	var horizontal_distance = abs(ball.global_position.x - global_position.x)
 	var target_x = ball.global_position.x
 	var distance_to_net = abs(ball.global_position.x - 128)
 	
-	# If ball is close to net and on our side, position closer to net
 	if ball.global_position.x > 128 and distance_to_net < 40:
 		target_x = 128 + 30
 	
-	# Add some error based on difficulty
 	target_x += randf_range(-aim_error, aim_error)
 	target_x = clamp(target_x, left_bound, right_bound)
 	
-	# Stop moving if we're close enough
 	if horizontal_distance < 5:
 		move_dir = 0
 	else:
 		move_dir = sign(target_x - global_position.x)
 	
-	# Only decide new actions if we're not in cooldown
 	if action_cooldown <= 0 and in_range:
 		_decide_action()
 
@@ -187,10 +173,15 @@ func _decide_action() -> void:
 	var ball_height_diff = global_position.y - ball.global_position.y
 	var ball_falling = ball.linear_velocity.y > 0
 	var distance_to_net = abs(global_position.x - 128)
+	label.text = str(ball_height_diff)
 	
-	# Reset touch counter when ball crosses to opponent's side
 	if ball.global_position.x <= 128:
 		player_arms.touch_counter = 0
+	
+	# Store the PREVIOUS action before resetting (but not preparatory states)
+	if current_action != "" and current_action not in ["preparing_hit", "preparing_block"]:
+		last_action = current_action
+		print("Stored last_action: ", last_action)
 		
 	# Reset all actions first
 	is_bumping = false
@@ -200,11 +191,10 @@ func _decide_action() -> void:
 	should_jump = false
 	current_action = ""
 	
-	# DECISION PRIORITY (most specific first):
+	# DECISION PRIORITY
 	
 	# 1. Very low ball - BUMP
 	if is_on_floor() and ball_falling and in_bump_range:
-		last_action = current_action
 		current_action = "bump"
 		is_bumping = true
 		should_jump = false
@@ -214,7 +204,6 @@ func _decide_action() -> void:
 	
 	# 2. High ball after 3 touches - HIT
 	if in_hit_range and not is_on_floor():
-		last_action = current_action
 		current_action = "hit"
 		is_hitting = true
 		action_hold_timer = 0.3
@@ -223,16 +212,16 @@ func _decide_action() -> void:
 	
 	# 3. Medium ball on ground - SET
 	if is_on_floor() and in_set_range:
-		last_action = current_action
 		current_action = "set"
 		is_setting = true
-		action_hold_timer = 0.5
-		action_cooldown = 0.4
+		if distance_to_net > 50:
+			action_hold_timer = 0.5
+			action_cooldown = 0.5
 		return
 	
 	# 4. Ball coming over net - BLOCK
 	if in_blockzone and ball.global_position.x < 128 and ball_height_diff > 80 and ball_height_diff < 110:
-		if ball.linear_velocity.x > 0:  # Ball coming toward our side
+		if ball.linear_velocity.x > 0:
 			if is_on_floor():
 				should_jump = true
 				current_action = "preparing_block"
@@ -245,23 +234,23 @@ func _decide_action() -> void:
 	
 	# 5. Position for jump after set
 	if (
-		distance_to_net > 10 and
+		distance_to_net > 20 and
 		distance_to_net < 70 and
-		ball_height_diff > 140 and
-		ball_height_diff < 160 and
+		ball_height_diff > 120 and
+		ball_height_diff < 140 and
 		ball.global_position.x > 128 and
 		player_arms.touch_counter >= 2 and
 		is_on_floor() and
 		not in_blockzone and 
 		last_action == "set"
 	):
-		print(ball_height_diff)
+		print("Jump after set - height diff:", ball_height_diff)
 		should_jump = true
 		return
 	
 	# Position for jump after bump
 	if (
-		distance_to_net > 10 and
+		distance_to_net > 20 and
 		distance_to_net < 50 and
 		ball_height_diff > 120 and
 		ball_height_diff < 140 and
@@ -271,25 +260,22 @@ func _decide_action() -> void:
 		not in_blockzone and 
 		last_action == "bump"
 	):
-		print(ball_height_diff)
+		print("Jump after bump - height diff:", ball_height_diff)
 		should_jump = true
 		return
 		
 func _apply_gravity(delta: float) -> void:
-	
 	if is_blocking:
 		gravity_mult = 1.3
 	else:
 		gravity_mult = 1.0
 
-	# Apply gravity with multiplier
 	if velocity.y < 0:
 		velocity.y += gravity * 0.6 * gravity_mult * delta
 	else:
 		velocity.y += gravity * fall_multiplier * gravity_mult * delta
 		
 func _apply_movement(delta: float) -> void:
-	# Jump if needed
 	if should_jump and is_on_floor():
 		velocity.y = -jump_force
 		should_jump = false
@@ -301,7 +287,6 @@ func _apply_movement(delta: float) -> void:
 	else:
 		speed_mult = 1
 	
-	# Move horizontally
 	if move_dir != 0:
 		velocity.x = move_toward(
 			velocity.x,
@@ -325,23 +310,19 @@ func _update_actions() -> void:
 		player_arms.action("block")
 		sprite.play("Block")
 	else:
-		# Release all actions
 		player_arms.action("bump", false)
 		player_arms.action("hit", false)
 		player_arms.action("set", false)
 		player_arms.action("block", false)
 
 func _update_animation() -> void:
-	
 	if in_blockzone or not is_on_floor() or is_setting or is_bumping:
 		sprite.flip_h = true
 		player_arms.sprite_direction(-1)
 	elif move_dir != 0:
-		# Only change direction when on ground and moving
 		sprite.flip_h = move_dir < 0
 		player_arms.sprite_direction(move_dir)
 	
-	# Handle animations
 	if not is_bumping and not is_hitting and not is_setting:
 		if not is_on_floor():
 			if in_blockzone:
