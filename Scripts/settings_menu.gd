@@ -24,10 +24,12 @@ signal settings_deleted
 @onready var ball_launcher: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BallLauncher
 @onready var launcher_options: OptionButton = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/LauncherOptions
 
-@onready var bot_on: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BotOn
-@onready var bot_difficulty: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BotDifficulty
 @onready var bot_check: CheckBox = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotCheck
+@onready var bot_difficulty: OptionButton = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotDifficulty
 @onready var bot_options: OptionButton = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotOptions
+@onready var bot_on: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BotOn
+@onready var difficulty: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/Difficulty
+@onready var bot_character: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BotCharacter
 
 var launcher_instance: PackedScene = preload("res://Scenes/ball_launcher.tscn")
 var bot_instance: PackedScene = preload("res://Scenes/bot.tscn")
@@ -63,14 +65,16 @@ func _ready() -> void:
 		change_menu(1)
 		game.show()
 		game.grab_focus()
-		launcher_on.show()
-		launcher_check.show()
-		ball_launcher.show()
-		launcher_options.show()
-		bot_difficulty.show()
-		bot_on.show()
-		bot_options.show()
-		bot_check.show()
+		#launcher_on.show()
+		#launcher_check.show()
+		#ball_launcher.show()
+		#launcher_options.show()
+		#bot_difficulty.show()
+		#bot_on.show()
+		#bot_options.show()
+		#bot_check.show()
+		#difficulty.show()
+		#bot_character.show()
 		_setup_focus_neighbors()
 		
 		var existing_launcher = _find_existing_launcher()
@@ -82,14 +86,14 @@ func _ready() -> void:
 			launcher_check.button_pressed = false
 	else:
 		game.hide()
-		launcher_on.hide()
-		launcher_check.hide()
-		ball_launcher.hide()
-		launcher_options.hide()
-		bot_check.hide()
-		bot_difficulty.hide()
-		bot_on.hide()
-		bot_options.hide()
+		#launcher_on.hide()
+		#launcher_check.hide()
+		#ball_launcher.hide()
+		#launcher_options.hide()
+		#bot_check.hide()
+		#bot_difficulty.hide()
+		#bot_on.hide()
+		#bot_options.hide()
 	
 	# Find and disable settings/exit buttons
 	_disable_background_ui()
@@ -301,8 +305,8 @@ func _on_sfx_vol_value_changed(value) -> void:
 func _on_music_vol_value_changed(value) -> void:
 	AudioManager.change_music_vol(value)
 
-func _on_check_box_toggled(toggled_on: bool) -> void:
-	pass
+func _on_bot_check_toggled(toggled_on: bool) -> void:
+	pass # Replace with function body.
 
-func _on_bot_options_item_selected(index: int) -> void:
-	pass
+func _on_bot_difficulty_item_selected(index: int) -> void:
+	pass # Replace with function body.

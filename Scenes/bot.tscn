@@ -9,22 +9,22 @@ radius = 7.0
 height = 26.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ch2fi"]
-radius = 180.0
+radius = 140.0
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_gdc2h"]
-radius = 26.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gdc2h"]
+radius = 22.0
+height = 54.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ch2fi"]
-radius = 13.0
-height = 62.0
+radius = 16.0
+height = 44.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dl46b"]
-radius = 30.016663
+radius = 15.0
 
 [node name="Bot" type="CharacterBody2D"]
 collision_mask = 156
 script = ExtResource("1_dd6s3")
-difficulty = "Expert"
 
 [node name="BotAnim" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -1)
@@ -46,25 +46,31 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_ch2fi")
 
 [node name="BumpRange" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BumpRange"]
-shape = SubResource("CircleShape2D_gdc2h")
+position = Vector2(0, -7)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_gdc2h")
 
 [node name="SetRange" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SetRange"]
+position = Vector2(-1, -14)
 shape = SubResource("CapsuleShape2D_ch2fi")
 
 [node name="HitRange" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitRange"]
-position = Vector2(8, -10)
+position = Vector2(-7, -14)
 shape = SubResource("CircleShape2D_dl46b")
 
 [connection signal="body_entered" from="BallRange" to="." method="_on_ball_range_body_entered"]
