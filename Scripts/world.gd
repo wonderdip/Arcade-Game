@@ -183,7 +183,7 @@ func _on_block_zone_body_entered(body: Node2D):
 func _on_block_zone_body_exited(body: Node2D) -> void:
 	if body is CharacterBody2D and "in_blockzone" in body:
 		body.in_blockzone = false
-
+		
 func _on_ball_timer_timeout() -> void:
 	if total_players == Networkhandler.MAX_CLIENTS:
 		if not ball_spawned:

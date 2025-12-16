@@ -9,6 +9,7 @@ var is_blocking: bool = false
 var is_setting: bool = false
 var facing_right: bool = true
 var hit_bodies: Dictionary = {}  # Tracks last hit time for each ball
+var touch_counter: int = 0
 
 @export var hit_force: float = 50.0
 @export var downward_force: float = 20.0
@@ -145,6 +146,8 @@ func _apply_hit_to_ball(body: RigidBody2D):
 	if is_hitting or is_blocking:
 		collision_shape.set_deferred("disabled", true)  # CHANGED: Use set_deferred consistently
 		
+	touch_counter += 1
+	print(touch_counter)
 	# Cap speed
 	await get_tree().process_frame
 	if body.linear_velocity.length() > max_ball_speed:
@@ -168,7 +171,7 @@ func _apply_hit_to_ball_server(body: RigidBody2D, contact_point: Vector2, face_r
 	await get_tree().process_frame
 	if body.linear_velocity.length() > max_ball_speed:
 		body.linear_velocity = body.linear_velocity.normalized() * max_ball_speed
-
+		
 		
 func calculate_ball_hit(
 	body: RigidBody2D,
