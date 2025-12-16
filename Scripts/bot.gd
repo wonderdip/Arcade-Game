@@ -94,6 +94,7 @@ func _apply_difficulty_settings() -> void:
 			reaction_time = 0.05
 			aim_error = 1.0
 			speed = 180.0
+			player_arms.ball_control = 1
 
 func _physics_process(delta: float) -> void:
 	_find_ball()
@@ -302,7 +303,7 @@ func _update_actions() -> void:
 
 func _update_animation() -> void:
 	
-	if in_blockzone or not is_on_floor():
+	if in_blockzone or not is_on_floor() or is_setting or is_bumping:
 		sprite.flip_h = true
 		player_arms.sprite_direction(-1)
 	elif move_dir != 0:
