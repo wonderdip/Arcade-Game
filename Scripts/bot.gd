@@ -91,8 +91,8 @@ func _apply_difficulty_settings() -> void:
 			aim_error = 5.0
 			speed = 160.0
 		"Expert":
-			reaction_time = 0.05
-			aim_error = 1.0
+			reaction_time = 0.005
+			aim_error = .5
 			speed = 180.0
 			player_arms.ball_control = 1
 
@@ -126,7 +126,7 @@ func _update_ai(delta: float) -> void:
 		
 	if not in_range:
 		# Return to center-back position when ball is far
-		var defensive_position = (left_bound + right_bound) / 2 + 20
+		var defensive_position = (left_bound + right_bound) / 2 - 20
 		var distance_to_position = abs(defensive_position - global_position.x)
 		if distance_to_position > 5:
 			move_dir = sign(defensive_position - global_position.x)
@@ -204,6 +204,7 @@ func _decide_action() -> void:
 	
 	# 1. Very low ball - BUMP
 	if is_on_floor() and ball_falling and in_bump_range:
+		last_action = current_action
 		current_action = "bump"
 		is_bumping = true
 		should_jump = false
@@ -213,6 +214,7 @@ func _decide_action() -> void:
 	
 	# 2. High ball after 3 touches - HIT
 	if in_hit_range and not is_on_floor():
+		last_action = current_action
 		current_action = "hit"
 		is_hitting = true
 		action_hold_timer = 0.3
@@ -221,14 +223,15 @@ func _decide_action() -> void:
 	
 	# 3. Medium ball on ground - SET
 	if is_on_floor() and in_set_range:
+		last_action = current_action
 		current_action = "set"
 		is_setting = true
-		action_hold_timer = 0.55
+		action_hold_timer = 0.5
 		action_cooldown = 0.4
 		return
 	
 	# 4. Ball coming over net - BLOCK
-	if in_blockzone and ball.global_position.x < 128:
+	if in_blockzone and ball.global_position.x < 128 and ball_height_diff > 80 and ball_height_diff < 110:
 		if ball.linear_velocity.x > 0:  # Ball coming toward our side
 			if is_on_floor():
 				should_jump = true
@@ -240,8 +243,35 @@ func _decide_action() -> void:
 				action_cooldown = 0.6
 			return
 	
-	# 5. Position for spike near net
-	if distance_to_net < 50 and ball_height_diff > -10 and ball.global_position.x > 128 and player_arms.touch_counter >= 3:
+	# 5. Position for jump after set
+	if (
+		distance_to_net > 10 and
+		distance_to_net < 70 and
+		ball_height_diff > 140 and
+		ball_height_diff < 160 and
+		ball.global_position.x > 128 and
+		player_arms.touch_counter >= 2 and
+		is_on_floor() and
+		not in_blockzone and 
+		last_action == "set"
+	):
+		print(ball_height_diff)
+		should_jump = true
+		return
+	
+	# Position for jump after bump
+	if (
+		distance_to_net > 10 and
+		distance_to_net < 50 and
+		ball_height_diff > 120 and
+		ball_height_diff < 140 and
+		ball.global_position.x > 128 and
+		player_arms.touch_counter >= 3 and
+		is_on_floor() and
+		not in_blockzone and 
+		last_action == "bump"
+	):
+		print(ball_height_diff)
 		should_jump = true
 		return
 		
@@ -265,7 +295,7 @@ func _apply_movement(delta: float) -> void:
 		should_jump = false
 		
 	if is_bumping or is_setting:
-		speed_mult = 0.2
+		speed_mult = 0.4
 	elif is_hitting:
 		speed_mult = 0.4
 	else:

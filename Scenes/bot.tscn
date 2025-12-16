@@ -12,12 +12,12 @@ height = 26.0
 radius = 150.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gdc2h"]
-radius = 22.0
+radius = 15.0
 height = 54.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ch2fi"]
-radius = 16.0
-height = 44.0
+radius = 9.0
+height = 58.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dl46b"]
 radius = 15.0
@@ -40,6 +40,7 @@ shape = SubResource("CapsuleShape2D_gm32c")
 ball_control = 0.0
 
 [node name="BallRange" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
@@ -47,7 +48,6 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_ch2fi")
 
 [node name="BumpRange" type="Area2D" parent="."]
-visible = false
 collision_layer = 0
 collision_mask = 2
 
@@ -62,7 +62,7 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="SetRange"]
-position = Vector2(-1, -14)
+position = Vector2(-1, -8)
 shape = SubResource("CapsuleShape2D_ch2fi")
 
 [node name="HitRange" type="Area2D" parent="."]
