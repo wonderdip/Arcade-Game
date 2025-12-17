@@ -144,7 +144,7 @@ func _apply_hit_to_ball(body: RigidBody2D):
 	body.apply_impulse(impulse, contact_point - body.global_position)
 	
 	if is_hitting or is_blocking:
-		collision_shape.set_deferred("disabled", true)  # CHANGED: Use set_deferred consistently
+		collision_shape.set_deferred("disabled", true)
 		
 	touch_counter += 1
 	print(touch_counter)

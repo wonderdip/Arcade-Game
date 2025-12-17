@@ -47,6 +47,7 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_ch2fi")
 
 [node name="BumpRange" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
@@ -56,6 +57,7 @@ rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_gdc2h")
 
 [node name="SetRange" type="Area2D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
@@ -71,20 +73,6 @@ collision_mask = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="HitRange"]
 position = Vector2(-7, -14)
 shape = SubResource("CircleShape2D_dl46b")
-
-[node name="Label" type="Label" parent="."]
-offset_left = 11.0
-offset_top = -25.0
-offset_right = 51.0
-offset_bottom = -2.0
-text = "s"
-
-[node name="Label2" type="Label" parent="."]
-offset_left = 11.0
-offset_top = -40.0
-offset_right = 51.0
-offset_bottom = -17.0
-text = "s"
 
 [connection signal="body_entered" from="BallRange" to="." method="_on_ball_range_body_entered"]
 [connection signal="body_exited" from="BallRange" to="." method="_on_ball_range_body_exited"]

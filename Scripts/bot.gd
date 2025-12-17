@@ -19,12 +19,12 @@ extends CharacterBody2D
 @onready var player_arms: Node2D = $"Player Arms"
 @onready var ball_range: Area2D = $BallRange
 @onready var bump_range: Area2D = $BumpRange
-@onready var label: Label = $Label
-@onready var label_2: Label = $Label2
 
 var ball: RigidBody2D
 var decision_timer := 0.0
 var move_dir := 0.0
+var min_ball_distance:= 0.0
+var distance_to_net := 0
 
 var is_hitting := false
 var is_bumping := false
@@ -45,19 +45,9 @@ var last_action := ""
 var gravity_mult: float = 1.0
 var speed_mult: float
 
-var fallbackframe := preload("res://Assets/Characters/Player Sprite Frames/P1.tres")
-
-# Character resources for dynamic loading
-@export var character_resources: Array[CharacterStat] = [
-	preload("res://Scripts/Resources/P1.tres"),
-	preload("res://Scripts/Resources/P2.tres"),
-	preload("res://Scripts/Resources/P3.tres")
-]
-
 func _ready() -> void:
 	sprite.play("Idle")
 	_apply_difficulty_settings()
-	load_character_by_index(0)
 
 # Method to set difficulty from index (0=Easy, 1=Normal, 2=Hard, 3=Expert)
 func set_difficulty_from_index(index: int) -> void:
@@ -74,53 +64,37 @@ func set_difficulty_from_index(index: int) -> void:
 func _apply_difficulty_settings() -> void:
 	match difficulty:
 		"Easy":
-			reaction_time = 0.3
-			aim_error = 20.0
-			speed = speed * 0.8
+			reaction_time = 0.1
+			aim_error = 3.0
+			speed = 200 * 0.8
+			jump_force = 250 * 0.9
+			player_arms.ball_control = 0.3
+			player_arms.downward_force = 25
+			player_arms.hit_force = 50
 		"Normal":
-			reaction_time = 0.2
-			aim_error = 10.0
+			reaction_time = 0.5
+			aim_error = 1.0
+			jump_force = 240 
+			player_arms.ball_control = 0.6
+			player_arms.downward_force = 30
+			player_arms.hit_force = 60
 		"Hard":
 			reaction_time = 0.005
 			aim_error = 0.5
-			speed = speed * 1.2
+			speed = 200 * 1.2
+			jump_force = 250
+			player_arms.ball_control = 0.8
+			player_arms.downward_force = 40
+			player_arms.hit_force = 70
 		"Expert":
-			reaction_time = 0.0005
+			reaction_time = 0.00005
 			aim_error = 0.05
-			speed = speed * 1.5
+			min_ball_distance = 1
+			speed = 200 * 1.5
+			jump_force = 250 * 1.2
 			player_arms.ball_control = 1
-			
-# Method to load character by index (0=P1, 1=P2, 2=P3)
-func load_character_by_index(index: int) -> void:
-	if index < 0 or index >= character_resources.size():
-		index = 0
-	
-	var char_stat: CharacterStat = character_resources[index]
-	
-	if char_stat != null:
-		sprite.sprite_frames = char_stat.sprite_frame
-		speed = char_stat.Speed * 2.0
-		jump_force = char_stat.Jumping * 4.0
-		var recv_norm = char_stat.Recieving / 100.0
-		var set_norm  = char_stat.Setting / 100.0
-		player_arms.ball_control = (recv_norm + set_norm) / 2.0
-		
-		if char_stat.Hitting < 50:
-			player_arms.downward_force = -char_stat.Hitting / 4
-			player_arms.hit_force = char_stat.Hitting * 0.6
-		else:
-			player_arms.downward_force = char_stat.Hitting / 2
-			player_arms.hit_force = char_stat.Hitting
-		
-		# Reapply difficulty settings after character change
-		_apply_difficulty_settings()
-		
-		print("Bot character loaded: P", index + 1)
-	else:
-		sprite.sprite_frames = fallbackframe
-		print("Failed to load character, using fallback")
-	
-
+			player_arms.downward_force = 50
+			player_arms.hit_force = 90
 
 func _physics_process(delta: float) -> void:
 	_find_ball()
@@ -161,7 +135,7 @@ func _update_ai(delta: float) -> void:
 	if action_hold_timer > 0:
 		var horiz_distance = abs(ball.global_position.x - global_position.x)
 		
-		if horiz_distance > 15:
+		if horiz_distance > min_ball_distance:
 			move_dir = sign(ball.global_position.x - global_position.x)
 		else:
 			move_dir = 0
@@ -175,7 +149,7 @@ func _update_ai(delta: float) -> void:
 
 	var horizontal_distance = abs(ball.global_position.x - global_position.x)
 	var target_x = ball.global_position.x
-	var distance_to_net = abs(ball.global_position.x - 128)
+	distance_to_net = abs(ball.global_position.x - 128)
 	
 	if ball.global_position.x > 128 and distance_to_net < 40:
 		target_x = 128 + 30
@@ -193,7 +167,7 @@ func _update_ai(delta: float) -> void:
 
 func _handle_action_holding(_delta: float) -> void:
 	if action_hold_timer <= 0:
-		if current_action not in ["preparing_hit", "preparing_block"]:
+		if current_action not in ["preparing_block"]:
 			is_bumping = false
 			is_hitting = false
 			is_setting = false
@@ -203,15 +177,12 @@ func _handle_action_holding(_delta: float) -> void:
 func _decide_action() -> void:
 	var ball_height_diff = global_position.y - ball.global_position.y
 	var ball_falling = ball.linear_velocity.y > 0
-	var distance_to_net = abs(global_position.x - 128)
-	label.text = str(ball_height_diff)
-	label_2.text = str(difficulty)
 	
 	if ball.global_position.x <= 128:
 		player_arms.touch_counter = 0
 	
 	# Store the PREVIOUS action before resetting (but not preparatory states)
-	if current_action != "" and current_action not in ["preparing_hit", "preparing_block"]:
+	if current_action != "" and current_action not in ["preparing_block"]:
 		last_action = current_action
 		
 	# Reset all actions first
@@ -234,7 +205,7 @@ func _decide_action() -> void:
 		return
 	
 	# 2. High ball after 3 touches - HIT
-	if in_hit_range and not is_on_floor():
+	if in_hit_range and not is_on_floor() and not last_action == "hit":
 		current_action = "hit"
 		is_hitting = true
 		action_hold_timer = 0.3
@@ -251,7 +222,7 @@ func _decide_action() -> void:
 		return
 	
 	# 4. Ball coming over net - BLOCK
-	if in_blockzone and ball.global_position.x < 128 and ball_height_diff > 80 and ball_height_diff < 110:
+	if in_blockzone and ball.global_position.x < 128 and ball_height_diff > 80 and ball_height_diff < 110 and not last_action == "block":
 		if ball.linear_velocity.x > 0:
 			if is_on_floor():
 				should_jump = true
@@ -259,7 +230,7 @@ func _decide_action() -> void:
 			else:
 				current_action = "block"
 				is_blocking = true
-				action_hold_timer = 0.3
+				action_hold_timer = 0.5
 				action_cooldown = 0.6
 			return
 	
@@ -293,8 +264,9 @@ func _decide_action() -> void:
 		return
 		
 func _apply_gravity(delta: float) -> void:
-	if is_blocking:
-		gravity_mult = 1.3
+	if is_blocking or in_blockzone:
+		gravity_mult = jump_force/200
+		print(" Gravity: ", gravity_mult," Jump Height: ", jump_force," Speed: ", speed)
 	else:
 		gravity_mult = 1.0
 
@@ -344,7 +316,7 @@ func _update_actions() -> void:
 		player_arms.action("block", false)
 
 func _update_animation() -> void:
-	if in_blockzone or not is_on_floor() or is_setting or is_bumping:
+	if in_blockzone or not is_on_floor() or is_setting or is_bumping or is_blocking and distance_to_net < 40:
 		sprite.flip_h = true
 		player_arms.sprite_direction(-1)
 	elif move_dir != 0:

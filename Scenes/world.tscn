@@ -55,7 +55,7 @@ height = 74.0
 size = Vector2(12, 116)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8j60k"]
-size = Vector2(24, 87.25)
+size = Vector2(24, 123.25)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o06y3"]
 size = Vector2(156, 15.5)
@@ -173,7 +173,7 @@ position = Vector2(128, 104)
 collision_layer = 128
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Block Zone"]
-position = Vector2(0, -0.375)
+position = Vector2(0, -18.375)
 shape = SubResource("RectangleShape2D_8j60k")
 
 [node name="Hover Zone" type="Area2D" parent="."]

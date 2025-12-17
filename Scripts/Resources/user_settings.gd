@@ -9,7 +9,6 @@ extends Resource
 @export var vsync_on: bool = false
 
 @export_range(0, 3) var bot_difficulty: int = 1  # 0=Easy, 1=Normal, 2=Hard, 3=Expert
-@export_range(0, 2) var bot_character: int = 0  # 0=P1, 1=P2, 2=P3
 
 func save() -> void:
 	var error = ResourceSaver.save(self, "user://user_settings.tres")

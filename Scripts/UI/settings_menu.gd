@@ -26,10 +26,8 @@ signal settings_deleted
 
 @onready var bot_check: CheckBox = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotCheck
 @onready var bot_difficulty: OptionButton = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotDifficulty
-@onready var bot_options: OptionButton = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotOptions
 @onready var bot_on: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BotOn
 @onready var difficulty: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/Difficulty
-@onready var bot_character: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BotCharacter
 
 var launcher_instance: PackedScene = preload("res://Scenes/ball_launcher.tscn")
 var bot_instance: PackedScene = preload("res://Scenes/bot.tscn")
@@ -97,8 +95,6 @@ func _load_settings_to_ui() -> void:
 	# Bot settings
 	if bot_difficulty:
 		bot_difficulty.selected = user_settings.bot_difficulty
-	if bot_options:
-		bot_options.selected = user_settings.bot_character
 
 func _save_settings() -> void:
 	"""Save current settings to disk"""
@@ -136,9 +132,6 @@ func _setup_focus_neighbors():
 	
 	bot_check.focus_neighbor_left = game.get_path()
 	bot_check.focus_neighbor_top = launcher_check.get_path()
-	bot_check.focus_neighbor_right = bot_options.get_path()
-	bot_options.focus_neighbor_left = bot_check.get_path()
-	bot_options.focus_neighbor_top = launcher_options.get_path()
 	
 	# Video panel focus
 	video.focus_neighbor_right = screen_mode.get_path()
@@ -266,7 +259,6 @@ func _spawn_bot():
 	
 	# Apply saved settings to the bot
 	new_bot.set_difficulty_from_index(user_settings.bot_difficulty)
-	new_bot.load_character_by_index(user_settings.bot_character)
 	print("Spawned bot with difficulty:", _get_difficulty_name(user_settings.bot_difficulty))
 	
 func _remove_bot():
@@ -286,17 +278,13 @@ func _on_bot_check_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		bot_difficulty.show()
 		difficulty.show()
-		bot_options.show()
-		bot_character.show()
 		if launcher_check.button_pressed:
 			_remove_launcher()
 			launcher_check.button_pressed = false
 		_spawn_bot()
 	else:
-		bot_character.hide()
 		bot_difficulty.hide()
 		difficulty.hide()
-		bot_options.hide()
 		_remove_bot()
 		 
 func _on_bot_difficulty_item_selected(index: int) -> void:
@@ -308,16 +296,6 @@ func _on_bot_difficulty_item_selected(index: int) -> void:
 	if existing_bot:
 		existing_bot.set_difficulty_from_index(index)
 		print("Updated bot difficulty to:", _get_difficulty_name(index))
-
-func _on_bot_options_item_selected(index: int) -> void:
-	user_settings.bot_character = index
-	_save_settings()
-	
-	# If bot exists, update its character
-	var existing_bot = _find_bot()
-	if existing_bot:
-		existing_bot.load_character_by_index(index)
-		print("Updated bot character to P", index + 1)
 
 # ========================================
 # MENU NAVIGATION
