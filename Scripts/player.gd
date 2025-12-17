@@ -192,7 +192,7 @@ func _physics_process(delta: float) -> void:
 			player_arms.action("bump", false)
 			sprite.play("Idle")
 			
-	if set_pressed and not is_hitting and not is_bumping:
+	if set_pressed and not is_hitting and not is_bumping and is_on_floor():
 		is_setting = true
 		sprite.play("Set")
 		player_arms.action("set")
