@@ -20,6 +20,7 @@ extends CharacterBody2D
 @onready var ball_range: Area2D = $BallRange
 @onready var bump_range: Area2D = $BumpRange
 @onready var label: Label = $Label
+@onready var label_2: Label = $Label2
 
 var ball: RigidBody2D
 var decision_timer := 0.0
@@ -76,19 +77,18 @@ func _apply_difficulty_settings() -> void:
 		"Easy":
 			reaction_time = 0.3
 			aim_error = 20.0
-			speed = 120.0
+			speed = speed * 0.8
 		"Normal":
 			reaction_time = 0.2
 			aim_error = 10.0
-			speed = 140.0
 		"Hard":
-			reaction_time = 0.1
-			aim_error = 5.0
-			speed = 160.0
-		"Expert":
 			reaction_time = 0.005
 			aim_error = .5
-			speed = 180.0
+			speed = speed * 1.2
+		"Expert":
+			reaction_time = 0.0005
+			aim_error = .05
+			speed = speed * 1.5
 			player_arms.ball_control = 1
 
 func _physics_process(delta: float) -> void:
@@ -174,7 +174,7 @@ func _decide_action() -> void:
 	var ball_falling = ball.linear_velocity.y > 0
 	var distance_to_net = abs(global_position.x - 128)
 	label.text = str(ball_height_diff)
-	
+	label_2.text = str(distance_to_net)
 	if ball.global_position.x <= 128:
 		player_arms.touch_counter = 0
 	
@@ -250,14 +250,13 @@ func _decide_action() -> void:
 	
 	# Position for jump after bump
 	if (
-		distance_to_net > 20 and
-		distance_to_net < 50 and
-		ball_height_diff > 120 and
-		ball_height_diff < 140 and
+		distance_to_net > 5 and
+		distance_to_net < 40 and
+		ball_height_diff > 80 and
+		ball_height_diff < 90 and
 		ball.global_position.x > 128 and
 		player_arms.touch_counter >= 3 and
 		is_on_floor() and
-		not in_blockzone and 
 		last_action == "bump"
 	):
 		print("Jump after bump - height diff:", ball_height_diff)

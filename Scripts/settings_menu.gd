@@ -38,7 +38,23 @@ var bot_instance: PackedScene = preload("res://Scenes/bot.tscn")
 var settings_button: Button = null
 var exit_button_ui: Button = null
 
+var user_settings: UserSettings
+
 func _ready() -> void:
+	user_settings = UserSettings.load_or_create()
+	if sfx_vol:
+		sfx_vol.value = user_settings.sfx_volume_level
+	if music_vol:
+		music_vol.value = user_settings.music_volume_level
+	if master_vol:
+		master_vol.value = user_settings.master_volume_level
+	if screen_mode:
+		screen_mode.selected = user_settings.screen_mode
+	if fps:
+		fps.value = user_settings.fps_limit
+	if vsync:
+		vsync.toggled = user_settings.vsync_on
+		
 	video.grab_focus()
 	
 	get_tree().connect("node_added", _on_node_added)

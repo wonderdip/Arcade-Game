@@ -78,6 +78,14 @@ offset_left = 11.0
 offset_top = -25.0
 offset_right = 51.0
 offset_bottom = -2.0
+text = "s"
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 11.0
+offset_top = -40.0
+offset_right = 51.0
+offset_bottom = -17.0
+text = "s"
 
 [connection signal="body_entered" from="BallRange" to="." method="_on_ball_range_body_entered"]
 [connection signal="body_exited" from="BallRange" to="." method="_on_ball_range_body_exited"]
