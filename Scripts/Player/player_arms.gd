@@ -215,16 +215,16 @@ func calculate_ball_hit(
 	elif hitting:
 		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
 		AudioManager.play_sound_from_library("hit")
-		CamShake.cam_shake(2, 1, 0.3)
-		FrameFreeze.framefreeze(0.2, 0)
+		ScreenFX.cam_shake(2, 1, 0.3)
+		ScreenFX.framefreeze(0.2, 0)
 		body.fire_particle.emitting = true
 		return hit_direction * hit_force + Vector2(0, downward_force)
 		
 	elif blocking:
 		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
 		AudioManager.play_sound_from_library("hit")
-		CamShake.cam_shake(2, 1, 0.3)
-		FrameFreeze.framefreeze(0.2, 0)
+		ScreenFX.cam_shake(2, 1, 0.3)
+		ScreenFX.framefreeze(0.2, 0)
 		body.fire_particle.emitting = true
 		return hit_direction * (hit_force * 0.75) + Vector2(0, downward_force)
 		

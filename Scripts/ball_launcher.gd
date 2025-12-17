@@ -43,6 +43,10 @@ func launch_ball() -> void:
 			oldest_ball.queue_free()
 			print("Oldest ball deleted.")
 
+func delete_all_balls():
+	for ball in balls:
+		ball.queue_free()
+
 func _on_timer_timeout() -> void:
 	launch_ball()
 	timer.start()

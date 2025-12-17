@@ -2,9 +2,9 @@
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_md8e5"]
 [ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="2_iol66"]
-[ext_resource type="Script" uid="uid://52lhjsnvwgde" path="res://Scripts/character_screen.gd" id="2_rlcns"]
+[ext_resource type="Script" uid="uid://52lhjsnvwgde" path="res://Scripts/UI/character_screen.gd" id="2_rlcns"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="3_mfqh0"]
-[ext_resource type="Script" uid="uid://bvpsymxfy7ynm" path="res://Scripts/character.gd" id="3_sad5p"]
+[ext_resource type="Script" uid="uid://bvpsymxfy7ynm" path="res://Scripts/Resources/character.gd" id="3_sad5p"]
 [ext_resource type="Resource" uid="uid://23m2engd5lfq" path="res://Scripts/Resources/P1.tres" id="4_hgap6"]
 [ext_resource type="Texture2D" uid="uid://cjvsnh1i2t2dp" path="res://Assets/Characters/Face Cards/P1 Face card.png" id="4_iol66"]
 [ext_resource type="Texture2D" uid="uid://57h2dau1qxpt" path="res://Assets/Characters/Face Cards/P2 face card.png" id="5_mfqh0"]

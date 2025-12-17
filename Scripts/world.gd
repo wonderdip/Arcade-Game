@@ -19,7 +19,7 @@ var total_players
 var settings_opened: bool = false
 
 func _ready() -> void:
-	CamShake.camera2d = camera_2d
+	ScreenFX.camera2d = camera_2d
 	
 	# Check if we're in network mode
 	if Networkhandler.is_solo:

@@ -1,11 +1,11 @@
 [gd_scene load_steps=19 format=3 uid="uid://wb61ewh1ublu"]
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_un4yt"]
-[ext_resource type="Script" uid="uid://btd4pirvmgl2c" path="res://Scripts/settings_menu.gd" id="2_s1iiq"]
+[ext_resource type="Script" uid="uid://btd4pirvmgl2c" path="res://Scripts/UI/settings_menu.gd" id="2_s1iiq"]
 [ext_resource type="Texture2D" uid="uid://dljn3lm5gefq6" path="res://Assets/UI/Button.png" id="3_ojbgt"]
 [ext_resource type="Texture2D" uid="uid://3c45c3q2lfmt" path="res://Assets/UI/Button_Pressed-Hover.png" id="4_ojbgt"]
 [ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="5_17muo"]
-[ext_resource type="Script" uid="uid://d1v7jwlj2xfc4" path="res://Scripts/spinbox.gd" id="6_bmgoi"]
+[ext_resource type="Script" uid="uid://d1v7jwlj2xfc4" path="res://Scripts/UI/spinbox.gd" id="6_bmgoi"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_17muo"]
 texture = ExtResource("3_ojbgt")
@@ -189,6 +189,7 @@ text = "Ball Launcher"
 vertical_alignment = 1
 
 [node name="BallLauncher" type="Label" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Labels"]
+visible = false
 custom_minimum_size = Vector2(0, 27)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("5_17muo")
@@ -205,6 +206,7 @@ text = "Bot"
 vertical_alignment = 1
 
 [node name="Difficulty" type="Label" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Labels"]
+visible = false
 custom_minimum_size = Vector2(0, 27)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("5_17muo")
@@ -213,6 +215,7 @@ text = "Bot Difficulty"
 vertical_alignment = 1
 
 [node name="BotCharacter" type="Label" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Labels"]
+visible = false
 custom_minimum_size = Vector2(0, 27)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("5_17muo")
@@ -228,6 +231,7 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="LauncherOptions" type="OptionButton" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
+visible = false
 custom_minimum_size = Vector2(78, 0)
 layout_mode = 2
 selected = 0
@@ -243,6 +247,7 @@ popup/item_2/id = 2
 layout_mode = 2
 
 [node name="BotDifficulty" type="OptionButton" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
+visible = false
 layout_mode = 2
 selected = 0
 item_count = 4
@@ -252,15 +257,20 @@ popup/item_1/text = "Normal"
 popup/item_1/id = 1
 popup/item_2/text = "Hard"
 popup/item_2/id = 2
-popup/item_3/text = "Hacker"
+popup/item_3/text = "Expert"
 popup/item_3/id = 3
 
 [node name="BotOptions" type="OptionButton" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
+visible = false
 layout_mode = 2
 selected = 0
-item_count = 1
+item_count = 3
 popup/item_0/text = "P1"
 popup/item_0/id = 0
+popup/item_1/text = "P2"
+popup/item_1/id = 1
+popup/item_2/text = "P3"
+popup/item_2/id = 2
 
 [node name="VideoPanel" type="Panel" parent="Panel"]
 visible = false
@@ -411,6 +421,7 @@ step = 10.0
 [connection signal="item_selected" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/LauncherOptions" to="." method="_on_launcher_options_item_selected"]
 [connection signal="toggled" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotCheck" to="." method="_on_bot_check_toggled"]
 [connection signal="item_selected" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotDifficulty" to="." method="_on_bot_difficulty_item_selected"]
+[connection signal="item_selected" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotOptions" to="." method="_on_bot_options_item_selected"]
 [connection signal="item_selected" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/ScreenMode" to="." method="_on_screen_mode_item_selected"]
 [connection signal="value_changed" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/FPS" to="." method="_on_fps_value_changed"]
 [connection signal="toggled" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/Vysnc" to="." method="_on_vysnc_toggled"]

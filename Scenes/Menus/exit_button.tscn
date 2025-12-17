@@ -2,7 +2,8 @@
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_e1lsn"]
 [ext_resource type="Texture2D" uid="uid://cy6kkffvrkly8" path="res://Assets/UI/Exit_Icon.png" id="2_4bl5c"]
-[ext_resource type="Script" uid="uid://d3535ocpea1gu" path="res://Scripts/exit_button.gd" id="3_4bl5c"]
+[ext_resource type="Script" uid="uid://d3535ocpea1gu" path="res://Scripts/UI/exit_button.gd" id="3_4bl5c"]
+
 
 [node name="Exit_Button" type="Button"]
 custom_minimum_size = Vector2(20, 24)

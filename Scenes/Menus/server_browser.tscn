@@ -1,10 +1,10 @@
 [gd_scene load_steps=10 format=3 uid="uid://d3ycdm22efqyq"]
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_rfd8m"]
-[ext_resource type="Script" uid="uid://qi4qb347fwmd" path="res://Scripts/server_browser.gd" id="2_6a1mq"]
+[ext_resource type="Script" uid="uid://qi4qb347fwmd" path="res://Scripts/UI/server_browser.gd" id="2_6a1mq"]
 [ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="3_rfd8m"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="4_245e3"]
-[ext_resource type="Script" uid="uid://ba4lonmwpakqq" path="res://Scripts/in_game_ui.gd" id="5_245e3"]
+[ext_resource type="Script" uid="uid://ba4lonmwpakqq" path="res://Scripts/UI/in_game_ui.gd" id="5_245e3"]
 [ext_resource type="PackedScene" uid="uid://c7563e38wevvi" path="res://Scenes/Menus/settings_button.tscn" id="6_kshtp"]
 [ext_resource type="PackedScene" uid="uid://ct7u5xg8q4twg" path="res://Scenes/Menus/exit_button.tscn" id="7_35mqi"]
 

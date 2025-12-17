@@ -47,13 +47,55 @@ var speed_mult: float
 
 var fallbackframe := preload("res://Assets/Characters/Player Sprite Frames/P1.tres")
 
+# Character resources for dynamic loading
+@export var character_resources: Array[CharacterStat] = [
+	preload("res://Scripts/Resources/P1.tres"),
+	preload("res://Scripts/Resources/P2.tres"),
+	preload("res://Scripts/Resources/P3.tres")
+]
+
 func _ready() -> void:
 	sprite.play("Idle")
 	_apply_difficulty_settings()
-	load_character()
+	load_character_by_index(0)
+
+# Method to set difficulty from index (0=Easy, 1=Normal, 2=Hard, 3=Expert)
+func set_difficulty_from_index(index: int) -> void:
+	match index:
+		0: difficulty = "Easy"
+		1: difficulty = "Normal"
+		2: difficulty = "Hard"
+		3: difficulty = "Expert"
+		_: difficulty = "Normal"
 	
-func load_character():
-	var char_stat: CharacterStat = null
+	_apply_difficulty_settings()
+	print("Bot difficulty set to:", difficulty)
+	
+func _apply_difficulty_settings() -> void:
+	match difficulty:
+		"Easy":
+			reaction_time = 0.3
+			aim_error = 20.0
+			speed = speed * 0.8
+		"Normal":
+			reaction_time = 0.2
+			aim_error = 10.0
+		"Hard":
+			reaction_time = 0.005
+			aim_error = 0.5
+			speed = speed * 1.2
+		"Expert":
+			reaction_time = 0.0005
+			aim_error = 0.05
+			speed = speed * 1.5
+			player_arms.ball_control = 1
+			
+# Method to load character by index (0=P1, 1=P2, 2=P3)
+func load_character_by_index(index: int) -> void:
+	if index < 0 or index >= character_resources.size():
+		index = 0
+	
+	var char_stat: CharacterStat = character_resources[index]
 	
 	if char_stat != null:
 		sprite.sprite_frames = char_stat.sprite_frame
@@ -69,27 +111,16 @@ func load_character():
 		else:
 			player_arms.downward_force = char_stat.Hitting / 2
 			player_arms.hit_force = char_stat.Hitting
+		
+		# Reapply difficulty settings after character change
+		_apply_difficulty_settings()
+		
+		print("Bot character loaded: P", index + 1)
 	else:
 		sprite.sprite_frames = fallbackframe
-		
-func _apply_difficulty_settings() -> void:
-	match difficulty:
-		"Easy":
-			reaction_time = 0.3
-			aim_error = 20.0
-			speed = speed * 0.8
-		"Normal":
-			reaction_time = 0.2
-			aim_error = 10.0
-		"Hard":
-			reaction_time = 0.005
-			aim_error = .5
-			speed = speed * 1.2
-		"Expert":
-			reaction_time = 0.0005
-			aim_error = .05
-			speed = speed * 1.5
-			player_arms.ball_control = 1
+		print("Failed to load character, using fallback")
+	
+
 
 func _physics_process(delta: float) -> void:
 	_find_ball()
@@ -174,14 +205,14 @@ func _decide_action() -> void:
 	var ball_falling = ball.linear_velocity.y > 0
 	var distance_to_net = abs(global_position.x - 128)
 	label.text = str(ball_height_diff)
-	label_2.text = str(distance_to_net)
+	label_2.text = str(difficulty)
+	
 	if ball.global_position.x <= 128:
 		player_arms.touch_counter = 0
 	
 	# Store the PREVIOUS action before resetting (but not preparatory states)
 	if current_action != "" and current_action not in ["preparing_hit", "preparing_block"]:
 		last_action = current_action
-		print("Stored last_action: ", last_action)
 		
 	# Reset all actions first
 	is_bumping = false
@@ -244,7 +275,6 @@ func _decide_action() -> void:
 		not in_blockzone and 
 		last_action == "set"
 	):
-		print("Jump after set - height diff:", ball_height_diff)
 		should_jump = true
 		return
 	
@@ -259,7 +289,6 @@ func _decide_action() -> void:
 		is_on_floor() and
 		last_action == "bump"
 	):
-		print("Jump after bump - height diff:", ball_height_diff)
 		should_jump = true
 		return
 		

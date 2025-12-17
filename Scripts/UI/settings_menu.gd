@@ -65,6 +65,11 @@ func _ready() -> void:
 			launcher_options.selected = current_pos
 		else:
 			launcher_check.button_pressed = false
+			
+		# Check if bot exists and update checkbox
+		var existing_bot = _find_bot()
+		if existing_bot:
+			bot_check.button_pressed = true
 	else:
 		game.hide()
 	
@@ -72,6 +77,7 @@ func _ready() -> void:
 	call_deferred("_setup_focus_neighbors")
 
 func _load_settings_to_ui() -> void:
+	"""Load settings from resource and apply to UI controls"""
 	# Audio settings
 	if master_vol:
 		master_vol.value = user_settings.master_volume_level
@@ -87,8 +93,15 @@ func _load_settings_to_ui() -> void:
 		fps.value = user_settings.fps_limit
 	if vsync:
 		vsync.button_pressed = user_settings.vsync_on
+	
+	# Bot settings
+	if bot_difficulty:
+		bot_difficulty.selected = user_settings.bot_difficulty
+	if bot_options:
+		bot_options.selected = user_settings.bot_character
 
 func _save_settings() -> void:
+	"""Save current settings to disk"""
 	SettingsManager.save_settings()
 	print("Settings saved to disk")
 
@@ -173,13 +186,22 @@ func _on_node_added(node: Node) -> void:
 	if node is PopupPanel and node.name.begins_with("@PopupPanel@"):
 		node.queue_free()
 
-# Launcher functions
+# ========================================
+# LAUNCHER FUNCTIONS
+# ========================================
+
 func _on_launcher_check_toggled(toggled_on: bool) -> void:
 	if toggled_on:
+		ball_launcher.show()
+		launcher_options.show()
+		if bot_check.button_pressed:
+			_remove_bot()
+			bot_check.button_pressed = false
 		_spawn_launcher()
 	else:
 		_remove_launcher()
-
+		ball_launcher.hide()
+		launcher_options.hide()
 func _on_launcher_options_item_selected(index: int) -> void:
 	var existing_launcher = _find_existing_launcher()
 	if existing_launcher:
@@ -216,9 +238,91 @@ func _spawn_launcher() -> void:
 func _remove_launcher() -> void:
 	var existing_launcher = _find_existing_launcher()
 	if existing_launcher and existing_launcher.is_inside_tree():
+		existing_launcher.delete_all_balls()
 		existing_launcher.queue_free()
 
-# Menu navigation
+# ========================================
+# BOT FUNCTIONS
+# ========================================
+
+func _find_bot():
+	var world = get_tree().current_scene
+	if world:
+		for child in world.get_children():
+			if child.name == "Bot":
+				return child
+	return null
+	
+func _spawn_bot():
+	var existing_bot = _find_bot()
+	if existing_bot:
+		return
+	
+	var new_bot = bot_instance.instantiate()
+	new_bot.name = "Bot"
+	get_tree().current_scene.add_child(new_bot, true)
+	await get_tree().process_frame
+	new_bot.global_position = Vector2(236, 112)
+	
+	# Apply saved settings to the bot
+	new_bot.set_difficulty_from_index(user_settings.bot_difficulty)
+	new_bot.load_character_by_index(user_settings.bot_character)
+	print("Spawned bot with difficulty:", _get_difficulty_name(user_settings.bot_difficulty))
+	
+func _remove_bot():
+	var existing_bot = _find_bot()
+	if existing_bot and existing_bot.is_inside_tree():
+		existing_bot.queue_free()
+
+func _get_difficulty_name(index: int) -> String:
+	match index:
+		0: return "Easy"
+		1: return "Normal"
+		2: return "Hard"
+		3: return "Expert"
+		_: return "Normal"
+
+func _on_bot_check_toggled(toggled_on: bool) -> void:
+	if toggled_on:
+		bot_difficulty.show()
+		difficulty.show()
+		bot_options.show()
+		bot_character.show()
+		if launcher_check.button_pressed:
+			_remove_launcher()
+			launcher_check.button_pressed = false
+		_spawn_bot()
+	else:
+		bot_character.hide()
+		bot_difficulty.hide()
+		difficulty.hide()
+		bot_options.hide()
+		_remove_bot()
+		 
+func _on_bot_difficulty_item_selected(index: int) -> void:
+	user_settings.bot_difficulty = index
+	_save_settings()
+	
+	# Update existing bot if spawned
+	var existing_bot = _find_bot()
+	if existing_bot:
+		existing_bot.set_difficulty_from_index(index)
+		print("Updated bot difficulty to:", _get_difficulty_name(index))
+
+func _on_bot_options_item_selected(index: int) -> void:
+	user_settings.bot_character = index
+	_save_settings()
+	
+	# If bot exists, update its character
+	var existing_bot = _find_bot()
+	if existing_bot:
+		existing_bot.load_character_by_index(index)
+		print("Updated bot character to P", index + 1)
+
+# ========================================
+# MENU NAVIGATION
+# ========================================
+
 func _on_game_pressed() -> void:
 	change_menu(1)
 
@@ -257,7 +361,10 @@ func _center_on_screen() -> void:
 	var screen_size = get_viewport_rect().size
 	global_position = screen_size / 2 - size / 2
 
-# Video settings callbacks
+# ========================================
+# VIDEO SETTINGS CALLBACKS
+# ========================================
+
 func _on_screen_mode_item_selected(index: int) -> void:
 	user_settings.screen_mode = index
 	if index == 1:
@@ -279,7 +386,10 @@ func _on_vysnc_toggled(toggled_on: bool) -> void:
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	_save_settings()
 
-# Audio settings callbacks
+# ========================================
+# AUDIO SETTINGS CALLBACKS
+# ========================================
+
 func _on_master_vol_value_changed(value) -> void:
 	user_settings.master_volume_level = int(value)
 	AudioManager.change_master_vol(value)
@@ -294,10 +404,3 @@ func _on_music_vol_value_changed(value) -> void:
 	user_settings.music_volume_level = int(value)
 	AudioManager.change_music_vol(value)
 	_save_settings()
-
-# Bot settings (placeholder)
-func _on_bot_check_toggled(toggled_on: bool) -> void:
-	pass
-
-func _on_bot_difficulty_item_selected(index: int) -> void:
-	pass

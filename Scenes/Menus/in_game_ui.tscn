@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://c58nyk17ffnwj"]
 
 [ext_resource type="PackedScene" uid="uid://c7563e38wevvi" path="res://Scenes/Menus/settings_button.tscn" id="1_0mbd6"]
-[ext_resource type="Script" uid="uid://ba4lonmwpakqq" path="res://Scripts/in_game_ui.gd" id="1_i0vjh"]
+[ext_resource type="Script" uid="uid://ba4lonmwpakqq" path="res://Scripts/UI/in_game_ui.gd" id="1_i0vjh"]
 [ext_resource type="PackedScene" uid="uid://ct7u5xg8q4twg" path="res://Scenes/Menus/exit_button.tscn" id="2_hwtiq"]
 
 [node name="InGame_UI" type="Control"]
