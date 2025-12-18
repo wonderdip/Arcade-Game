@@ -24,7 +24,7 @@ var touch_counter: int = 0
 @export var control_speed_threshold: float = 200.0  # Speed above which control kicks in
 
 var is_network_mode: bool = false
-@onready var collision_particle: GPUParticles2D = $CollisionParticle
+@onready var collision_particle: GPUParticles2D = $CollisionShape2D/CollisionParticle
 
 func _ready():
 	if !Networkhandler.is_solo:
@@ -207,7 +207,7 @@ func calculate_ball_hit(
 		var adjusted_bump_force = bump_force * horizontal_modifier
 		
 		AudioManager.play_sound_from_library("bump")
-		collision_particle.global_position = _contact_point
+		#collision_particle.global_position = _contact_point
 		collision_particle.emitting = true
 		return final_direction * adjusted_bump_force + Vector2(0, -bump_upward_force)
 		

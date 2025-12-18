@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=4 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=28 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
 [ext_resource type="Script" uid="uid://bshn1jsaig2fx" path="res://Scripts/world.gd" id="1_fo5ed"]
@@ -40,7 +40,13 @@ sources/0 = SubResource("TileSetAtlasSource_5a7ea")
 bounce = 0.6
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_k7acu"]
-size = Vector2(12, 194)
+size = Vector2(16, 226)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7yui6"]
+size = Vector2(16, 224)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c5t2i"]
+size = Vector2(288, 16)
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_5ukr8"]
 friction = 10.0
@@ -132,18 +138,22 @@ modulate = Color(0.7014114, 0.7014114, 0.7014114, 1)
 position = Vector2(128, 68)
 texture = ExtResource("4_k7acu")
 
-[node name="SideWalls" type="StaticBody2D" parent="."]
+[node name="Walls" type="StaticBody2D" parent="."]
 collision_layer = 8
 collision_mask = 3
 physics_material_override = SubResource("PhysicsMaterial_5v1tr")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SideWalls"]
-position = Vector2(-6, 49)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls"]
+position = Vector2(-8, 33)
 shape = SubResource("RectangleShape2D_k7acu")
 
-[node name="CollisionShape2D2" type="CollisionShape2D" parent="SideWalls"]
-position = Vector2(262, 49)
-shape = SubResource("RectangleShape2D_k7acu")
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Walls"]
+position = Vector2(264, 32)
+shape = SubResource("RectangleShape2D_7yui6")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Walls"]
+position = Vector2(128, -72)
+shape = SubResource("RectangleShape2D_c5t2i")
 
 [node name="Pole" type="StaticBody2D" parent="."]
 position = Vector2(128, 103)

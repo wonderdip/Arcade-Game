@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://dmo0d7ilqvp1s"]
+
+[ext_resource type="Texture2D" uid="uid://cvt5n57xbdiau" path="res://Assets/whistle.png" id="1_j0b21"]
+[ext_resource type="Script" uid="uid://fy6hyyhklo7x" path="res://Scripts/whistle.gd" id="1_r0fqf"]
+
+[node name="Whistle" type="Node2D"]
+script = ExtResource("1_r0fqf")
+
+[node name="WhistleSprite" type="Sprite2D" parent="."]
+position = Vector2(65, 42)
+texture = ExtResource("1_j0b21")

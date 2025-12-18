@@ -66,6 +66,7 @@ func _apply_difficulty_settings() -> void:
 		"Easy":
 			reaction_time = 0.1
 			aim_error = 3.0
+			min_ball_distance = 10
 			speed = 200 * 0.8
 			jump_force = 250 * 0.9
 			player_arms.ball_control = 0.3
@@ -74,6 +75,7 @@ func _apply_difficulty_settings() -> void:
 		"Normal":
 			reaction_time = 0.5
 			aim_error = 1.0
+			min_ball_distance = 5
 			jump_force = 240 
 			player_arms.ball_control = 0.6
 			player_arms.downward_force = 30
@@ -81,6 +83,7 @@ func _apply_difficulty_settings() -> void:
 		"Hard":
 			reaction_time = 0.005
 			aim_error = 0.5
+			min_ball_distance = 3
 			speed = 200 * 1.2
 			jump_force = 250
 			player_arms.ball_control = 0.8
@@ -222,17 +225,16 @@ func _decide_action() -> void:
 		return
 	
 	# 4. Ball coming over net - BLOCK
-	if in_blockzone and ball.global_position.x < 128 and ball_height_diff > 80 and ball_height_diff < 110:
-		if ball.linear_velocity.x > 0:
-			if is_on_floor():
-				should_jump = true
-				current_action = "preparing_block"
-			else:
-				current_action = "block"
-				is_blocking = true
-				action_hold_timer = 0.5
-				action_cooldown = 0.6
-			return
+	if in_blockzone and ball.global_position.x < 128 and ball_height_diff > 80 and is_on_floor():
+		should_jump = true
+		current_action = "preparing_block"
+		
+	if current_action == "preparing_block" and is_on_floor():
+		current_action = "block"
+		is_blocking = true
+		action_hold_timer = 0.5
+		action_cooldown = 0.6
+		return
 	
 	# 5. Position for jump after set
 	if (
@@ -265,8 +267,7 @@ func _decide_action() -> void:
 		
 func _apply_gravity(delta: float) -> void:
 	if is_blocking or in_blockzone:
-		gravity_mult = jump_force/200
-		print(" Gravity: ", gravity_mult," Jump Height: ", jump_force," Speed: ", speed)
+		gravity_mult = jump_force/210
 	else:
 		gravity_mult = 1.0
 

@@ -161,6 +161,7 @@ func spawn_ball_local() -> void:
 		ball_instance.update_score.connect(_on_ball_scored)
 
 func _on_ball_scored(_side: int) -> void:
+	AudioManager.play_sound_from_library("whistle")
 	ball_spawned = false
 	ball_timer.start()
 	

@@ -194,7 +194,10 @@ scale = Vector2(0.9999998, 0.9999998)
 shape = SubResource("CapsuleShape2D_ism15")
 debug_color = Color(0.99861974, 0, 0.14905396, 0.41960785)
 
-[node name="CollisionParticle" type="GPUParticles2D" parent="."]
+[node name="CollisionParticle" type="GPUParticles2D" parent="CollisionShape2D"]
+position = Vector2(-0.032112837, 14.142103)
+rotation = -0.13962634
+scale = Vector2(1.0000002, 1.0000002)
 emitting = false
 amount = 30
 lifetime = 0.3
