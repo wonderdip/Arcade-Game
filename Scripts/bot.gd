@@ -222,7 +222,7 @@ func _decide_action() -> void:
 		return
 	
 	# 4. Ball coming over net - BLOCK
-	if in_blockzone and ball.global_position.x < 128 and ball_height_diff > 80 and ball_height_diff < 110 and not last_action == "block":
+	if in_blockzone and ball.global_position.x < 128 and ball_height_diff > 80 and ball_height_diff < 110:
 		if ball.linear_velocity.x > 0:
 			if is_on_floor():
 				should_jump = true

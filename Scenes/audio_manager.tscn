@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://dp22kc0mg2ipx"]
+[gd_scene load_steps=21 format=3 uid="uid://dp22kc0mg2ipx"]
 
 [ext_resource type="Script" uid="uid://bte2dcievitpi" path="res://Scripts/audio_manager.gd" id="1_4tj6f"]
 [ext_resource type="Script" uid="uid://crrtlpk84auvi" path="res://Scripts/audio_library.gd" id="2_qixve"]
@@ -10,6 +10,7 @@
 [ext_resource type="AudioStream" uid="uid://dknphn6i2y8cw" path="res://Assets/SFX/bump.wav" id="8_tnn7g"]
 [ext_resource type="AudioStream" uid="uid://cyurxkl7xcyrk" path="res://Assets/SFX/set.wav" id="9_lwpe1"]
 [ext_resource type="AudioStream" uid="uid://dslein4mgwsg0" path="res://Assets/SFX/ball_launch.wav" id="10_5nrbi"]
+[ext_resource type="AudioStream" uid="uid://c3wlhrrfbonut" path="res://Assets/SFX/hit2.wav" id="11_5nrbi"]
 
 [sub_resource type="Resource" id="Resource_5kf6k"]
 script = ExtResource("3_0hehx")
@@ -30,6 +31,13 @@ script = ExtResource("3_0hehx")
 tag = "hit"
 type = 1
 stream = ExtResource("6_5kf6k")
+metadata/_custom_type_script = "uid://d146sbh4v7p66"
+
+[sub_resource type="Resource" id="Resource_1bal0"]
+script = ExtResource("3_0hehx")
+tag = "hit"
+type = 1
+stream = ExtResource("11_5nrbi")
 metadata/_custom_type_script = "uid://d146sbh4v7p66"
 
 [sub_resource type="Resource" id="Resource_jmilc"]
@@ -62,7 +70,7 @@ metadata/_custom_type_script = "uid://d146sbh4v7p66"
 
 [sub_resource type="Resource" id="Resource_tnn7g"]
 script = ExtResource("2_qixve")
-sound_effects = Array[ExtResource("3_0hehx")]([SubResource("Resource_5kf6k"), SubResource("Resource_mjqhu"), SubResource("Resource_lwpe1"), SubResource("Resource_jmilc"), SubResource("Resource_5nrbi"), SubResource("Resource_pn88s"), SubResource("Resource_fasow")])
+sound_effects = Array[ExtResource("3_0hehx")]([SubResource("Resource_5kf6k"), SubResource("Resource_mjqhu"), SubResource("Resource_lwpe1"), SubResource("Resource_1bal0"), SubResource("Resource_jmilc"), SubResource("Resource_5nrbi"), SubResource("Resource_pn88s"), SubResource("Resource_fasow")])
 metadata/_custom_type_script = "uid://crrtlpk84auvi"
 
 [node name="AudioManager" type="AudioStreamPlayer2D"]

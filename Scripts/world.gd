@@ -60,7 +60,7 @@ func _on_local_player_joined(device_id: int, player_number: int, input_type: Str
 	add_child(player)
 	
 	# Setup the player with their device and input type
-	player.setup_local_player(device_id, player_number, input_type)
+	player._setup_local_player(device_id, player_number, input_type)
 	
 	spawned_players.append(player)
 	

@@ -63,13 +63,20 @@ func _input(event: InputEvent):
 			_try_register_device(event.device, "controller")
 			print("Player 2 registered with controller (motion)")
 			return
-
-		# Keyboard registration
-		for action in player_2_actions:
-			if event.is_action_pressed(action):
-				_try_register_device(event.device, "keyboard")
-				print("Player 2 registered with keyboard", event.device)
-				return
+			
+		if keyboard_count == 0:
+			for action in player_1_actions:
+				if event.is_action_pressed(action):
+					_try_register_device(event.device, "keyboard")
+					print("Player 2 registered with keyboard", event.device)
+					return
+					
+		else:# Keyboard registration
+			for action in player_2_actions:
+				if event.is_action_pressed(action):
+					_try_register_device(event.device, "keyboard")
+					print("Player 2 registered with keyboard", event.device)
+					return
 
 func _try_register_device(device_id: int, input_type: String) -> bool:
 	# For keyboard, allow up to 2 players

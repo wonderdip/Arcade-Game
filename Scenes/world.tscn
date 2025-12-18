@@ -213,7 +213,6 @@ offset_right = 256.0
 offset_bottom = 144.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(1, 1, 1, 0)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(128, 72)

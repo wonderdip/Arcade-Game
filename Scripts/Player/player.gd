@@ -35,6 +35,12 @@ var settings_opened: bool = false
 @onready var sprite: AnimatedSprite2D = $Sprite
 @onready var player_arms: Node2D = $"Player Arms"
 
+var direction: float
+var jump_just_pressed: bool
+var hit_just_pressed: bool
+var bump_pressed: bool
+var set_pressed: bool
+
 func _enter_tree() -> void:
 	is_local_mode = Networkhandler.is_local
 	is_solo_mode = Networkhandler.is_solo
@@ -51,7 +57,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	# Load character based on mode
-	load_character()
+	_load_character()
 	
 	# Just verify we have proper authority for input
 	if !is_local_mode and !is_solo_mode:
@@ -65,7 +71,7 @@ func _ready() -> void:
 		  " is_server=", multiplayer.is_server(),
 		  " pos=", global_position)
 
-func load_character():
+func _load_character():
 	var char_stat: CharacterStat = null
 	
 	if is_solo_mode:
@@ -110,14 +116,17 @@ func _physics_process(delta: float) -> void:
 		# In network mode, only process if we have authority
 		if not is_multiplayer_authority():
 			return
+			
+	_set_inputs()
+	_animations()
+	_apply_gravity(delta)
+	_apply_movement(delta)
+	_handle_actions()
 	
+	move_and_slide()
+	
+func _set_inputs():
 	# --- Input Handling ---
-	var direction: float
-	var jump_just_pressed: bool
-	var hit_just_pressed: bool
-	var bump_pressed: bool
-	var set_pressed: bool
-	
 	if is_local_mode:
 		# Local mode uses InputManager
 		direction = InputManager.get_axis(player_number, "left", "right")
@@ -142,24 +151,8 @@ func _physics_process(delta: float) -> void:
 			jump_just_pressed = true
 		elif Input.is_action_just_pressed("jump"):
 			jump_just_pressed = true
-	
-	animations(direction)
-	
-	if is_blocking:
-		gravity_mult = 1.3
-	else:
-		gravity_mult = 1
-
-	# Apply gravity
-	if velocity.y < 0:
-		velocity.y += gravity * 0.6 * gravity_mult * delta
-	else:
-		velocity.y += gravity * fall_multiplier * gravity_mult * delta
-
-	# Handle jump
-	if jump_just_pressed and is_on_floor():
-		velocity.y = -JumpForce
-		AudioManager.play_sound_from_library("jump")
+			
+func _apply_movement(delta: float):
 	
 	if is_bumping or is_setting:
 		speed_mult = 0.2
@@ -172,13 +165,19 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, direction * Speed * speed_mult, Acceleration * delta)
 	else:
 		velocity.x = move_toward(velocity.x, 0, Friction * delta)
-
+		
+func _handle_actions():
+	# Handle jump
+	if jump_just_pressed and is_on_floor():
+		velocity.y = -JumpForce
+		AudioManager.play_sound_from_library("jump")
+		
 	# Handle attack
 	if hit_just_pressed and not is_on_floor() and not is_hitting and not is_bumping:
 		is_hitting = true
 		player_arms.action("hit")
 		sprite.play("Hit")
-
+	
 	# Handle bump
 	if bump_pressed and is_on_floor() and not is_hitting and not is_setting:
 		if not is_bumping:
@@ -215,7 +214,19 @@ func _physics_process(delta: float) -> void:
 		player_arms.action("hit", false)
 		sprite.play("Idle")
 		
-func animations(direction):
+func _apply_gravity(delta: float):
+	if is_blocking:
+		gravity_mult = 1.3
+	else:
+		gravity_mult = 1
+
+	# Apply gravity
+	if velocity.y < 0:
+		velocity.y += gravity * 0.6 * gravity_mult * delta
+	else:
+		velocity.y += gravity * fall_multiplier * gravity_mult * delta
+
+func _animations():
 	
 	if not is_bumping and not is_hitting and not is_setting:
 		if not is_on_floor():
@@ -236,9 +247,7 @@ func animations(direction):
 			sprite.flip_h = true
 		player_arms.sprite_direction(direction)
 
-	move_and_slide()
-
-func setup_local_player(dev_id: int, p_number: int, inp_type: String):
+func _setup_local_player(dev_id: int, p_number: int, inp_type: String):
 	player_number = p_number
 	device_id = dev_id
 	input_type = inp_type
@@ -246,4 +255,4 @@ func setup_local_player(dev_id: int, p_number: int, inp_type: String):
 	# Register with InputManager if local mode
 	InputManager.register_player(player_number, input_type, device_id)
 	# Load character after player number is set
-	load_character()
+	_load_character()

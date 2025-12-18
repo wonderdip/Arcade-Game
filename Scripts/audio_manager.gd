@@ -13,6 +13,7 @@ func _ready() -> void:
 	stream.polyphony = custom_max_polyphony
 	volume_db = 0.0 # ensure parent node doesn't scale voices
 	play() # activate the playback instance
+	randomize()
 
 func play_sound_from_library(_tag: String) -> void:
 	if _tag == "":
@@ -44,7 +45,18 @@ func play_sound_from_library(_tag: String) -> void:
 	var vol_db := linear_to_db(max(final_linear, 0.00001))
 	vol_db = min(vol_db, -9.0)
 	
-	var voice_id : int = polyphonic_playback.play_stream(sound_effect.stream, 0.0, vol_db, 1.0)
+	var pitch := 1.0
+	# Only randomize pitch for SFX
+	if sound_effect.type == SoundEffect.Type.SFX:
+		pitch = randf_range(0.95, 1.05)
+		
+	var voice_id : int = polyphonic_playback.play_stream(
+		sound_effect.stream,
+		0.0,
+		vol_db,
+		pitch
+	)
+	
 	if voice_id < 0:
 		printerr("Failed to start stream for", _tag)
 		return

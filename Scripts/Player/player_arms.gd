@@ -147,7 +147,6 @@ func _apply_hit_to_ball(body: RigidBody2D):
 		collision_shape.set_deferred("disabled", true)
 		
 	touch_counter += 1
-	print(touch_counter)
 	# Cap speed
 	await get_tree().process_frame
 	if body.linear_velocity.length() > max_ball_speed:
