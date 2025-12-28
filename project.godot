@@ -12,11 +12,11 @@ config_version=5
 
 [application]
 
-config/name="Ican Arcade Game"
+config/name="Volleyball Smasherz"
 run/main_scene="uid://5mskd276w0y3"
 config/features=PackedStringArray("4.5", "Forward Plus")
 run/max_fps=240
-config/icon="res://icon.svg"
+config/icon="uid://cy2r6hplu17v"
 
 [autoload]
 
