@@ -57,7 +57,7 @@ func action(action_name: String, start: bool = true):
 	# Handle the player arms
 	if start:
 		hit_bodies.clear()
-		collision_shape.set_deferred("disabled", false)  # CHANGED: Use set_deferred for consistency
+		collision_shape.set_deferred("disabled", false)
 		
 		match action_name:
 			"hit":
@@ -70,7 +70,7 @@ func action(action_name: String, start: bool = true):
 				anim.play("Set")
 	else:
 		hit_bodies.clear()
-		collision_shape.set_deferred("disabled", true)  # CHANGED: Use set_deferred for consistency
+		collision_shape.set_deferred("disabled", true)
 		anim.stop()
 		anim.play("RESET")
 

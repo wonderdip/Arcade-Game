@@ -49,8 +49,7 @@ size = Vector2(16, 224)
 size = Vector2(288, 16)
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_5ukr8"]
-bounce = 0.55
-absorbent = true
+bounce = 0.7
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5a7ea"]
 radius = 4.0

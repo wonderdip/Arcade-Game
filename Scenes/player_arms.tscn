@@ -178,7 +178,6 @@ scale_curve = SubResource("CurveTexture_yk4cr")
 [node name="Player Arms" type="Area2D"]
 collision_layer = 64
 collision_mask = 2
-collision_priority = 30.0
 script = ExtResource("1_f6qgc")
 ball_control = 0.2
 

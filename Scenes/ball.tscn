@@ -5,8 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://ckesrjrj7u4gq" path="res://Assets/Start Screen/Volleyball_anim.png" id="2_376qj"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_d60mj"]
-friction = 0.5
-bounce = 0.5
+bounce = 0.7
 
 [sub_resource type="Gradient" id="Gradient_376qj"]
 offsets = PackedFloat32Array(0.028301887, 0.4811321, 1)
@@ -95,7 +94,7 @@ properties/7/replication_mode = 1
 [node name="Ball" type="RigidBody2D" groups=["ball"]]
 collision_layer = 2
 collision_mask = 108
-collision_priority = 20.0
+collision_priority = 100.0
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_d60mj")
 gravity_scale = 0.8
