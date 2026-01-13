@@ -12,12 +12,12 @@ height = 26.0
 radius = 150.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gdc2h"]
-radius = 17.0
-height = 54.0
+radius = 11.0
+height = 38.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ch2fi"]
 radius = 9.0
-height = 48.0
+height = 52.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dl46b"]
 radius = 15.0
@@ -38,46 +38,53 @@ shape = SubResource("CapsuleShape2D_gm32c")
 [node name="Player Arms" parent="." instance=ExtResource("8_t4dwd")]
 ball_control = 0.0
 
-[node name="BallRange" type="Area2D" parent="."]
+[node name="RangePivot" type="Node2D" parent="."]
+
+[node name="BallRange" type="Area2D" parent="RangePivot"]
 visible = false
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="BallRange"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RangePivot/BallRange"]
 shape = SubResource("CircleShape2D_ch2fi")
 
-[node name="BumpRange" type="Area2D" parent="."]
+[node name="BumpRange" type="Area2D" parent="RangePivot"]
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="BumpRange"]
-position = Vector2(0, -7)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RangePivot/BumpRange"]
+position = Vector2(8, -7)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_gdc2h")
 
-[node name="SetRange" type="Area2D" parent="."]
-visible = false
+[node name="SetRange" type="Area2D" parent="RangePivot"]
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SetRange"]
-position = Vector2(-1, -8)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RangePivot/SetRange"]
+position = Vector2(-2, -11)
+rotation = 0.2617994
 shape = SubResource("CapsuleShape2D_ch2fi")
 
-[node name="HitRange" type="Area2D" parent="."]
-visible = false
+[node name="HitRange" type="Area2D" parent="RangePivot"]
 collision_layer = 0
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="HitRange"]
-position = Vector2(-7, -14)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RangePivot/HitRange"]
+position = Vector2(7, -14)
 shape = SubResource("CircleShape2D_dl46b")
 
-[connection signal="body_entered" from="BallRange" to="." method="_on_ball_range_body_entered"]
-[connection signal="body_exited" from="BallRange" to="." method="_on_ball_range_body_exited"]
-[connection signal="body_entered" from="BumpRange" to="." method="_on_bump_range_body_entered"]
-[connection signal="body_exited" from="BumpRange" to="." method="_on_bump_range_body_exited"]
-[connection signal="body_entered" from="SetRange" to="." method="_on_set_range_body_entered"]
-[connection signal="body_exited" from="SetRange" to="." method="_on_set_range_body_exited"]
-[connection signal="body_entered" from="HitRange" to="." method="_on_hit_range_body_entered"]
-[connection signal="body_exited" from="HitRange" to="." method="_on_hit_range_body_exited"]
+[node name="Label" type="Label" parent="."]
+offset_left = -62.0
+offset_top = -52.0
+offset_right = -22.0
+offset_bottom = -29.0
+
+[connection signal="body_entered" from="RangePivot/BallRange" to="." method="_on_ball_range_body_entered"]
+[connection signal="body_exited" from="RangePivot/BallRange" to="." method="_on_ball_range_body_exited"]
+[connection signal="body_entered" from="RangePivot/BumpRange" to="." method="_on_bump_range_body_entered"]
+[connection signal="body_exited" from="RangePivot/BumpRange" to="." method="_on_bump_range_body_exited"]
+[connection signal="body_entered" from="RangePivot/SetRange" to="." method="_on_set_range_body_entered"]
+[connection signal="body_exited" from="RangePivot/SetRange" to="." method="_on_set_range_body_exited"]
+[connection signal="body_entered" from="RangePivot/HitRange" to="." method="_on_hit_range_body_entered"]
+[connection signal="body_exited" from="RangePivot/HitRange" to="." method="_on_hit_range_body_exited"]

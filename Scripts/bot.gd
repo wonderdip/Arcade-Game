@@ -17,8 +17,12 @@ extends CharacterBody2D
 
 @onready var sprite: AnimatedSprite2D = $BotAnim
 @onready var player_arms: Node2D = $"Player Arms"
-@onready var ball_range: Area2D = $BallRange
-@onready var bump_range: Area2D = $BumpRange
+@onready var ball_range: Area2D = $RangePivot/BallRange
+@onready var bump_range: Area2D = $RangePivot/BumpRange
+@onready var range_pivot: Node2D = $RangePivot
+@onready var set_range: Area2D = $RangePivot/SetRange
+@onready var hit_range: Area2D = $RangePivot/HitRange
+@onready var label: Label = $Label
 
 var ball: RigidBody2D
 var decision_timer := 0.0
@@ -112,6 +116,8 @@ func _physics_process(delta: float) -> void:
 	_update_animation()
 	move_and_slide()
 	
+	label.text = ("TOUCHES: " + str(player_arms.touch_counter))
+	
 	if action_cooldown > 0:
 		action_cooldown -= delta
 	if action_hold_timer > 0:
@@ -122,10 +128,10 @@ func _find_ball() -> void:
 		ball = get_tree().get_first_node_in_group("ball")
 
 func _update_ai(delta: float) -> void:
-	if not is_bot or ball == null or ball.scored:
+	if not is_bot or ball == null:
 		return
 		
-	if not in_range:
+	if not in_range or ball.scored:
 		var defensive_position = (left_bound + right_bound) / 2 - 20
 		var distance_to_position = abs(defensive_position - global_position.x)
 		if distance_to_position > 5:
@@ -181,9 +187,12 @@ func _decide_action() -> void:
 	var ball_height_diff = global_position.y - ball.global_position.y
 	var ball_falling = ball.linear_velocity.y > 0
 	
-	if ball.global_position.x <= 128:
+	var rand_num = randi_range(1, 2)
+	var hit_type = "quick" if rand_num == 1 else "high"
+
+	if ball.global_position.x <= 128 or ball.scored:
 		player_arms.touch_counter = 0
-	
+		
 	# Store the PREVIOUS action before resetting (but not preparatory states)
 	if current_action != "" and current_action not in ["preparing_block"]:
 		last_action = current_action
@@ -199,7 +208,7 @@ func _decide_action() -> void:
 	# DECISION PRIORITY
 	
 	# 1. Very low ball - BUMP
-	if is_on_floor() and ball_falling and in_bump_range:
+	if is_on_floor() and in_bump_range:
 		current_action = "bump"
 		is_bumping = true
 		should_jump = false
@@ -208,7 +217,13 @@ func _decide_action() -> void:
 		return
 	
 	# 2. High ball after 3 touches - HIT
-	if in_hit_range and not is_on_floor() and not last_action == "hit":
+	if (
+		in_hit_range and 
+		not is_on_floor() and 
+		not last_action == "hit" and 
+		player_arms.touch_counter >= 1 and 
+		ball_falling
+		):
 		current_action = "hit"
 		is_hitting = true
 		action_hold_timer = 0.3
@@ -260,7 +275,7 @@ func _decide_action() -> void:
 		ball.global_position.x > 128 and
 		player_arms.touch_counter >= 3 and
 		is_on_floor() and
-		last_action == "bump"
+		hit_type == "quick"
 	):
 		should_jump = true
 		return
@@ -294,6 +309,7 @@ func _apply_movement(delta: float) -> void:
 			move_dir * speed * speed_mult,
 			acceleration * delta
 		)
+		
 	else:
 		velocity.x = move_toward(velocity.x, 0, friction * delta)
 
@@ -317,6 +333,9 @@ func _update_actions() -> void:
 		player_arms.action("block", false)
 
 func _update_animation() -> void:
+	if move_dir != 0:
+		range_pivot.scale.x = sign(move_dir)
+
 	if in_blockzone or not is_on_floor() or is_setting or is_bumping or is_blocking and distance_to_net < 40:
 		sprite.flip_h = true
 		player_arms.sprite_direction(-1)

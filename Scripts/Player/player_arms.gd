@@ -22,6 +22,7 @@ var touch_counter: int = 0
 @export_range(0.0, 1.0, 0.1) var ball_control: float = 0.0  # 0 = no control, 1 = perfect control
 
 @export var control_speed_threshold: float = 200.0  # Speed above which control kicks in
+@export var shank_percentage: float = 0.4
 
 var is_network_mode: bool = false
 @onready var collision_particle: GPUParticles2D = $CollisionShape2D/CollisionParticle
@@ -255,9 +256,11 @@ func get_random_direction(face_right: bool, ball_control_val: float, max_angle: 
 	# Randomness based on control
 	var angle_randomness = max_angle * (1.0 - ball_control_val)
 	# --- BACKWARD CHANCE ---
+	
 	var shank_chance = lerp(0.5, 0.0, ball_control_val)
 	var is_shanking_backward = randf() < shank_chance
 	var backward_bias_deg := 0.0
+	
 	if is_shanking_backward:
 		backward_bias_deg = randf_range(-35.0, -10.0)  # random backward shank range
 		var backward_bias = deg_to_rad(backward_bias_deg)
