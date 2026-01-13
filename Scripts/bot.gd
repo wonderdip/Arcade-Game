@@ -28,7 +28,7 @@ var ball: RigidBody2D
 var decision_timer := 0.0
 var move_dir := 0.0
 var min_ball_distance:= 0.0
-var distance_to_net := 0
+var distance_to_net :float = 0
 
 var is_hitting := false
 var is_bumping := false
@@ -48,6 +48,9 @@ var current_action := ""
 var last_action := ""
 var gravity_mult: float = 1.0
 var speed_mult: float
+var offense_plan := ""  # "quick" or "high"
+var ball_height_diff: float
+var is_preparing_block := false
 
 func _ready() -> void:
 	sprite.play("Idle")
@@ -116,7 +119,8 @@ func _physics_process(delta: float) -> void:
 	_update_animation()
 	move_and_slide()
 	
-	label.text = ("TOUCHES: " + str(player_arms.touch_counter))
+	label.text = (current_action + str(player_arms.touch_counter) + " " + str(ball_height_diff))
+	$Label2.text = offense_plan
 	
 	if action_cooldown > 0:
 		action_cooldown -= delta
@@ -127,11 +131,23 @@ func _find_ball() -> void:
 	if ball == null:
 		ball = get_tree().get_first_node_in_group("ball")
 
+func reset():
+	player_arms.touch_counter = 0
+	offense_plan = ""
+
 func _update_ai(delta: float) -> void:
 	if not is_bot or ball == null:
 		return
-		
+	# HARD BLOCK RESET (runs every frame)
+	if is_blocking and not in_blockzone and is_on_floor():
+		is_blocking = false
+		should_jump = false
+		current_action = ""
+		action_hold_timer = 0
+		action_cooldown = 0
+
 	if not in_range or ball.scored:
+		player_arms.touch_counter = 0
 		var defensive_position = (left_bound + right_bound) / 2 - 20
 		var distance_to_position = abs(defensive_position - global_position.x)
 		if distance_to_position > 5:
@@ -158,7 +174,7 @@ func _update_ai(delta: float) -> void:
 
 	var horizontal_distance = abs(ball.global_position.x - global_position.x)
 	var target_x = ball.global_position.x
-	distance_to_net = abs(ball.global_position.x - 128)
+	distance_to_net = global_position.x - 128
 	
 	if ball.global_position.x > 128 and distance_to_net < 40:
 		target_x = 128 + 30
@@ -171,12 +187,18 @@ func _update_ai(delta: float) -> void:
 	else:
 		move_dir = sign(target_x - global_position.x)
 	
+	if ball.global_position.x <= 128 or ball.scored:
+		reset()
+		
 	if action_cooldown <= 0 and in_range:
 		_decide_action()
+		
+	if player_arms.touch_counter == 0 and ball.global_position.x > 128:
+		offense_plan = "quick" if randf() < 0.5 else "high"
 
 func _handle_action_holding(_delta: float) -> void:
 	if action_hold_timer <= 0:
-		if current_action not in ["preparing_block"]:
+		if current_action != "block":
 			is_bumping = false
 			is_hitting = false
 			is_setting = false
@@ -184,17 +206,13 @@ func _handle_action_holding(_delta: float) -> void:
 			current_action = ""
 
 func _decide_action() -> void:
-	var ball_height_diff = global_position.y - ball.global_position.y
+	ball_height_diff = global_position.y - ball.global_position.y
 	var ball_falling = ball.linear_velocity.y > 0
 	
-	var rand_num = randi_range(1, 2)
-	var hit_type = "quick" if rand_num == 1 else "high"
-
-	if ball.global_position.x <= 128 or ball.scored:
-		player_arms.touch_counter = 0
-		
+	var hit_type := offense_plan
+	
 	# Store the PREVIOUS action before resetting (but not preparatory states)
-	if current_action != "" and current_action not in ["preparing_block"]:
+	if current_action != "" and current_action != "block":
 		last_action = current_action
 		
 	# Reset all actions first
@@ -205,6 +223,15 @@ func _decide_action() -> void:
 	should_jump = false
 	current_action = ""
 	
+	# FORCE EXIT BLOCK STATE
+	if not in_blockzone:
+		is_blocking = false
+		should_jump = false
+		current_action = ""
+		action_hold_timer = 0
+		action_cooldown = 0
+		print("resetting block")
+		
 	# DECISION PRIORITY
 	
 	# 1. Very low ball - BUMP
@@ -221,20 +248,27 @@ func _decide_action() -> void:
 		in_hit_range and 
 		not is_on_floor() and 
 		not last_action == "hit" and 
-		player_arms.touch_counter >= 1 and 
-		ball_falling
+		player_arms.touch_counter >= 2
 		):
+			
 		current_action = "hit"
 		is_hitting = true
 		action_hold_timer = 0.3
 		action_cooldown = 0.6
+		reset()
+		print("hit")
 		return
 	
 	# 3. Medium ball on ground - SET
-	if is_on_floor() and in_set_range:
-		current_action = "set"
-		is_setting = true
-		if distance_to_net > 50:
+	if is_on_floor() and in_set_range and player_arms.touch_counter >= 1 and distance_to_net < 110:
+		if hit_type == "quick" and player_arms.touch_counter <= 2:
+			current_action = "set"
+			is_setting = true
+			action_hold_timer = 0.5
+			action_cooldown = 0.5
+		elif hit_type == "high":
+			current_action = "set"
+			is_setting = true
 			action_hold_timer = 0.5
 			action_cooldown = 0.5
 		return
@@ -242,40 +276,37 @@ func _decide_action() -> void:
 	# 4. Ball coming over net - BLOCK
 	if in_blockzone and ball.global_position.x < 128 and ball_height_diff > 80 and is_on_floor():
 		should_jump = true
-		current_action = "preparing_block"
-		
-	if current_action == "preparing_block" and is_on_floor():
-		current_action = "block"
 		is_blocking = true
+		current_action = "block"
 		action_hold_timer = 0.5
-		action_cooldown = 0.6
+		action_cooldown = 0.1
 		return
-	
+		
 	# 5. Position for jump after set
 	if (
-		distance_to_net > 20 and
-		distance_to_net < 70 and
-		ball_height_diff > 120 and
-		ball_height_diff < 140 and
+		distance_to_net > 30 and
+		distance_to_net < 90 and
+		ball_height_diff > 140 and
+		ball_height_diff < 180 and
 		ball.global_position.x > 128 and
 		player_arms.touch_counter >= 2 and
 		is_on_floor() and
-		not in_blockzone and 
-		last_action == "set"
+		hit_type == "high"
 	):
 		should_jump = true
 		return
-	
+		
 	# Position for jump after bump
 	if (
 		distance_to_net > 5 and
-		distance_to_net < 40 and
-		ball_height_diff > 80 and
-		ball_height_diff < 90 and
+		distance_to_net < 60 and
+		ball_height_diff > 40 and
+		ball_height_diff < 80 and
 		ball.global_position.x > 128 and
-		player_arms.touch_counter >= 3 and
+		player_arms.touch_counter >= 2 and
 		is_on_floor() and
-		hit_type == "quick"
+		hit_type == "quick" and
+		last_action == "bump"
 	):
 		should_jump = true
 		return

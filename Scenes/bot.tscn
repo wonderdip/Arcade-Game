@@ -12,8 +12,8 @@ height = 26.0
 radius = 150.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gdc2h"]
-radius = 11.0
-height = 38.0
+radius = 15.0
+height = 44.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ch2fi"]
 radius = 9.0
@@ -53,11 +53,12 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RangePivot/BumpRange"]
-position = Vector2(8, -7)
+position = Vector2(11, -7)
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_gdc2h")
 
 [node name="SetRange" type="Area2D" parent="RangePivot"]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
@@ -67,6 +68,7 @@ rotation = 0.2617994
 shape = SubResource("CapsuleShape2D_ch2fi")
 
 [node name="HitRange" type="Area2D" parent="RangePivot"]
+visible = false
 collision_layer = 0
 collision_mask = 2
 
@@ -79,6 +81,12 @@ offset_left = -62.0
 offset_top = -52.0
 offset_right = -22.0
 offset_bottom = -29.0
+
+[node name="Label2" type="Label" parent="."]
+offset_left = -62.0
+offset_top = -25.0
+offset_right = -22.0
+offset_bottom = -2.0
 
 [connection signal="body_entered" from="RangePivot/BallRange" to="." method="_on_ball_range_body_entered"]
 [connection signal="body_exited" from="RangePivot/BallRange" to="." method="_on_ball_range_body_exited"]

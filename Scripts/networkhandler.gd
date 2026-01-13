@@ -97,8 +97,7 @@ func _on_server_disconnected() -> void:
 	ServerDiscovery.stop_broadcasting()
 	
 	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
-
-
+	
 func _on_connected_to_server() -> void:
 	print("Connected to server successfully!")
 	get_tree().change_scene_to_file("res://Scenes/world.tscn")
