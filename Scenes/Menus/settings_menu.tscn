@@ -209,9 +209,20 @@ vertical_alignment = 1
 visible = false
 custom_minimum_size = Vector2(0, 27)
 layout_mode = 2
+focus_behavior_recursive = 1
 theme_override_fonts/font = ExtResource("5_17muo")
 theme_override_font_sizes/font_size = 8
 text = "Bot Difficulty"
+vertical_alignment = 1
+
+[node name="Blocking" type="Label" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Labels"]
+visible = false
+custom_minimum_size = Vector2(0, 31)
+layout_mode = 2
+focus_behavior_recursive = 1
+theme_override_fonts/font = ExtResource("5_17muo")
+theme_override_font_sizes/font_size = 8
+text = "Bot Blocking"
 vertical_alignment = 1
 
 [node name="Buttons" type="VBoxContainer" parent="Panel/GamePanel/ScrollContainer/HBoxContainer"]
@@ -250,6 +261,11 @@ popup/item_2/text = "Hard"
 popup/item_2/id = 2
 popup/item_3/text = "Expert"
 popup/item_3/id = 3
+
+[node name="BotBlock" type="CheckBox" parent="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons"]
+visible = false
+layout_mode = 2
+alignment = 2
 
 [node name="VideoPanel" type="Panel" parent="Panel"]
 visible = false
@@ -400,6 +416,7 @@ step = 10.0
 [connection signal="item_selected" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/LauncherOptions" to="." method="_on_launcher_options_item_selected"]
 [connection signal="toggled" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotCheck" to="." method="_on_bot_check_toggled"]
 [connection signal="item_selected" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotDifficulty" to="." method="_on_bot_difficulty_item_selected"]
+[connection signal="toggled" from="Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotBlock" to="." method="_on_bot_block_toggled"]
 [connection signal="item_selected" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/ScreenMode" to="." method="_on_screen_mode_item_selected"]
 [connection signal="value_changed" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/FPS" to="." method="_on_fps_value_changed"]
 [connection signal="toggled" from="Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/Vysnc" to="." method="_on_vysnc_toggled"]

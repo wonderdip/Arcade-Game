@@ -25,6 +25,9 @@ var character: CharacterStat  # For solo mode
 var player1_character: CharacterStat  # For local multiplayer
 var player2_character: CharacterStat  # For local multiplayer
 
+var player_one: CharacterBody2D
+var player_two: CharacterBody2D
+
 func _ready():
 	set_process_input(true)
 	await get_tree().process_frame

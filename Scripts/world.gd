@@ -18,6 +18,7 @@ var spawned_players: Array = []
 var total_players
 var settings_opened: bool = false
 
+var can_move_players: bool = false
 func _ready() -> void:
 	ScreenFX.camera2d = camera_2d
 	
@@ -48,7 +49,12 @@ func spawn_solo_player():
 	var player = player_scene.instantiate()
 	player.position = Vector2(30, 112)
 	add_child(player)
+	PlayerManager.player_one = player
 	
+	for child in self.get_children():
+		if child.name == "Bot":
+			PlayerManager.player_two = child
+			
 	print("solo player spawned")
 
 func _on_local_player_joined(device_id: int, player_number: int, input_type: String):
@@ -61,7 +67,15 @@ func _on_local_player_joined(device_id: int, player_number: int, input_type: Str
 	
 	# Setup the player with their device and input type
 	player._setup_local_player(device_id, player_number, input_type)
-	
+	match player_number:
+		1:
+			PlayerManager.player_one = player
+		2:
+			PlayerManager.player_two = player
+			for child in self.get_children():
+				if child.name == "Bot":
+					PlayerManager.player_two = child
+					
 	spawned_players.append(player)
 	
 	# If both players joined, spawn the ball
@@ -97,6 +111,13 @@ func _physics_process(_delta: float) -> void:
 		settings_opened = true
 		print(settings_opened)
 		
+		
+	#if active_ball != null and active_ball.scored and can_move_players == true:
+		#PlayerManager.player_one.global_position = PlayerManager.get_spawn_position(1)
+		#if PlayerManager.player_two != null: 
+			#PlayerManager.player_two.global_position = PlayerManager.get_spawn_position(2)
+			#
+		can_move_players = false
 func _on_settings_deleted():
 	settings_opened = false
 	
@@ -163,6 +184,7 @@ func spawn_ball_local() -> void:
 func _on_ball_scored(_side: int) -> void:
 	AudioManager.play_sound_from_library("whistle")
 	ball_spawned = false
+	can_move_players = true
 	ball_timer.start()
 	
 func _on_player_one_side_body_entered(body: Node2D) -> void:

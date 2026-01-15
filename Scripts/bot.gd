@@ -1,4 +1,3 @@
-
 extends CharacterBody2D
 
 @export var speed := 200.0
@@ -28,8 +27,9 @@ extends CharacterBody2D
 var ball: RigidBody2D
 var decision_timer := 0.0
 var move_dir := 0.0
-var min_ball_distance:= 0.0
-var distance_to_net :float = 0
+var min_ball_distance := 0.0
+var distance_to_net: float = 0
+var target_position: Vector2 = Vector2.ZERO
 
 var is_hitting := false
 var is_bumping := false
@@ -40,6 +40,7 @@ var in_bump_range: bool
 var in_set_range: bool
 var in_hit_range: bool
 var in_blockzone: bool = false
+var can_block: bool
 
 var predicted_landing_pos: Vector2
 var should_jump := false
@@ -53,6 +54,10 @@ var offense_plan := ""
 var ball_height_diff: float
 var predicted_ball_pos: Vector2
 var cooldown_mult: float = 1.0
+
+# New tracking variables
+var prediction_accuracy := 1.0
+var movement_tolerance := 5.0
 
 func _ready() -> void:
 	sprite.play("Idle")
@@ -80,7 +85,9 @@ func _apply_difficulty_settings() -> void:
 			player_arms.ball_control = 0.2
 			player_arms.downward_force = 20
 			player_arms.hit_force = 45
-			cooldown_mult = 1.4   # slower bot
+			cooldown_mult = 1.4
+			prediction_accuracy = 0.5
+			movement_tolerance = 15.0
 		"Normal":
 			reaction_time = 0.15
 			aim_error = 4.0
@@ -91,6 +98,8 @@ func _apply_difficulty_settings() -> void:
 			player_arms.downward_force = 30
 			player_arms.hit_force = 60
 			cooldown_mult = 1.0
+			prediction_accuracy = 0.7
+			movement_tolerance = 8.0
 		"Hard":
 			reaction_time = 0.08
 			aim_error = 2.0
@@ -101,6 +110,8 @@ func _apply_difficulty_settings() -> void:
 			player_arms.downward_force = 40
 			player_arms.hit_force = 70
 			cooldown_mult = 0.8
+			prediction_accuracy = 0.85
+			movement_tolerance = 5.0
 		"Expert":
 			reaction_time = 0.03
 			aim_error = 0.5
@@ -110,8 +121,9 @@ func _apply_difficulty_settings() -> void:
 			player_arms.ball_control = 0.95
 			player_arms.downward_force = 50
 			player_arms.hit_force = 85
-			cooldown_mult = 0.6   # very fast bot
-
+			cooldown_mult = 0.6
+			prediction_accuracy = 0.95
+			movement_tolerance = 3.0
 
 func _physics_process(delta: float) -> void:
 	_find_ball()
@@ -126,8 +138,16 @@ func _physics_process(delta: float) -> void:
 	_update_animation()
 	move_and_slide()
 	
-	label.text = (current_action + str(player_arms.touch_counter) + " " + str(ball_height_diff))
-	$Label2.text = offense_plan
+	# Debug info
+	if label:
+		var debug_text = "%s T:%d H:%.0f" % [current_action, player_arms.touch_counter, ball_height_diff]
+		if ball:
+			debug_text += " S:%.0f" % ball.linear_velocity.length()
+		label.text = debug_text
+	
+	if $Label2:
+		var debug2 = "Plan:%s Tgt:%.0f" % [offense_plan, target_position.x]
+		$Label2.text = debug2
 	
 	if action_cooldown > 0:
 		action_cooldown -= delta
@@ -143,15 +163,57 @@ func reset():
 		player_arms.touch_counter = 0
 	offense_plan = ""
 
-# IMPROVED: Predict where ball will be based on velocity
+# IMPROVED: Better ball position prediction with physics
 func _predict_ball_position(time_ahead: float) -> Vector2:
 	if not ball:
 		return Vector2.ZERO
 	
-	var predicted_pos = ball.global_position + ball.linear_velocity * time_ahead
-	# Account for gravity
-	predicted_pos.y += 0.5 * gravity * ball.gravity_scale * time_ahead * time_ahead
+	var predicted_pos = ball.global_position
+	var predicted_vel = ball.linear_velocity
+	var time_step = 0.05
+	var steps = int(time_ahead / time_step)
+	
+	# Simulate physics forward
+	for i in range(steps):
+		predicted_pos += predicted_vel * time_step
+		predicted_vel.y += gravity * ball.gravity_scale * time_step
+		
+		# Simple damping
+		predicted_vel *= 0.99
+	
 	return predicted_pos
+
+# NEW: Calculate where ball will land
+func _calculate_landing_position() -> Vector2:
+	if not ball:
+		return Vector2.ZERO
+	
+	# If ball is going up, return current position
+	if ball.linear_velocity.y < 0:
+		return ball.global_position
+	
+	var sim_pos = ball.global_position
+	var sim_vel = ball.linear_velocity
+	var ground_y = 112.0  # Approximate ground level
+	var time_elapsed = 0.0
+	var max_time = 3.0  # Max 3 seconds of simulation
+	
+	# Simulate until it reaches ground or max time
+	for i in range(150):  # Max iterations
+		var delta_time = 0.02
+		sim_pos += sim_vel * delta_time
+		sim_vel.y += gravity * ball.gravity_scale * delta_time
+		
+		# Apply damping (air resistance)
+		sim_vel.x *= 0.995
+		sim_vel.y *= 0.998
+		
+		time_elapsed += delta_time
+		
+		if sim_pos.y >= ground_y or time_elapsed >= max_time:
+			return Vector2(clamp(sim_pos.x, left_bound - 20, right_bound + 20), ground_y)
+	
+	return Vector2(clamp(sim_pos.x, left_bound - 20, right_bound + 20), ground_y)
 
 func _update_ai(delta: float) -> void:
 	if not is_bot or ball == null:
@@ -165,75 +227,91 @@ func _update_ai(delta: float) -> void:
 		action_hold_timer = 0
 		action_cooldown = 0
 
-	# IMPROVED: Better out-of-range behavior
-	if not in_range or ball.scored:
+	# IMPROVED: Better defensive positioning - but still track ball
+	if ball.scored or (not can_block and ball.global_position.x <= 128):
 		player_arms.touch_counter = 0
-		var defensive_position = (left_bound + right_bound) / 2 - 20
-		var distance_to_position = abs(defensive_position - global_position.x)
-		if distance_to_position > 5:
-			move_dir = sign(defensive_position - global_position.x)
+		var defensive_position = (left_bound + right_bound) / 2 + 20
+		target_position = Vector2(defensive_position, global_position.y)
+		
+		# Actually move to defensive position
+		var dist_to_pos = abs(target_position.x - global_position.x)
+		if dist_to_pos > movement_tolerance:
+			move_dir = sign(target_position.x - global_position.x)
 		else:
 			move_dir = 0
+		
 		should_jump = false
 		is_blocking = false
 		is_bumping = false
 		is_hitting = false
 		is_setting = false
-		return
 		
-	# IMPROVED: Don't lock movement during action hold unless it's a commit action
-	if action_hold_timer > 0 and (is_hitting or (is_bumping and action_hold_timer > 0.3)):
-		var horiz_distance = abs(ball.global_position.x - global_position.x)
-		if horiz_distance > min_ball_distance:
-			move_dir = sign(ball.global_position.x - global_position.x)
-		else:
-			move_dir = 0
+		if ball.global_position.x <= 128:
+			offense_plan = ""
 		return
-		
+	
 	decision_timer -= delta
 	if decision_timer > 0:
+		# Continue moving even during decision cooldown
+		if target_position != Vector2.ZERO:
+			var dist_to_target = abs(target_position.x - global_position.x)
+			if dist_to_target > movement_tolerance:
+				move_dir = sign(target_position.x - global_position.x)
+			else:
+				move_dir = 0
 		return
 
 	decision_timer = reaction_time
 
-	# IMPROVED: Use prediction for faster balls
+	# IMPROVED: Smart prediction based on ball state
 	var ball_speed = ball.linear_velocity.length()
-	var use_prediction = ball_speed > 150.0 and ball.global_position.x > 128
+	var ball_falling = ball.linear_velocity.y > 0
+	var use_landing_prediction = ball_falling and ball.global_position.y < 100
+	
 	var target_ball_pos = ball.global_position
 	
-	if use_prediction:
-		var time_to_predict = 0.3 if difficulty == "Expert" else 0.5
+	# Always predict for falling balls
+	if use_landing_prediction:
+		var landing_pos = _calculate_landing_position()
+		# Weight prediction more heavily for faster balls
+		var prediction_weight = clamp(ball_speed / 300.0, 0.3, 1.0) * prediction_accuracy
+		target_ball_pos = lerp(ball.global_position, landing_pos, prediction_weight)
+	elif ball_speed > 150.0:
+		# Fast ball - predict ahead
+		var time_to_predict = lerp(0.4, 0.15, prediction_accuracy)
 		predicted_ball_pos = _predict_ball_position(time_to_predict)
-		# Only use prediction if ball is moving toward bot's side
-		if ball.linear_velocity.x > 0:
-			target_ball_pos = predicted_ball_pos
+		target_ball_pos = lerp(ball.global_position, predicted_ball_pos, prediction_accuracy)
 	
-	var horizontal_distance = abs(target_ball_pos.x - global_position.x)
-	var target_x = target_ball_pos.x
 	distance_to_net = global_position.x - 128
 	
-	# IMPROVED: Better net positioning
-	if ball.global_position.x > 128 and distance_to_net < 50:
-		target_x = 128 + 35
+	# IMPROVED: Better positioning near net
+	var horizontal_distance = abs(target_ball_pos.x - global_position.x)
+	var target_x = target_ball_pos.x
 	
+	# Stay away from net when ball is on our side
+	if ball.global_position.x > 128 and distance_to_net < 50:
+		target_x = max(target_x, 128 + 35)
+	
+	# Add aim error
 	target_x += randf_range(-aim_error, aim_error)
 	target_x = clamp(target_x, left_bound, right_bound)
 	
-	# IMPROVED: Start moving earlier
-	if horizontal_distance < min_ball_distance:
-		move_dir = 0
-	else:
-		move_dir = sign(target_x - global_position.x)
+	target_position = Vector2(target_x, global_position.y)
 	
-	if ball.global_position.x <= 128 or ball.scored:
-		reset()
-		
-	if action_cooldown <= 0 and in_range:
-		_decide_action()
-		
-	# IMPROVED: Set offense plan earlier
+	# IMPROVED: More aggressive movement - don't stop at min_ball_distance
+	var dist_to_target = abs(target_x - global_position.x)
+	if dist_to_target > movement_tolerance:
+		move_dir = sign(target_x - global_position.x)
+	else:
+		move_dir = 0
+	
+	# Set offense plan early
 	if offense_plan == "" and ball.global_position.x > 128:
 		offense_plan = "quick" if randf() < 0.5 else "high"
+		
+	# Always check for actions, not just when in_range
+	if action_cooldown <= 0:
+		_decide_action()
 
 func _handle_action_holding(_delta: float) -> void:
 	if action_hold_timer <= 0:
@@ -259,8 +337,6 @@ func _decide_action() -> void:
 		should_jump = false
 		current_action = ""
 	
-	# DECISION PRIORITY (IMPROVED)
-	
 	# 1. Regular BUMP - Low ball on ground
 	if is_on_floor() and in_bump_range:
 		current_action = "bump"
@@ -271,7 +347,7 @@ func _decide_action() -> void:
 		return
 	
 	# 2. BLOCK - Ball coming over net
-	if (in_blockzone and ball.global_position.x < 128 and 
+	if (in_blockzone and ball.global_position.x < 128 and can_block and
 		ball_height_diff > 70 and ball_height_diff < 120 and is_on_floor()):
 		should_jump = true
 		is_blocking = true
@@ -316,7 +392,7 @@ func _decide_action() -> void:
 		
 	# 6. Position for jump after bump (quick)
 	if (distance_to_net > 10 and distance_to_net < 60 and
-		ball_height_diff > 50 and ball_height_diff < 80 and
+		ball_height_diff > 60 and ball_height_diff < 80 and
 		ball.global_position.x > 128 and
 		player_arms.touch_counter >= 2 and
 		is_on_floor() and hit_type == "quick"):

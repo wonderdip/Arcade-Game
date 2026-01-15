@@ -28,6 +28,8 @@ signal settings_deleted
 @onready var bot_difficulty: OptionButton = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotDifficulty
 @onready var bot_on: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/BotOn
 @onready var difficulty: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/Difficulty
+@onready var bot_block: CheckBox = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/BotBlock
+@onready var blocking: Label = $Panel/GamePanel/ScrollContainer/HBoxContainer/Labels/Blocking
 
 var launcher_instance: PackedScene = preload("res://Scenes/ball_launcher.tscn")
 var bot_instance: PackedScene = preload("res://Scenes/bot.tscn")
@@ -49,7 +51,12 @@ func _ready() -> void:
 	change_menu(2)
 	
 	_setup_spinbox_controller_input(fps)
-	
+	var labels := get_all_labels(self)
+	print_tree_pretty()
+	for label in labels:
+		label.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
+		
+		
 	if Networkhandler.is_solo:
 		change_menu(1)
 		game.show()
@@ -95,11 +102,29 @@ func _load_settings_to_ui() -> void:
 	# Bot settings
 	if bot_difficulty:
 		bot_difficulty.selected = user_settings.bot_difficulty
+		
+	if bot_block:
+		var bot = _find_bot()
+		if bot == null:
+			return
+		bot_block.button_pressed = bot.can_block
 
 func _save_settings() -> void:
 	"""Save current settings to disk"""
 	SettingsManager.save_settings()
 	print("Settings saved to disk")
+	
+func get_all_labels(root: Node) -> Array[Label]:
+	var result: Array[Label] = []
+	_collect_labels(root, result)
+	return result
+
+func _collect_labels(node: Node, result: Array[Label]) -> void:
+	if node is Label:
+		result.append(node)
+
+	for child in node.get_children():
+		_collect_labels(child, result)
 
 func _process(_delta: float) -> void:
 	if !exit.has_focus() and Input.is_action_just_pressed("exit_ui") and !fps.has_focus():
@@ -144,6 +169,7 @@ func _setup_focus_neighbors():
 	
 	vsync.focus_neighbor_left = video.get_path()
 	vsync.focus_neighbor_top = fps.get_path()
+	vsync.focus_neighbor_bottom = screen_mode.get_path()
 	
 	# Audio panel focus
 	audio.focus_neighbor_right = master_vol.get_path()
@@ -256,6 +282,7 @@ func _spawn_bot():
 	get_tree().current_scene.add_child(new_bot, true)
 	await get_tree().process_frame
 	new_bot.global_position = Vector2(236, 112)
+	PlayerManager.player_two = new_bot
 	
 	# Apply saved settings to the bot
 	new_bot.set_difficulty_from_index(user_settings.bot_difficulty)
@@ -278,6 +305,8 @@ func _on_bot_check_toggled(toggled_on: bool) -> void:
 	if toggled_on:
 		bot_difficulty.show()
 		difficulty.show()
+		blocking.show()
+		bot_block.show()
 		if launcher_check.button_pressed:
 			_remove_launcher()
 			launcher_check.button_pressed = false
@@ -285,6 +314,8 @@ func _on_bot_check_toggled(toggled_on: bool) -> void:
 	else:
 		bot_difficulty.hide()
 		difficulty.hide()
+		blocking.hide()
+		bot_block.hide()
 		_remove_bot()
 		 
 func _on_bot_difficulty_item_selected(index: int) -> void:
@@ -296,6 +327,13 @@ func _on_bot_difficulty_item_selected(index: int) -> void:
 	if existing_bot:
 		existing_bot.set_difficulty_from_index(index)
 		print("Updated bot difficulty to:", _get_difficulty_name(index))
+		
+func _on_bot_block_toggled(toggled_on: bool) -> void:
+	var bot = _find_bot()
+	if toggled_on:
+		bot.can_block = true
+	else:
+		bot.can_block = false
 
 # ========================================
 # MENU NAVIGATION
