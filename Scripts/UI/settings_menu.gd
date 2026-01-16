@@ -52,7 +52,7 @@ func _ready() -> void:
 	
 	_setup_spinbox_controller_input(fps)
 	var labels := get_all_labels(self)
-	print_tree_pretty()
+	
 	for label in labels:
 		label.focus_behavior_recursive = Control.FOCUS_BEHAVIOR_DISABLED
 		

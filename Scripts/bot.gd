@@ -194,19 +194,15 @@ func _calculate_landing_position() -> Vector2:
 	
 	var sim_pos = ball.global_position
 	var sim_vel = ball.linear_velocity
-	var ground_y = 112.0  # Approximate ground level
+	var ground_y = 100.0  # Approximate ground level
 	var time_elapsed = 0.0
 	var max_time = 3.0  # Max 3 seconds of simulation
 	
 	# Simulate until it reaches ground or max time
 	for i in range(150):  # Max iterations
-		var delta_time = 0.02
+		var delta_time = get_physics_process_delta_time()
 		sim_pos += sim_vel * delta_time
-		sim_vel.y += gravity * ball.gravity_scale * delta_time
-		
-		# Apply damping (air resistance)
-		sim_vel.x *= 0.995
-		sim_vel.y *= 0.998
+		sim_vel.y += gravity * ball.normal_gravity_scale * delta_time
 		
 		time_elapsed += delta_time
 		
@@ -289,7 +285,7 @@ func _update_ai(delta: float) -> void:
 	var target_x = target_ball_pos.x
 	
 	# Stay away from net when ball is on our side
-	if ball.global_position.x > 128 and distance_to_net < 50:
+	if ball.global_position.x > 128 and distance_to_net < 20:
 		target_x = max(target_x, 128 + 35)
 	
 	# Add aim error
@@ -369,7 +365,7 @@ func _decide_action() -> void:
 	
 	# 4. SET - Medium ball on ground
 	if is_on_floor() and in_set_range and player_arms.touch_counter >= 1 and distance_to_net < 110:
-		if hit_type == "quick" and player_arms.touch_counter <= 2 and distance_to_net > 60:
+		if hit_type == "quick" and (player_arms.touch_counter <= 2 or player_arms.touch_counter >= 8):
 			current_action = "set"
 			is_setting = true
 			action_hold_timer = 0.5
@@ -382,20 +378,21 @@ func _decide_action() -> void:
 		return
 		
 	# 5. Position for jump after set (high ball)
-	if (distance_to_net > 30 and distance_to_net < 95 and
+	if (distance_to_net > 20 and distance_to_net < 95 and
 		ball_height_diff > 140 and ball_height_diff < 180 and
-		ball.global_position.x > 128 and
+		ball.global_position.x > 128 and ball_falling and
 		player_arms.touch_counter >= 2 and
 		is_on_floor() and hit_type == "high"):
 		should_jump = true
 		return
 		
 	# 6. Position for jump after bump (quick)
-	if (distance_to_net > 10 and distance_to_net < 60 and
-		ball_height_diff > 60 and ball_height_diff < 80 and
+	if (distance_to_net > 10 and distance_to_net < 50 and
+		ball_height_diff > 80 and ball_height_diff < 100 and
 		ball.global_position.x > 128 and
 		player_arms.touch_counter >= 2 and
-		is_on_floor() and hit_type == "quick"):
+		is_on_floor() and hit_type == "quick" and
+		last_action == "bump"):
 		should_jump = true
 		return
 		
@@ -458,7 +455,7 @@ func _update_animation() -> void:
 	if move_dir != 0:
 		range_pivot.scale.x = sign(move_dir)
 
-	if in_blockzone or not is_on_floor() or (is_setting or is_bumping) and distance_to_net < 40:
+	if in_blockzone or not is_on_floor() or (is_setting or is_bumping) and distance_to_net < 70:
 		sprite.flip_h = true
 		player_arms.sprite_direction(-1)
 	elif move_dir != 0:

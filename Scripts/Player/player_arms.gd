@@ -8,7 +8,7 @@ var is_bumping: bool = false
 var is_blocking: bool = false
 var is_setting: bool = false
 var facing_right: bool = true
-var hit_bodies: Dictionary = {}  # Tracks last hit time for each ball
+var hit_bodies: = {} # body -> true (or just use a Set)
 var touch_counter: int = 0
 
 @export var hit_force: float = 50.0
@@ -27,6 +27,8 @@ var touch_counter: int = 0
 var is_network_mode: bool = false
 @onready var collision_particle: GPUParticles2D = $CollisionShape2D/CollisionParticle
 
+var original_shape_size : Vector2 = Vector2(4.5, 20.0)
+
 func _ready():
 	if !Networkhandler.is_solo:
 		if !Networkhandler.is_local:
@@ -34,15 +36,16 @@ func _ready():
 	
 	monitoring = true
 	monitorable = true
-	collision_shape.disabled = true
-	
-	# Connect signals safely using method references
-	if not body_entered.is_connected(_on_body_entered):
-		body_entered.connect(_on_body_entered)
-	
-	if not body_exited.is_connected(_on_body_exited):
-		body_exited.connect(_on_body_exited)
-
+	collision_shape.disabled = false
+		
+func set_collision_shape(disabled: bool):
+	if disabled:
+		collision_shape.shape.radius = 0
+		collision_shape.shape.height = 0
+	else:
+		collision_shape.shape.radius = original_shape_size.x
+		collision_shape.shape.height = original_shape_size.y
+		
 func action(action_name: String, start: bool = true):
 	match action_name:
 		"hit":
@@ -57,7 +60,7 @@ func action(action_name: String, start: bool = true):
 	# Handle the player arms
 	if start:
 		hit_bodies.clear()
-		collision_shape.set_deferred("disabled", false)
+		set_collision_shape(false)
 		
 		match action_name:
 			"hit":
@@ -70,7 +73,8 @@ func action(action_name: String, start: bool = true):
 				anim.play("Set")
 	else:
 		hit_bodies.clear()
-		collision_shape.set_deferred("disabled", true)
+		set_collision_shape(true)
+		
 		anim.stop()
 		anim.play("RESET")
 
@@ -82,10 +86,8 @@ func _on_body_entered(body: Node):
 		return
 	if not "scored" in body or body.scored:
 		return
-		
-	var current_time = Time.get_ticks_msec() / 1000.0
 	
-	if body in hit_bodies and current_time - hit_bodies[body] < hit_cooldown:
+	if hit_bodies.has(body):
 		return
 	
 	# In network mode, send hit to server
@@ -97,7 +99,7 @@ func _on_body_entered(body: Node):
 		# Server or local mode - apply directly
 		_apply_hit_to_ball(body)
 	
-	hit_bodies[body] = current_time
+	hit_bodies[body] = true
 
 # RPC called by clients to request ball hit on server
 @rpc("any_peer", "call_remote", "reliable")
@@ -123,11 +125,9 @@ func _request_ball_hit(ball_path: NodePath, contact_pos: Vector2, face_right: bo
 	# Apply hit using the contact position and facing direction from client
 	_apply_hit_to_ball_server(ball, contact_pos, face_right, hitting, bumping, blocking, is_set)
 
-func _on_body_exited(body: Node):
-	# Allow ball to be hit again after cooldown
-	if body.is_in_group("ball") and body in hit_bodies:
-		var current_time = Time.get_ticks_msec() / 1000.0
-		hit_bodies[body] = current_time - hit_cooldown + 0.05
+func _on_body_exited(body: Node) -> void:
+	if body.is_in_group("ball"):
+		hit_bodies.erase(body)
 
 func _apply_hit_to_ball(body: RigidBody2D):
 	var contact_point = collision_shape.global_position
@@ -145,11 +145,10 @@ func _apply_hit_to_ball(body: RigidBody2D):
 	body.apply_impulse(impulse, contact_point - body.global_position)
 	
 	if is_hitting or is_blocking:
-		collision_shape.set_deferred("disabled", true)
+		set_collision_shape(true)
 		
 	touch_counter += 1
 	# Cap speed
-	await get_tree().process_frame
 	if body.linear_velocity.length() > max_ball_speed:
 		body.linear_velocity = body.linear_velocity.normalized() * max_ball_speed
 
@@ -249,8 +248,10 @@ func calculate_ball_hit(
 		return final_direction * adjusted_set_force + Vector2(0, -set_upward_force)
 		
 	return Vector2.ZERO
-	
+
+## Chooses random direction based on ball_control
 func get_random_direction(face_right: bool, ball_control_val: float, max_angle: float) -> Vector2:
+	
 	var base_dir := Vector2(0, -1)
 	
 	# Randomness based on control
@@ -291,13 +292,13 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	if anim_name == "Hit": 
 		is_hitting = false 
 		hit_bodies.clear() 
-		collision_shape.set_deferred("disabled", true)
+		set_collision_shape(true)
 		
 	elif anim_name == "Block":
 		is_blocking = false 
 		hit_bodies.clear() 
-		collision_shape.set_deferred("disabled", true)
-		
+		set_collision_shape(true
+		)
 	elif anim_name == "Bump":
 		if is_bumping:
 			anim.play("Bump")
