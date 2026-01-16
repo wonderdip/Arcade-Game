@@ -9,6 +9,8 @@ var is_blocking: bool = false
 var is_setting: bool = false
 var facing_right: bool = true
 var hit_bodies: = {} # body -> true (or just use a Set)
+var body_hit_cooldowns: Dictionary = {}  # body -> time_remaining
+var last_hit_time: Dictionary = {}  # body -> timestamp of last hit
 var touch_counter: int = 0
 
 @export var hit_force: float = 50.0
@@ -36,7 +38,14 @@ func _ready():
 	
 	monitoring = true
 	monitorable = true
-	collision_shape.disabled = false
+	
+	# Ensure collision shape exists and is properly initialized
+	if collision_shape:
+		collision_shape.disabled = false
+		if collision_shape.shape is CapsuleShape2D:
+			original_shape_size = Vector2(collision_shape.shape.radius, collision_shape.shape.height)
+	else:
+		push_error("CollisionShape2D not found in player_arms!")
 		
 func set_collision_shape(disabled: bool):
 	if disabled:
@@ -46,6 +55,58 @@ func set_collision_shape(disabled: bool):
 		collision_shape.shape.radius = original_shape_size.x
 		collision_shape.shape.height = original_shape_size.y
 		
+		
+func _process(delta: float) -> void:
+	# Update cooldowns
+	var bodies_to_remove = []
+	for body in body_hit_cooldowns:
+		body_hit_cooldowns[body] -= delta
+		if body_hit_cooldowns[body] <= 0:
+			bodies_to_remove.append(body)
+	
+	for body in bodies_to_remove:
+		body_hit_cooldowns.erase(body)
+
+# Called when a body enters the arm's area
+func _on_body_entered(body: Node):
+	if not (is_hitting or is_bumping or is_blocking or is_setting):
+		return
+	if not (body.is_in_group("ball") and body is RigidBody2D):
+		return
+	if not "scored" in body or body.scored:
+		return
+	
+	# For instant actions (hit, block), check cooldown
+	if (is_hitting or is_blocking):
+		if body_hit_cooldowns.has(body) and body_hit_cooldowns[body] > 0:
+			return
+		if hit_bodies.has(body):
+			return
+	
+	# For hold actions (bump, set), allow continuous contact but with minimum interval
+	if (is_bumping or is_setting):
+		var current_time = Time.get_ticks_msec() / 1000.0
+		if last_hit_time.has(body):
+			var time_since_last = current_time - last_hit_time[body]
+			# Minimum 0.2 seconds between hits from same hold action
+			if time_since_last < 0.2:
+				return
+		last_hit_time[body] = current_time
+	
+	# In network mode, send hit to server
+	if is_network_mode and not multiplayer.is_server():
+		print("Client sending hit RPC to server")
+		_request_ball_hit.rpc_id(1, body.get_path(), collision_shape.global_position, facing_right, is_hitting, is_bumping, is_blocking, is_setting)
+	else:
+		# Server or local mode - apply directly
+		_apply_hit_to_ball(body)
+	
+	hit_bodies[body] = true
+	
+	# Set cooldown only for instant actions
+	if is_hitting or is_blocking:
+		body_hit_cooldowns[body] = hit_cooldown
+
 func action(action_name: String, start: bool = true):
 	match action_name:
 		"hit":
@@ -59,7 +120,6 @@ func action(action_name: String, start: bool = true):
 	
 	# Handle the player arms
 	if start:
-		hit_bodies.clear()
 		set_collision_shape(false)
 		
 		match action_name:
@@ -72,34 +132,22 @@ func action(action_name: String, start: bool = true):
 			"set":
 				anim.play("Set")
 	else:
-		hit_bodies.clear()
+		# When stopping an action, clear hit tracking for that action only
+		if action_name in ["hit", "block"]:
+			# For instant actions, clear immediately
+			hit_bodies.clear()
+			body_hit_cooldowns.clear()
+		elif action_name in ["bump", "set"]:
+			# For hold actions, just clear the last hit times
+			last_hit_time.clear()
+			# Clear hit_bodies if no other action is active
+			if not (is_hitting or is_bumping or is_blocking or is_setting):
+				hit_bodies.clear()
+		
 		set_collision_shape(true)
 		
 		anim.stop()
 		anim.play("RESET")
-
-# Called when a body enters the arm's area
-func _on_body_entered(body: Node):
-	if not (is_hitting or is_bumping or is_blocking or is_setting):
-		return
-	if not (body.is_in_group("ball") and body is RigidBody2D):
-		return
-	if not "scored" in body or body.scored:
-		return
-	
-	if hit_bodies.has(body):
-		return
-	
-	# In network mode, send hit to server
-	if is_network_mode and not multiplayer.is_server():
-		# Client: Send RPC to server with hit information
-		print("Client sending hit RPC to server")
-		_request_ball_hit.rpc_id(1, body.get_path(), collision_shape.global_position, facing_right, is_hitting, is_bumping, is_blocking, is_setting)
-	else:
-		# Server or local mode - apply directly
-		_apply_hit_to_ball(body)
-	
-	hit_bodies[body] = true
 
 # RPC called by clients to request ball hit on server
 @rpc("any_peer", "call_remote", "reliable")
@@ -128,6 +176,7 @@ func _request_ball_hit(ball_path: NodePath, contact_pos: Vector2, face_right: bo
 func _on_body_exited(body: Node) -> void:
 	if body.is_in_group("ball"):
 		hit_bodies.erase(body)
+		last_hit_time.erase(body)
 
 func _apply_hit_to_ball(body: RigidBody2D):
 	var contact_point = collision_shape.global_position
@@ -141,14 +190,27 @@ func _apply_hit_to_ball(body: RigidBody2D):
 		is_setting,
 		ball_control
 	)
-
-	body.apply_impulse(impulse, contact_point - body.global_position)
+	
+	# Safety check for impulse magnitude
+	if impulse.length() > 1000.0:
+		push_warning("Impulse too large! Capping. Original: " + str(impulse))
+		impulse = impulse.normalized() * 1000.0
+	
+	# Apply impulse with safety check
+	var contact_offset = contact_point - body.global_position
+	if contact_offset.length() > 50.0:  # If contact point is too far from ball center
+		push_warning("Contact point too far from ball center! Using ball position.")
+		contact_offset = Vector2.ZERO
+	
+	body.apply_impulse(impulse, contact_offset)
 	
 	if is_hitting or is_blocking:
 		set_collision_shape(true)
 		
 	touch_counter += 1
+	
 	# Cap speed
+	await get_tree().process_frame
 	if body.linear_velocity.length() > max_ball_speed:
 		body.linear_velocity = body.linear_velocity.normalized() * max_ball_speed
 
@@ -225,7 +287,7 @@ func calculate_ball_hit(
 		ScreenFX.cam_shake(2, 1, 0.3)
 		ScreenFX.framefreeze(0.2, 0)
 		body.fire_particle.emitting = true
-		return hit_direction * (hit_force * 0.75) + Vector2(0, downward_force)
+		return hit_direction * (hit_force * 0.8) + Vector2(0, downward_force * 0.6)
 		
 	elif is_set:
 		hit_direction = Vector2(0.2 if face_right else -0.2, -1).normalized()
@@ -288,15 +350,15 @@ func sprite_direction(sprite_dir: float):
 			facing_right = false
 			scale.x = -1
 
-func _on_animation_player_animation_finished(anim_name: StringName) -> void: 
-	if anim_name == "Hit": 
-		is_hitting = false 
-		hit_bodies.clear() 
+func _on_animation_player_animation_finished(anim_name: StringName) -> void:
+	if anim_name == "Hit":
+		is_hitting = false
+		hit_bodies.clear()
 		set_collision_shape(true)
 		
 	elif anim_name == "Block":
-		is_blocking = false 
-		hit_bodies.clear() 
+		is_blocking = false
+		hit_bodies.clear()
 		set_collision_shape(true
 		)
 	elif anim_name == "Bump":

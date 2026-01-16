@@ -247,8 +247,9 @@ func _update_ai(delta: float) -> void:
 		return
 	
 	decision_timer -= delta
-	if decision_timer > 0:
+	if decision_timer > 0 and not is_blocking:
 		# Continue moving even during decision cooldown
+			
 		if target_position != Vector2.ZERO:
 			var dist_to_target = abs(target_position.x - global_position.x)
 			if dist_to_target > movement_tolerance:
@@ -344,7 +345,7 @@ func _decide_action() -> void:
 	
 	# 2. BLOCK - Ball coming over net
 	if (in_blockzone and ball.global_position.x < 128 and can_block and
-		ball_height_diff > 70 and ball_height_diff < 120 and is_on_floor()):
+		ball_height_diff > 80 and ball_height_diff < 130 and is_on_floor()):
 		should_jump = true
 		is_blocking = true
 		current_action = "block"

@@ -153,6 +153,7 @@ _data = {
 }
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ism15"]
+resource_local_to_scene = true
 radius = 4.5
 height = 20.0
 

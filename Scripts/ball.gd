@@ -11,6 +11,8 @@ signal update_score(current_player_side)
 @onready var fire_particle: GPUParticles2D = $FireParticle
 @onready var blue_fire_particle: GPUParticles2D = $BlueFireParticle
 
+const MAX_POSITION = 10000.0  # Maximum allowed position value
+const MIN_POSITION = -1000.0  # Minimum allowed position value
 
 # These need to be synced
 var current_player_side: int = 0:
@@ -53,7 +55,7 @@ func _ready() -> void:
 		freeze = false
 		sleeping = false
 		contact_monitor = true
-		max_contacts_reported = 4
+		max_contacts_reported = 1
 		print("Ball: Client ready, authority is ", get_multiplayer_authority())
 
 func _physics_process(_delta: float) -> void:
@@ -68,13 +70,26 @@ func _physics_process(_delta: float) -> void:
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	# In local mode, always process. In network mode, only on server
 	if (not is_local_mode and not is_solo_mode) and not multiplayer.is_server():
-		# Clients don't modify velocity - that's synced from server
 		return
-		
+	
+	# Safety check for position
+	var pos = state.transform.origin
+	if abs(pos.x) > MAX_POSITION or abs(pos.y) > MAX_POSITION or pos.y < MIN_POSITION:
+		push_warning("Ball position out of bounds! Resetting. Pos: " + str(pos))
+		# Reset to center top
+		state.transform.origin = Vector2(128, -40)
+		state.linear_velocity = Vector2.ZERO
+		state.angular_velocity = 0
+		return
+	
 	# Cap velocity to prevent ball from going crazy
 	var vel: Vector2 = state.linear_velocity
 	if vel.length() > max_velocity:
 		state.linear_velocity = vel.normalized() * max_velocity
+	
+	# Cap angular velocity too
+	if abs(state.angular_velocity) > 10.0:
+		state.angular_velocity = sign(state.angular_velocity) * 10.0
 
 func enter_hover_zone() -> void:
 	if not is_hovering:

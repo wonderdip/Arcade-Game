@@ -41,6 +41,9 @@ var hit_just_pressed: bool
 var bump_pressed: bool
 var set_pressed: bool
 
+var hit_cooldown_timer: float = 0.0
+const HIT_COOLDOWN: float = 0.1  # Minimum time between actions
+
 func _enter_tree() -> void:
 	is_local_mode = Networkhandler.is_local
 	is_solo_mode = Networkhandler.is_solo
@@ -65,11 +68,11 @@ func _ready() -> void:
 			print("This player instance is controlled locally")
 		
 		print("[Player._ready] name=", name,
-		  " player_number=", player_number,
-		  " authority=", get_multiplayer_authority(),
-		  " unique_id=", multiplayer.get_unique_id(),
-		  " is_server=", multiplayer.is_server(),
-		  " pos=", global_position)
+			" player_number=", player_number,
+			" authority=", get_multiplayer_authority(),
+			" unique_id=", multiplayer.get_unique_id(),
+			" is_server=", multiplayer.is_server(),
+			" pos=", global_position)
 
 func _load_character():
 	var char_stat: CharacterStat = null
@@ -104,6 +107,7 @@ func _load_character():
 		sprite.sprite_frames = fallbackframe
 		print("Warning: No character assigned for player %d, using default" % player_number)
 		
+
 func _physics_process(delta: float) -> void:
 	# Freeze movement if settings menu is open globally
 	if Networkhandler.settings_opened:
@@ -116,6 +120,9 @@ func _physics_process(delta: float) -> void:
 		# In network mode, only process if we have authority
 		if not is_multiplayer_authority():
 			return
+	
+	if hit_cooldown_timer > 0:
+		hit_cooldown_timer -= delta
 			
 	_set_inputs()
 	_animations()
@@ -124,7 +131,7 @@ func _physics_process(delta: float) -> void:
 	_handle_actions()
 	
 	move_and_slide()
-	
+		
 func _set_inputs():
 	# --- Input Handling ---
 	if is_local_mode:
@@ -167,43 +174,47 @@ func _apply_movement(delta: float):
 		velocity.x = move_toward(velocity.x, 0, Friction * delta)
 		
 func _handle_actions():
-	# Handle jump
+	# Handle jump (no cooldown needed)
 	if jump_just_pressed and is_on_floor():
 		velocity.y = -JumpForce
 		AudioManager.play_sound_from_library("jump")
 		
-	# Handle attack
-	if hit_just_pressed and not is_on_floor() and not is_hitting and not is_bumping:
+	# Handle attack with cooldown (instant action)
+	if hit_just_pressed and not is_on_floor() and not is_hitting and not is_bumping and hit_cooldown_timer <= 0:
 		is_hitting = true
 		player_arms.action("hit")
 		sprite.play("Hit")
+		hit_cooldown_timer = HIT_COOLDOWN
 	
-	# Handle bump
+	# Handle bump (HOLD action - no cooldown)
 	if bump_pressed and is_on_floor() and not is_hitting and not is_setting:
 		if not is_bumping:
 			is_bumping = true
 			player_arms.action("bump")
 			sprite.play("Bump")
-			
 	else:
 		if is_bumping:
-			is_bumping = false 
+			is_bumping = false
 			player_arms.action("bump", false)
 			sprite.play("Idle")
 			
+	# Handle set (HOLD action - no cooldown)
 	if set_pressed and not is_hitting and not is_bumping and is_on_floor():
-		is_setting = true
-		sprite.play("Set")
-		player_arms.action("set")
+		if not is_setting:
+			is_setting = true
+			sprite.play("Set")
+			player_arms.action("set")
 	else:
 		if is_setting:
 			is_setting = false
 			sprite.play("Idle")
 			player_arms.action("set", false)
-		
-	if in_blockzone and not is_on_floor() and not is_blocking:
+	
+	# Handle block (automatic when in zone, but add cooldown to prevent spam)
+	if in_blockzone and not is_on_floor() and not is_blocking and hit_cooldown_timer <= 0:
 		is_blocking = true
 		player_arms.action("block")
+		hit_cooldown_timer = HIT_COOLDOWN
 	elif (is_on_floor() or not in_blockzone) and is_blocking:
 		is_blocking = false
 		player_arms.action("block", false)
