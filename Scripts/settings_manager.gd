@@ -11,9 +11,9 @@ func _ready() -> void:
 func apply_settings() -> void:
 	"""Apply all settings to the game engine/systems"""
 	# Apply audio settings
-	AudioManager.change_master_vol(user_settings.master_volume_level)
-	AudioManager.change_music_vol(user_settings.music_volume_level)
-	AudioManager.change_sfx_vol(user_settings.sfx_volume_level)
+	AudioManager.set_bus_volume("Master", user_settings.master_volume_level)
+	AudioManager.set_bus_volume("Music", user_settings.music_volume_level)
+	AudioManager.set_bus_volume("SFX", user_settings.sfx_volume_level)
 	
 	# Apply video settings
 	Engine.max_fps = user_settings.fps_limit

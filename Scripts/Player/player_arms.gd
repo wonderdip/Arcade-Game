@@ -203,6 +203,7 @@ func _apply_hit_to_ball(body: RigidBody2D):
 		contact_offset = Vector2.ZERO
 	
 	body.apply_impulse(impulse, contact_offset)
+	body.animation_player.play("blink")
 	
 	if is_hitting or is_blocking:
 		set_collision_shape(true)
@@ -236,7 +237,7 @@ func _apply_hit_to_ball_server(body: RigidBody2D, contact_point: Vector2, face_r
 		
 func calculate_ball_hit(
 	body: RigidBody2D,
-	_contact_point: Vector2,
+	contact_point: Vector2,
 	face_right: bool,
 	hitting: bool,
 	bumping: bool,
@@ -268,14 +269,14 @@ func calculate_ball_hit(
 		var horizontal_modifier = lerp(1.0, 0.5, ball_control_val)
 		var adjusted_bump_force = bump_force * horizontal_modifier
 		
-		AudioManager.play_sound_from_library("bump")
-		#collision_particle.global_position = _contact_point
+		AudioManager.play_sfx("bump")
+		collision_particle.global_position = body.global_position + Vector2(0, 8)
 		collision_particle.emitting = true
 		return final_direction * adjusted_bump_force + Vector2(0, -bump_upward_force)
 		
 	elif hitting:
 		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
-		AudioManager.play_sound_from_library("hit")
+		AudioManager.play_sfx("hit")
 		ScreenFX.cam_shake(2, 1, 0.3)
 		ScreenFX.framefreeze(0.2, 0)
 		body.fire_particle.emitting = true
@@ -283,7 +284,7 @@ func calculate_ball_hit(
 		
 	elif blocking:
 		hit_direction = Vector2(1 if face_right else -1, -0.2).normalized()
-		AudioManager.play_sound_from_library("hit")
+		AudioManager.play_sfx("hit")
 		ScreenFX.cam_shake(2, 1, 0.3)
 		ScreenFX.framefreeze(0.2, 0)
 		body.fire_particle.emitting = true
@@ -304,8 +305,8 @@ func calculate_ball_hit(
 		
 		horizontal_modifier = lerp(1.0, 0.5, ball_control_val)
 		var adjusted_set_force = set_force * horizontal_modifier
-		AudioManager.play_sound_from_library("set")
-		collision_particle.global_position = _contact_point
+		AudioManager.play_sfx("set")
+		collision_particle.global_position = body.global_position + Vector2(0, 8)
 		collision_particle.emitting = true
 		return final_direction * adjusted_set_force + Vector2(0, -set_upward_force)
 		

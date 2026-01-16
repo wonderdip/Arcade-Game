@@ -408,15 +408,15 @@ func _on_vysnc_toggled(toggled_on: bool) -> void:
 
 func _on_master_vol_value_changed(value) -> void:
 	user_settings.master_volume_level = int(value)
-	AudioManager.change_master_vol(value)
+	AudioManager.set_bus_volume("Master", user_settings.master_volume_level)
 	_save_settings()
 
 func _on_sfx_vol_value_changed(value) -> void:
 	user_settings.sfx_volume_level = int(value)
-	AudioManager.change_sfx_vol(value)
+	AudioManager.set_bus_volume("SFX", user_settings.sfx_volume_level)
 	_save_settings()
 
 func _on_music_vol_value_changed(value) -> void:
 	user_settings.music_volume_level = int(value)
-	AudioManager.change_music_vol(value)
+	AudioManager.set_bus_volume("Music", user_settings.music_volume_level)
 	_save_settings()

@@ -177,7 +177,7 @@ func _handle_actions():
 	# Handle jump (no cooldown needed)
 	if jump_just_pressed and is_on_floor():
 		velocity.y = -JumpForce
-		AudioManager.play_sound_from_library("jump")
+		AudioManager.play_sfx("jump")
 		
 	# Handle attack with cooldown (instant action)
 	if hit_just_pressed and not is_on_floor() and not is_hitting and not is_bumping and hit_cooldown_timer <= 0:

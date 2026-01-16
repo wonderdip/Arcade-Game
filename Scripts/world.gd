@@ -8,6 +8,7 @@ extends Node2D
 @onready var camera_2d: Camera2D = $Camera2D
 @onready var settings_button = $"InGame_UI/VBoxContainer/Settings button"
 @onready var in_game_ui: Control = $InGame_UI
+@onready var referee: Node2D = $Referee
 
 var active_ball: Node2D = null
 @export var ball_spawned: bool = false
@@ -112,11 +113,15 @@ func _physics_process(_delta: float) -> void:
 		print(settings_opened)
 		
 		
-	#if active_ball != null and active_ball.scored and can_move_players == true:
-		#PlayerManager.player_one.global_position = PlayerManager.get_spawn_position(1)
-		#if PlayerManager.player_two != null: 
-			#PlayerManager.player_two.global_position = PlayerManager.get_spawn_position(2)
-			#
+	if active_ball != null and active_ball.scored and can_move_players == true:
+		if is_solo_mode and PlayerManager.player_two != null:
+			PlayerManager.player_one.global_position = PlayerManager.get_spawn_position(1)
+			PlayerManager.player_two.global_position = PlayerManager.get_spawn_position(2)
+		elif not is_solo_mode:
+			PlayerManager.player_one.global_position = PlayerManager.get_spawn_position(1)
+			if PlayerManager.player_two != null: 
+				PlayerManager.player_two.global_position = PlayerManager.get_spawn_position(2)
+			
 		can_move_players = false
 func _on_settings_deleted():
 	settings_opened = false
@@ -138,10 +143,10 @@ func spawn_ball() -> void:
 	var ball_instance = ball_scene.instantiate()
 	
 	if score_board.last_point == 1:
-		ball_instance.position = Vector2(30, -40)
+		ball_instance.position = Vector2(30, 20)
 		ball_instance.current_player_side = 1
 	elif score_board.last_point == 2:
-		ball_instance.position = Vector2(226, -40)
+		ball_instance.position = Vector2(226, 20)
 		ball_instance.current_player_side = 2
 	
 	ball_instance.name = "Ball_" + str(Time.get_ticks_msec())
@@ -165,10 +170,10 @@ func spawn_ball_local() -> void:
 	if is_solo_mode:
 		score_board.last_point = 1
 	if score_board.last_point == 1:
-		ball_instance.global_position = Vector2(30, -40)
+		ball_instance.global_position = Vector2(30, 20)
 		ball_instance.current_player_side = 1
 	elif score_board.last_point == 2:
-		ball_instance.global_position = Vector2(226, -40)
+		ball_instance.global_position = Vector2(226, 20)
 		ball_instance.current_player_side = 2
 	
 	add_child(ball_instance, true)
@@ -181,8 +186,13 @@ func spawn_ball_local() -> void:
 	if not ball_instance.update_score.is_connected(_on_ball_scored):
 		ball_instance.update_score.connect(_on_ball_scored)
 
-func _on_ball_scored(_side: int) -> void:
-	AudioManager.play_sound_from_library("whistle")
+func _on_ball_scored(side: int) -> void:
+	
+	
+	if is_solo_mode:
+		AudioManager.play_sfx("quick_whistle")
+	else:
+		referee.call_point(side)
 	ball_spawned = false
 	can_move_players = true
 	ball_timer.start()

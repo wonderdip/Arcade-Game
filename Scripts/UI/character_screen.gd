@@ -27,17 +27,17 @@ func _ready() -> void:
 func _on_p_1_pressed() -> void:
 	current_selection = characters.get(0)
 	change_values()
-	AudioManager.play_sound_from_library("click")
+	AudioManager.play_sfx("click")
 	
 func _on_p_2_pressed() -> void:
 	current_selection = characters.get(1)
 	change_values()
-	AudioManager.play_sound_from_library("click")
+	AudioManager.play_sfx("click")
 	
 func _on_p_3_pressed() -> void:
 	current_selection = characters.get(2)
 	change_values()
-	AudioManager.play_sound_from_library("click")
+	AudioManager.play_sfx("click")
 	
 func change_values():
 	speed_slider.value = current_selection.Speed
@@ -56,7 +56,7 @@ func update_title():
 		title.text = "Choose your Player"
 	
 func _on_player_choice_pressed() -> void:
-	AudioManager.play_sound_from_library("click")
+	AudioManager.play_sfx("click")
 	
 	if Networkhandler.is_local:
 		# Store the selection for the current player

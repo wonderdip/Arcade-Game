@@ -10,6 +10,10 @@ signal update_score(current_player_side)
 @onready var landing_sprite: Sprite2D = $"Landing Sprite"
 @onready var fire_particle: GPUParticles2D = $FireParticle
 @onready var blue_fire_particle: GPUParticles2D = $BlueFireParticle
+@onready var freeze_timer: Timer = $FreezeTimer
+@onready var blink_timer: Timer = $BlinkTimer
+@onready var ball_sprite: Sprite2D = $BallSprite
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 const MAX_POSITION = 10000.0  # Maximum allowed position value
 const MIN_POSITION = -1000.0  # Minimum allowed position value
@@ -31,7 +35,7 @@ func _ready() -> void:
 	normal_linear_damp = linear_damp
 	fire_particle.emitting = false
 	blue_fire_particle.emitting = false
-
+	setup_ball()
 	is_local_mode = Networkhandler.is_local
 	is_solo_mode = Networkhandler.is_solo
 	# CRITICAL FIX: Set the server as the authority for the ball (only in network mode)
@@ -43,21 +47,38 @@ func _ready() -> void:
 			
 	if is_local_mode or is_solo_mode:
 		# Local mode - always simulate physics
-		freeze = false
 		sleeping = false
 	elif multiplayer.is_server():
 		# Network mode - server simulates fully
-		freeze = false
 		sleeping = false
 		print("Ball: Server ready, physics enabled")
 	else:
 		# Clients still need collision detection but don't modify physics
-		freeze = false
 		sleeping = false
 		contact_monitor = true
 		max_contacts_reported = 1
 		print("Ball: Client ready, authority is ", get_multiplayer_authority())
-
+		
+func setup_ball():
+	freeze_timer.start()
+	gravity_scale = 0
+	blink(1)
+	
+func blink(length: float):
+	var blink_speed = 0.1  # Time between blinks (fixed speed)
+	var blink_count = min(10, int(length / blink_speed) * 2)  # Ensure even count
+	
+	blink_timer.wait_time = blink_speed
+	
+	for i in range(blink_count):
+		blink_timer.start()
+		await blink_timer.timeout
+		animation_player.play("blink")
+		
+func _on_freeze_timer_timeout() -> void:
+	sleeping = false
+	gravity_scale = normal_gravity_scale
+	
 func _physics_process(_delta: float) -> void:
 	# Keep the raycast pointing straight down in world space
 	landing_ray.global_rotation = 0
@@ -90,7 +111,8 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	# Cap angular velocity too
 	if abs(state.angular_velocity) > 10.0:
 		state.angular_velocity = sign(state.angular_velocity) * 10.0
-
+	
+	
 func enter_hover_zone() -> void:
 	if not is_hovering:
 		is_hovering = true

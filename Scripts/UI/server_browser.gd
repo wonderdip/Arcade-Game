@@ -47,7 +47,7 @@ func _on_server_list_item_selected(index: int):
 		
 func _on_join_button_pressed():
 	var selected_items = server_list.get_selected_items()
-	AudioManager.play_sound_from_library("click")
+	AudioManager.play_sfx("click")
 	if selected_items.size() == 0:
 		print("No server selected.")
 		return
@@ -59,7 +59,7 @@ func _on_join_button_pressed():
 
 func _on_refresh_button_pressed():
 	refresh_servers()
-	AudioManager.play_sound_from_library("click")
+	AudioManager.play_sfx("click")
 
 func refresh_servers():
 	discovered_servers.clear()
@@ -102,7 +102,7 @@ func animate_search_label() -> void:
 func _on_back_button_pressed():
 	ServerDiscovery.stop_discovery_client()
 	get_tree().change_scene_to_file("res://Scenes/Menus/title_screen.tscn")
-	AudioManager.play_sound_from_library("click")
+	AudioManager.play_sfx("click")
 
 func _exit_tree():
 	ServerDiscovery.stop_discovery_client()

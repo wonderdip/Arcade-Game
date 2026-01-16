@@ -1,8 +1,8 @@
-[gd_scene load_steps=23 format=3 uid="uid://dp22kc0mg2ipx"]
+[gd_scene load_steps=29 format=3 uid="uid://dp22kc0mg2ipx"]
 
-[ext_resource type="Script" uid="uid://bte2dcievitpi" path="res://Scripts/audio_manager.gd" id="1_4tj6f"]
-[ext_resource type="Script" uid="uid://crrtlpk84auvi" path="res://Scripts/audio_library.gd" id="2_qixve"]
-[ext_resource type="Script" uid="uid://d146sbh4v7p66" path="res://Scripts/sound_effect.gd" id="3_0hehx"]
+[ext_resource type="Script" uid="uid://bte2dcievitpi" path="res://Scripts/Audio/audio_manager.gd" id="1_4tj6f"]
+[ext_resource type="Script" uid="uid://crrtlpk84auvi" path="res://Scripts/Audio/audio_library.gd" id="2_qixve"]
+[ext_resource type="Script" uid="uid://d146sbh4v7p66" path="res://Scripts/Audio/sound_effect.gd" id="3_0hehx"]
 [ext_resource type="AudioStream" uid="uid://7gkmw5gm7i03" path="res://Assets/SFX/Click.wav" id="4_mjqhu"]
 [ext_resource type="AudioStream" uid="uid://b8v3o8lrlnrxy" path="res://Assets/SFX/jump.wav" id="5_0hehx"]
 [ext_resource type="AudioStream" uid="uid://gy8r8xq2kuxf" path="res://Assets/SFX/hit.wav" id="6_5kf6k"]
@@ -12,6 +12,10 @@
 [ext_resource type="AudioStream" uid="uid://dslein4mgwsg0" path="res://Assets/SFX/ball_launch.wav" id="10_5nrbi"]
 [ext_resource type="AudioStream" uid="uid://c3wlhrrfbonut" path="res://Assets/SFX/hit2.wav" id="11_5nrbi"]
 [ext_resource type="AudioStream" uid="uid://ha3hy1h6upof" path="res://Assets/SFX/whistle.wav" id="12_pn88s"]
+[ext_resource type="AudioStream" uid="uid://7ukb752slomg" path="res://Assets/SFX/whistle(2).mp3" id="13_fasow"]
+[ext_resource type="AudioStream" uid="uid://dwy10u2yqognd" path="res://Assets/Music/Jazzy.wav" id="14_1bal0"]
+[ext_resource type="Script" uid="uid://2i3ekeu81g5a" path="res://Scripts/Audio/music_player.gd" id="15_vhwx7"]
+[ext_resource type="Script" uid="uid://bawg1nlx3i5em" path="res://Scripts/Audio/sfx_player.gd" id="16_bkjj7"]
 
 [sub_resource type="Resource" id="Resource_5kf6k"]
 script = ExtResource("3_0hehx")
@@ -71,17 +75,37 @@ metadata/_custom_type_script = "uid://d146sbh4v7p66"
 
 [sub_resource type="Resource" id="Resource_vhwx7"]
 script = ExtResource("3_0hehx")
-tag = "whistle"
+tag = "quick_whistle"
 type = 1
 stream = ExtResource("12_pn88s")
 metadata/_custom_type_script = "uid://d146sbh4v7p66"
 
+[sub_resource type="Resource" id="Resource_bkjj7"]
+script = ExtResource("3_0hehx")
+tag = "long_whistle"
+type = 1
+stream = ExtResource("13_fasow")
+metadata/_custom_type_script = "uid://d146sbh4v7p66"
+
+[sub_resource type="Resource" id="Resource_dv115"]
+script = ExtResource("3_0hehx")
+tag = "jazzy"
+stream = ExtResource("14_1bal0")
+metadata/_custom_type_script = "uid://d146sbh4v7p66"
+
 [sub_resource type="Resource" id="Resource_tnn7g"]
 script = ExtResource("2_qixve")
-sound_effects = Array[ExtResource("3_0hehx")]([SubResource("Resource_5kf6k"), SubResource("Resource_mjqhu"), SubResource("Resource_lwpe1"), SubResource("Resource_1bal0"), SubResource("Resource_jmilc"), SubResource("Resource_5nrbi"), SubResource("Resource_pn88s"), SubResource("Resource_fasow"), SubResource("Resource_vhwx7")])
+sound_effects = Array[ExtResource("3_0hehx")]([SubResource("Resource_5kf6k"), SubResource("Resource_mjqhu"), SubResource("Resource_lwpe1"), SubResource("Resource_1bal0"), SubResource("Resource_jmilc"), SubResource("Resource_5nrbi"), SubResource("Resource_pn88s"), SubResource("Resource_fasow"), SubResource("Resource_vhwx7"), SubResource("Resource_bkjj7"), SubResource("Resource_dv115")])
 metadata/_custom_type_script = "uid://crrtlpk84auvi"
 
-[node name="AudioManager" type="AudioStreamPlayer2D"]
-max_polyphony = 20
+[node name="AudioManager" type="Node2D"]
 script = ExtResource("1_4tj6f")
 audio_library = SubResource("Resource_tnn7g")
+
+[node name="MusicPlayer" type="AudioStreamPlayer2D" parent="."]
+bus = &"Music"
+script = ExtResource("15_vhwx7")
+
+[node name="SFXPlayer" type="AudioStreamPlayer2D" parent="."]
+bus = &"SFX"
+script = ExtResource("16_bkjj7")

@@ -140,3 +140,5 @@ func reset():
 	player1_character = null
 	player2_character = null
 	character = null
+	player_one = null
+	player_two = null

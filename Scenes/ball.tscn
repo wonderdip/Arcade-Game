@@ -1,8 +1,9 @@
-[gd_scene load_steps=17 format=3 uid="uid://txgrcwpblspl"]
+[gd_scene load_steps=22 format=3 uid="uid://txgrcwpblspl"]
 
 [ext_resource type="Texture2D" uid="uid://m7f8mlud45t1" path="res://Assets/Volleyball.png" id="1_d60mj"]
 [ext_resource type="Script" uid="uid://cmmnovr8dmvae" path="res://Scripts/ball.gd" id="1_ij5cq"]
 [ext_resource type="Texture2D" uid="uid://ckesrjrj7u4gq" path="res://Assets/Start Screen/Volleyball_anim.png" id="2_376qj"]
+[ext_resource type="Shader" uid="uid://kwhivhvse1l6" path="res://Shaders/flash.gdshader" id="2_yk4cr"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_d60mj"]
 bounce = 0.7
@@ -62,6 +63,10 @@ scale_max = 12.0
 scale_curve = SubResource("CurveTexture_hk63f")
 color_ramp = SubResource("GradientTexture1D_vblhy")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aw2wy"]
+shader = ExtResource("2_yk4cr")
+shader_parameter/active = false
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_ij5cq"]
 radius = 6.0
 
@@ -91,6 +96,43 @@ properties/7/path = NodePath("Landing Sprite:position")
 properties/7/spawn = true
 properties/7/replication_mode = 1
 
+[sub_resource type="Animation" id="Animation_yk4cr"]
+resource_name = "blink"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BallSprite:material:shader_parameter/active")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="Animation" id="Animation_aw2wy"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("BallSprite:material")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [SubResource("ShaderMaterial_aw2wy")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vblhy"]
+_data = {
+&"RESET": SubResource("Animation_aw2wy"),
+&"blink": SubResource("Animation_yk4cr")
+}
+
 [node name="Ball" type="RigidBody2D" groups=["ball"]]
 collision_layer = 2
 collision_mask = 108
@@ -98,9 +140,10 @@ collision_priority = 100.0
 mass = 0.1
 physics_material_override = SubResource("PhysicsMaterial_d60mj")
 gravity_scale = 0.8
+can_sleep = false
 continuous_cd = 2
 contact_monitor = true
-max_contacts_reported = 10
+max_contacts_reported = 1
 linear_damp = 0.5
 angular_damp = 2.0
 script = ExtResource("1_ij5cq")
@@ -122,7 +165,8 @@ lifetime = 0.5
 one_shot = true
 process_material = SubResource("ParticleProcessMaterial_vm4s8")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="BallSprite" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_aw2wy")
 texture = ExtResource("2_376qj")
 hframes = 4
 frame = 1
@@ -136,10 +180,25 @@ collision_mask = 4
 
 [node name="Landing Sprite" type="Sprite2D" parent="."]
 modulate = Color(0.5137255, 0.5647059, 1, 0.3647059)
-position = Vector2(15, 0)
+position = Vector2(0, 15)
 texture = ExtResource("1_d60mj")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_ij5cq")
 
+[node name="FreezeTimer" type="Timer" parent="."]
+one_shot = true
+ignore_time_scale = true
+
+[node name="BlinkTimer" type="Timer" parent="."]
+wait_time = 0.2
+one_shot = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_vblhy")
+}
+
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="FreezeTimer" to="." method="_on_freeze_timer_timeout"]
+[connection signal="timeout" from="BlinkTimer" to="." method="_on_blink_timer_timeout"]
