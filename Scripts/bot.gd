@@ -215,6 +215,7 @@ func _update_ai(delta: float) -> void:
 	if not is_bot or ball == null:
 		return
 		
+	var dist_to_target: float
 	# BLOCK RESET: Cancel block when landing OR leaving blockzone
 	if is_blocking and (is_on_floor() or not in_blockzone):
 		is_blocking = false
@@ -251,7 +252,7 @@ func _update_ai(delta: float) -> void:
 		# Continue moving even during decision cooldown
 			
 		if target_position != Vector2.ZERO:
-			var dist_to_target = abs(target_position.x - global_position.x)
+			dist_to_target = abs(target_position.x - global_position.x)
 			if dist_to_target > movement_tolerance:
 				move_dir = sign(target_position.x - global_position.x)
 			else:
@@ -282,7 +283,6 @@ func _update_ai(delta: float) -> void:
 	distance_to_net = global_position.x - 128
 	
 	# IMPROVED: Better positioning near net
-	var horizontal_distance = abs(target_ball_pos.x - global_position.x)
 	var target_x = target_ball_pos.x
 	
 	# Stay away from net when ball is on our side
@@ -295,8 +295,7 @@ func _update_ai(delta: float) -> void:
 	
 	target_position = Vector2(target_x, global_position.y)
 	
-	# IMPROVED: More aggressive movement - don't stop at min_ball_distance
-	var dist_to_target = abs(target_x - global_position.x)
+	dist_to_target = abs(target_x - global_position.x)
 	if dist_to_target > movement_tolerance:
 		move_dir = sign(target_x - global_position.x)
 	else:
@@ -321,7 +320,7 @@ func _handle_action_holding(_delta: float) -> void:
 func _decide_action() -> void:
 	ball_height_diff = global_position.y - ball.global_position.y
 	var ball_falling = ball.linear_velocity.y > 0
-	var ball_speed = ball.linear_velocity.length()
+	var _ball_speed = ball.linear_velocity.length()
 	var hit_type := offense_plan
 	
 	if current_action != "" and current_action != "block":

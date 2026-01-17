@@ -1,28 +1,36 @@
 extends Resource
 class_name AudioLibrary
 
-@export var sound_effects: Array[SoundEffect]
+@export var sound_effects: Array[SoundEffect] = []
 
-var last_played: Dictionary
+var last_played: SoundEffect
 
-func get_audio_stream(_tag: String) -> SoundEffect:
+func get_audio_stream(tag: String) -> SoundEffect:
 	var matches: Array[SoundEffect] = []
 
 	for sound in sound_effects:
-		if sound.tag == _tag:
+		if sound.tag == tag:
 			matches.append(sound)
 
 	if matches.is_empty():
 		return null
 
+	# If only one variant exists, return it
 	if matches.size() == 1:
-		last_played[_tag] = matches[0]
+		last_played = matches[0]
 		return matches[0]
 
-	var choice = matches.pick_random()
-	if last_played.get(_tag) == choice:
-		matches.erase(choice)
-		choice = matches.pick_random()
+	# If more than one variant exists
+	var choice: SoundEffect = matches.pick_random()
 
-	last_played[_tag] = choice
+	# Avoid repeating immediately if there is more than one variant
+	if matches.size() > 1 and last_played != null:
+		matches.push_back(last_played)
+		choice = matches.get(0)
+		
+	# Remember what we just picked
+	last_played = choice
 	return choice
+
+func add_sound(sound: SoundEffect):
+	sound_effects.append(sound)

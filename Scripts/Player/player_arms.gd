@@ -237,7 +237,7 @@ func _apply_hit_to_ball_server(body: RigidBody2D, contact_point: Vector2, face_r
 		
 func calculate_ball_hit(
 	body: RigidBody2D,
-	contact_point: Vector2,
+	_contact_point: Vector2,
 	face_right: bool,
 	hitting: bool,
 	bumping: bool,

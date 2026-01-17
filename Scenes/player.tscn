@@ -37,7 +37,7 @@ player_number = 1
 
 [node name="Sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = ExtResource("2_6t5aa")
-animation = &"Jump"
+animation = &"Run"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-1, 0)
@@ -48,3 +48,5 @@ ball_control = 0.0
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_3smsa")
+
+[connection signal="frame_changed" from="Sprite" to="." method="_on_sprite_frame_changed"]

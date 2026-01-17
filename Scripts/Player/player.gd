@@ -11,6 +11,7 @@ extends CharacterBody2D
 @export_enum("P1", "P2", "P3") var character: String = "P1"
 
 var fallbackframe := preload("res://Assets/Characters/Player Sprite Frames/P1.tres")
+var footstep_frames : Array = [0, 4]
 
 var peak_gravity_scale: float = 0.5
 var peak_threshold: float = 80.0
@@ -248,6 +249,7 @@ func _animations():
 		elif direction != 0:
 			sprite.play("Run")
 		else:
+			
 			sprite.play("Idle")
 
 	# Flip sprite based on direction
@@ -258,6 +260,13 @@ func _animations():
 			sprite.flip_h = true
 		player_arms.sprite_direction(direction)
 
+func _on_sprite_frame_changed() -> void:
+	if sprite.animation == "Run":
+		if sprite.frame in footstep_frames:
+			AudioManager.play_sfx("step")
+	else:
+		return
+		
 func _setup_local_player(dev_id: int, p_number: int, inp_type: String):
 	player_number = p_number
 	device_id = dev_id
