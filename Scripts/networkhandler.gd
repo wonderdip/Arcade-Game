@@ -143,7 +143,8 @@ func _on_connection_failed() -> void:
 
 func _on_server_disconnected() -> void:
 	print("Disconnected from server")
-
+	reset_network()
+	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
 
 # ========================================
 # CLEANUP FUNCTIONS

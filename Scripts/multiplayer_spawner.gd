@@ -11,6 +11,13 @@ var spawn_positions = {
 	4: Vector2(226, 112)   # Third client/Player 4
 }
 
+var player_tints = {
+	1: Color.WHITE,
+	2: Color.BLUE,
+	3: Color.RED,
+	4: Color.GREEN
+}
+
 func _ready() -> void:
 	if Networkhandler.is_local or Networkhandler.is_solo:
 		return
@@ -28,6 +35,7 @@ func _ready() -> void:
 	# Connect to handle client connections
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	
 func _on_peer_connected(id: int) -> void:
 	if not multiplayer.is_server():
 		return
@@ -58,9 +66,11 @@ func spawn_player(id: int, index: int) -> void:
 	player.name = str(id)
 	# Get spawn position
 	var spawn_pos: Vector2 = spawn_positions.get(index, Vector2(30, 112))
+	var modulate: Color = player_tints.get(index, Color.WHITE)
 	var parent: Node = get_node(spawn_path)
 	parent.add_child(player, true)
 	
+	player.modulate = modulate
 	player.player_number = index
 	player.position = spawn_pos
 	

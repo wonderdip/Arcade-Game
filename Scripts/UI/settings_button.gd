@@ -13,7 +13,6 @@ func _on_pressed() -> void:
 
 func enable():
 	disabled = false
-	grab_focus()
 	await get_tree().process_frame
 	SettingsManager.settings_opened = false   # <— UNFREEZE
 	

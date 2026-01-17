@@ -127,7 +127,7 @@ func _apply_difficulty_settings() -> void:
 
 func _physics_process(delta: float) -> void:
 	_find_ball()
-	if Networkhandler.settings_opened:
+	if SettingsManager.settings_opened:
 		return
 			
 	_update_ai(delta)
@@ -224,7 +224,7 @@ func _update_ai(delta: float) -> void:
 		action_hold_timer = 0
 		action_cooldown = 0
 
-	# IMPROVED: Better defensive positioning - but still track ball
+	# Better defensive positioning - but still track ball
 	if ball.scored or (not can_block and ball.global_position.x <= 128):
 		player_arms.touch_counter = 0
 		var defensive_position = (left_bound + right_bound) / 2 + 20
@@ -261,7 +261,7 @@ func _update_ai(delta: float) -> void:
 
 	decision_timer = reaction_time
 
-	# IMPROVED: Smart prediction based on ball state
+	#Smart prediction based on ball state
 	var ball_speed = ball.linear_velocity.length()
 	var ball_falling = ball.linear_velocity.y > 0
 	var use_landing_prediction = ball_falling and ball.global_position.y < 100
@@ -282,7 +282,7 @@ func _update_ai(delta: float) -> void:
 	
 	distance_to_net = global_position.x - 128
 	
-	# IMPROVED: Better positioning near net
+	# Better positioning near net
 	var target_x = target_ball_pos.x
 	
 	# Stay away from net when ball is on our side
