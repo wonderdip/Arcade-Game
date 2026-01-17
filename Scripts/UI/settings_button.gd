@@ -5,6 +5,8 @@ signal settings_opened
 @export var settings_menu: PackedScene
 
 
+func _ready() -> void:
+	SettingsManager.connect("open_settings", open_settings)
 
 func _on_pressed() -> void:
 	open_settings()
@@ -13,13 +15,13 @@ func enable():
 	disabled = false
 	grab_focus()
 	await get_tree().process_frame
-	Networkhandler.settings_opened = false   # <— UNFREEZE
+	SettingsManager.settings_opened = false   # <— UNFREEZE
 	
 	if get_child_count() > 0:
 		get_child(0).queue_free()
 	
 func open_settings():
-	Networkhandler.settings_opened = true
+	SettingsManager.settings_opened = true
 	var settings_menu_instance = settings_menu.instantiate()
 	
 	add_child(settings_menu_instance)

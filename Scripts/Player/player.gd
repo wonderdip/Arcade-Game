@@ -111,7 +111,7 @@ func _load_character():
 
 func _physics_process(delta: float) -> void:
 	# Freeze movement if settings menu is open globally
-	if Networkhandler.settings_opened:
+	if SettingsManager.settings_opened:
 		return
 		
 	if is_local_mode:
@@ -261,11 +261,14 @@ func _animations():
 		player_arms.sprite_direction(direction)
 
 func _on_sprite_frame_changed() -> void:
+	# Safety check - sprite might not be ready yet or could be null
+	if not sprite or not is_instance_valid(sprite):
+		return
+	
+	# Only play footstep sounds during run animation
 	if sprite.animation == "Run":
 		if sprite.frame in footstep_frames:
 			AudioManager.play_sfx("step")
-	else:
-		return
 		
 func _setup_local_player(dev_id: int, p_number: int, inp_type: String):
 	player_number = p_number

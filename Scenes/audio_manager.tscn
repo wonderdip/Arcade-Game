@@ -129,6 +129,5 @@ audio_library = SubResource("Resource_tnn7g")
 bus = &"Music"
 script = ExtResource("15_vhwx7")
 
-[node name="SFXPlayer" type="AudioStreamPlayer2D" parent="."]
-bus = &"SFX"
+[node name="SFXPlayer" type="Node2D" parent="."]
 script = ExtResource("16_bkjj7")

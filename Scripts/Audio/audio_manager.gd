@@ -8,7 +8,7 @@ var sfx_vol: float = 50.0
 var music_vol: float = 50.0
 
 @onready var music_player: AudioStreamPlayer2D = $MusicPlayer
-@onready var sfx_player: AudioStreamPlayer2D = $SFXPlayer
+@onready var sfx_player: Node2D = $SFXPlayer
 
 var fade_duration := 2.0 # seconds
 var fade_timer := 0.0

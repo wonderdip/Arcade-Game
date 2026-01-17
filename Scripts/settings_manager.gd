@@ -1,13 +1,17 @@
 extends Node
 
-var user_settings: UserSettings
+signal open_settings
+signal close_settings
 
+var user_settings: UserSettings
+var settings_opened: bool = false
+	
 func _ready() -> void:
 	# Load settings as soon as the game starts
 	user_settings = UserSettings.load_or_create()
 	apply_settings()
 	print("Settings loaded and applied on game start")
-
+	
 func apply_settings() -> void:
 	"""Apply all settings to the game engine/systems"""
 	# Apply audio settings
@@ -36,3 +40,11 @@ func save_settings() -> void:
 func get_settings() -> UserSettings:
 	"""Get the current settings resource"""
 	return user_settings
+
+func _input(event: InputEvent) -> void:
+	
+	if event.is_action_pressed("settings") and settings_opened:
+		emit_signal("close_settings")
+		
+	elif event.is_action_pressed("settings") and not settings_opened:
+		emit_signal("open_settings")

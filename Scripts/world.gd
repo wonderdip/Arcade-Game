@@ -1,229 +1,297 @@
 extends Node2D
 
-@onready var ball_scene: PackedScene = preload("res://Scenes/ball.tscn")
-@onready var player_scene: PackedScene = preload("res://Scenes/player.tscn")
+const BALL_SCENE := preload("res://Scenes/ball.tscn")
+const PLAYER_SCENE := preload("res://Scenes/player.tscn")
+
 @onready var score_board: Node2D = $ScoreBoard
-@onready var multiplayer_spawner: MultiplayerSpawner = $MultiplayerSpawner
 @onready var ball_timer: Timer = $BallTimer
 @onready var camera_2d: Camera2D = $Camera2D
-@onready var settings_button = $"InGame_UI/VBoxContainer/Settings button"
-@onready var in_game_ui: Control = $InGame_UI
 @onready var referee: Node2D = $Referee
 
 var active_ball: Node2D = null
 @export var ball_spawned: bool = false
-var is_network_mode: bool = false
-var is_solo_mode: bool = false
-var local_player_manager: Node = null
-var spawned_players: Array = []
-var total_players
-var settings_opened: bool = false
 
-var can_move_players: bool = false
+# Mode tracking
+enum GameMode { SOLO, LOCAL, NETWORK }
+var current_mode: GameMode
+
+# Network specific
+var is_network_server: bool = false
+var total_players: int = 0
+
+# Local specific
+var spawned_players: Array = []
+
 func _ready() -> void:
 	ScreenFX.camera2d = camera_2d
-	
-	# Check if we're in network mode
-	if Networkhandler.is_solo:
-		is_solo_mode = true
-		print("solo player spawning")
-		spawn_solo_player()
-		return
-	is_network_mode = multiplayer.multiplayer_peer != null
-	if is_network_mode and not is_solo_mode:
-		print("world in network")
-		# Network mode - only server spawns ball after client connects
-		if multiplayer.is_server():
-			multiplayer.peer_connected.connect(_on_peer_connected)
-			multiplayer.peer_disconnected.connect(_on_peer_disconnected)
-			total_players = multiplayer.get_peers().size() + 1
-			if total_players == Networkhandler.MAX_CLIENTS:
-				await get_tree().create_timer(1.0).timeout
-				spawn_ball()
-	elif Networkhandler.is_local:
-		PlayerManager.player_joined.connect(_on_local_player_joined)
-	else:
-		print("no mode")
-		return
+	_determine_game_mode()
+	_initialize_mode()
 
-func spawn_solo_player():
-	var player = player_scene.instantiate()
+func _determine_game_mode() -> void:
+	"""Figure out which game mode we're in"""
+	if Networkhandler.is_solo:
+		current_mode = GameMode.SOLO
+	elif Networkhandler.is_local:
+		current_mode = GameMode.LOCAL
+	elif multiplayer.multiplayer_peer != null:
+		current_mode = GameMode.NETWORK
+		is_network_server = multiplayer.is_server()
+	else:
+		push_error("Unknown game mode - returning to main menu")
+		get_tree().change_scene_to_file("res://Scenes/Menus/title_screen.tscn")
+
+func _initialize_mode() -> void:
+	"""Initialize based on game mode"""
+	match current_mode:
+		GameMode.SOLO:
+			_setup_solo_mode()
+		GameMode.LOCAL:
+			_setup_local_mode()
+		GameMode.NETWORK:
+			_setup_network_mode()
+
+# ========================================
+# SOLO MODE
+# ========================================
+
+func _setup_solo_mode() -> void:
+	print("Initializing solo mode")
+	var player = PLAYER_SCENE.instantiate()
 	player.position = Vector2(30, 112)
 	add_child(player)
 	PlayerManager.player_one = player
 	
-	for child in self.get_children():
+	# Find bot if it exists
+	for child in get_children():
 		if child.name == "Bot":
 			PlayerManager.player_two = child
+			break
 			
-	print("solo player spawned")
+# ========================================
+# LOCAL MODE
+# ========================================
 
-func _on_local_player_joined(device_id: int, player_number: int, input_type: String):
-	
-	# Spawn the player
-	var player = player_scene.instantiate()
+func _setup_local_mode() -> void:
+	print("Initializing local multiplayer mode")
+	PlayerManager.player_joined.connect(_on_local_player_joined)
+
+func _on_local_player_joined(device_id: int, player_number: int, input_type: String) -> void:
+	var player = PLAYER_SCENE.instantiate()
 	player.name = "Player_" + str(player_number)
 	player.position = PlayerManager.get_spawn_position(player_number)
 	add_child(player)
-	
-	# Setup the player with their device and input type
 	player._setup_local_player(device_id, player_number, input_type)
-	match player_number:
-		1:
-			PlayerManager.player_one = player
-		2:
-			PlayerManager.player_two = player
-			for child in self.get_children():
-				if child.name == "Bot":
-					PlayerManager.player_two = child
-					
+	
+	if player_number == 1:
+		PlayerManager.player_one = player
+	elif player_number == 2:
+		PlayerManager.player_two = player
+	
 	spawned_players.append(player)
 	
-	# If both players joined, spawn the ball
+	# Spawn ball when both players ready
 	if spawned_players.size() == 2:
 		await get_tree().create_timer(0.5).timeout
-		spawn_ball_local()
+		_spawn_ball_local()
+
+# ========================================
+# NETWORK MODE
+# ========================================
+
+func _setup_network_mode() -> void:
+	print("Initializing network mode (server: %s)" % is_network_server)
+	
+	if is_network_server:
+		multiplayer.peer_connected.connect(_on_peer_connected)
+		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+		total_players = multiplayer.get_peers().size() + 1
+		
+		# Spawn ball if we already have max players
+		if total_players == Networkhandler.MAX_CLIENTS:
+			await get_tree().create_timer(1.0).timeout
+			_spawn_ball_network()
 
 func _on_peer_connected(id: int) -> void:
+	if not is_network_server:
+		return
+	
 	total_players = multiplayer.get_peers().size() + 1
-	print("Peer connected:", id, "Total players:", total_players)
+	print("Peer connected: %d (Total: %d/%d)" % [id, total_players, Networkhandler.MAX_CLIENTS])
+	
 	if total_players == Networkhandler.MAX_CLIENTS:
 		await get_tree().create_timer(1.0).timeout
-		spawn_ball()
-		
-func _on_peer_disconnected(_id: int):
-	total_players =- 1
+		_spawn_ball_network()
 
-func _physics_process(_delta: float) -> void:
-	# Ball spawning for testing/reset
-	if (Input.is_action_just_pressed("spawnball_1") or Input.is_action_just_pressed("spawnball_2")) and !ball_spawned  and !settings_opened:
-		if is_network_mode:
-			if multiplayer.is_server():
-				spawn_ball()
-			else:
-				rpc_id(1, "request_ball_spawn")
-		elif (Networkhandler.is_local and spawned_players.size() >= 2 and !settings_opened) or is_solo_mode:
-			spawn_ball_local()
-			print(settings_opened)
-	if Input.is_action_just_pressed("settings") and settings_opened == false:
-		settings_button.open_settings()
-		settings_button.open_settings().connect("settings_deleted", _on_settings_deleted)
-		
-		settings_opened = true
-		print(settings_opened)
-		
-		
-	if active_ball != null and active_ball.scored and can_move_players == true:
-		if is_solo_mode and PlayerManager.player_two != null:
-			PlayerManager.player_one.global_position = PlayerManager.get_spawn_position(1)
-			PlayerManager.player_two.global_position = PlayerManager.get_spawn_position(2)
-		elif not is_solo_mode:
-			PlayerManager.player_one.global_position = PlayerManager.get_spawn_position(1)
-			if PlayerManager.player_two != null: 
-				PlayerManager.player_two.global_position = PlayerManager.get_spawn_position(2)
-			
-		can_move_players = false
-func _on_settings_deleted():
-	settings_opened = false
-	
-	
-@rpc("any_peer", "call_remote")
-func request_ball_spawn():
-	if multiplayer.is_server():
-		spawn_ball()
-
-func spawn_ball() -> void:
-	# Network mode spawning
-	if not multiplayer.is_server():
+func _on_peer_disconnected(_id: int) -> void:
+	if not is_network_server:
 		return
+	
+	total_players = multiplayer.get_peers().size() + 1
+	print("Peer disconnected (Total: %d)" % total_players)
+
+# ========================================
+# BALL SPAWNING
+# ========================================
+
+func _spawn_ball_local() -> void:
+	"""Spawn ball in solo or local mode"""
+	_cleanup_existing_ball()
+	
+	var ball = BALL_SCENE.instantiate()
+	if current_mode == GameMode.SOLO:
+		ball.global_position = Vector2(30, 20)
+	else:
+		ball.global_position = _get_ball_spawn_position()
+	ball.current_player_side = score_board.last_point
+	
+	add_child(ball, true)
+	active_ball = ball
+	ball_spawned = true
+	
+	_connect_ball_signals(ball)
+
+func _spawn_ball_network() -> void:
+	"""Spawn ball in network mode (server only)"""
+	if not is_network_server:
+		return
+	
+	_cleanup_existing_ball()
+	
+	var ball = BALL_SCENE.instantiate()
+	ball.name = "Ball_" + str(Time.get_ticks_msec())
+	ball.global_position = _get_ball_spawn_position()
+	ball.current_player_side = score_board.last_point
+	
+	add_child(ball, true)
+	active_ball = ball
+	ball_spawned = true
+	
+	_connect_ball_signals(ball)
+
+@rpc("any_peer", "call_remote", "reliable")
+func _request_ball_spawn() -> void:
+	"""Client requests server to spawn ball"""
+	if is_network_server:
+		_spawn_ball_network()
+
+func _cleanup_existing_ball() -> void:
+	"""Remove existing ball if present"""
 	if active_ball != null and is_instance_valid(active_ball):
 		active_ball.queue_free()
 		await get_tree().process_frame
 
-	var ball_instance = ball_scene.instantiate()
-	
+func _get_ball_spawn_position() -> Vector2:
+	"""Get spawn position based on who scored last"""
 	if score_board.last_point == 1:
-		ball_instance.position = Vector2(30, 20)
-		ball_instance.current_player_side = 1
-	elif score_board.last_point == 2:
-		ball_instance.position = Vector2(226, 20)
-		ball_instance.current_player_side = 2
-	
-	ball_instance.name = "Ball_" + str(Time.get_ticks_msec())
-	
-	add_child(ball_instance, true)
-	active_ball = ball_instance
-	ball_spawned = true
-	
-	if not ball_instance.update_score.is_connected(score_board.update_score):
-		ball_instance.update_score.connect(score_board.update_score)
-		
-	if not ball_instance.update_score.is_connected(_on_ball_scored):
-		ball_instance.update_score.connect(_on_ball_scored)
+		return Vector2(30, 20)
+	else:
+		return Vector2(226, 20)
 
-func spawn_ball_local() -> void:
-	# Local mode spawning (no network replication needed)
-	if active_ball != null and is_instance_valid(active_ball):
-		active_ball.queue_free()
+func _connect_ball_signals(ball: Node) -> void:
+	"""Connect ball scoring signals"""
+	if not ball.update_score.is_connected(score_board.update_score):
+		ball.update_score.connect(score_board.update_score)
+	if not ball.update_score.is_connected(_on_ball_scored):
+		ball.update_score.connect(_on_ball_scored)
 
-	var ball_instance = ball_scene.instantiate()
-	if is_solo_mode:
-		score_board.last_point = 1
-	if score_board.last_point == 1:
-		ball_instance.global_position = Vector2(30, 20)
-		ball_instance.current_player_side = 1
-	elif score_board.last_point == 2:
-		ball_instance.global_position = Vector2(226, 20)
-		ball_instance.current_player_side = 2
-	
-	add_child(ball_instance, true)
-	active_ball = ball_instance
-	ball_spawned = true
-	
-	if not ball_instance.update_score.is_connected(score_board.update_score):
-		ball_instance.update_score.connect(score_board.update_score)
-		
-	if not ball_instance.update_score.is_connected(_on_ball_scored):
-		ball_instance.update_score.connect(_on_ball_scored)
+# ========================================
+# GAME EVENTS
+# ========================================
 
 func _on_ball_scored(side: int) -> void:
+	"""Handle ball scoring"""
+	ball_spawned = false
 	
-	
-	if is_solo_mode:
+	# Play appropriate sound/animation
+	if current_mode == GameMode.SOLO:
 		AudioManager.play_sfx("quick_whistle")
 	else:
 		referee.call_point(side)
-	ball_spawned = false
-	can_move_players = true
-	ball_timer.start()
+		_reset_player_positions()
+	# Reset player positions
 	
+	
+	# Start timer for next ball
+	ball_timer.start()
+
+func _reset_player_positions() -> void:
+	"""Move players back to spawn positions"""
+	await get_tree().create_timer(0.3).timeout  # Small delay before resetting
+	
+	if PlayerManager.player_one:
+		PlayerManager.player_one.global_position = PlayerManager.get_spawn_position(1)
+	if PlayerManager.player_two:
+		PlayerManager.player_two.global_position = PlayerManager.get_spawn_position(2)
+
+func _on_ball_timer_timeout() -> void:
+	"""Spawn new ball after timer expires"""
+	if ball_spawned:
+		return
+	
+	match current_mode:
+		GameMode.SOLO, GameMode.LOCAL:
+			_spawn_ball_local()
+		GameMode.NETWORK:
+			if is_network_server:
+				_spawn_ball_network()
+			else:
+				_request_ball_spawn.rpc_id(1)
+
+# ========================================
+# INPUT HANDLING
+# ========================================
+
+func _physics_process(_delta: float) -> void:
+	# Manual ball spawn for testing
+	if SettingsManager.settings_opened:
+		return
+	
+	if _should_allow_manual_spawn() and _is_spawn_input_pressed():
+		_handle_manual_spawn()
+
+func _should_allow_manual_spawn() -> bool:
+	"""Check if manual spawning is allowed"""
+	return !ball_spawned and !SettingsManager.settings_opened
+
+func _is_spawn_input_pressed() -> bool:
+	"""Check if spawn input was pressed"""
+	return Input.is_action_just_pressed("spawnball_1") or Input.is_action_just_pressed("spawnball_2")
+
+func _handle_manual_spawn() -> void:
+	"""Handle manual ball spawn based on mode"""
+	match current_mode:
+		GameMode.SOLO, GameMode.LOCAL:
+			if current_mode == GameMode.LOCAL and spawned_players.size() < 2:
+				return
+			_spawn_ball_local()
+		GameMode.NETWORK:
+			if is_network_server:
+				_spawn_ball_network()
+			else:
+				_request_ball_spawn.rpc_id(1)
+
+# ========================================
+# AREA DETECTION
+# ========================================
+
 func _on_player_one_side_body_entered(body: Node2D) -> void:
-	if body.is_in_group("ball"):
-		if is_network_mode and not multiplayer.is_server():
-			return
-		body.current_player_side = 1
+	if not body.is_in_group("ball"):
+		return
+	if current_mode == GameMode.NETWORK and not is_network_server:
+		return
+	body.current_player_side = 1
 
 func _on_player_two_side_body_entered(body: Node2D) -> void:
-	if body.is_in_group("ball"):
-		if is_network_mode and not multiplayer.is_server():
-			return
-		body.current_player_side = 2
+	if not body.is_in_group("ball"):
+		return
+	if current_mode == GameMode.NETWORK and not is_network_server:
+		return
+	body.current_player_side = 2
 
-func _on_block_zone_body_entered(body: Node2D):
+func _on_block_zone_body_entered(body: Node2D) -> void:
 	if body is CharacterBody2D and "in_blockzone" in body:
 		body.in_blockzone = true
 
 func _on_block_zone_body_exited(body: Node2D) -> void:
 	if body is CharacterBody2D and "in_blockzone" in body:
 		body.in_blockzone = false
-		
-func _on_ball_timer_timeout() -> void:
-	if total_players == Networkhandler.MAX_CLIENTS:
-		if not ball_spawned:
-			if is_network_mode:
-				if multiplayer.is_server():
-					spawn_ball()
-				else:
-					rpc_id(1, "request_ball_spawn")
-			elif Networkhandler.is_local and spawned_players.size() >= 2:
-				spawn_ball_local()

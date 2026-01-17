@@ -63,6 +63,7 @@ offset_bottom = 122.0
 
 [node name="Tournament" type="Button" parent="VBoxContainer"]
 layout_mode = 2
+disabled = true
 text = "Tournament Mode"
 
 [node name="Training" type="Button" parent="VBoxContainer"]
