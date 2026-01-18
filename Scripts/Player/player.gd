@@ -265,10 +265,10 @@ func _on_sprite_frame_changed() -> void:
 	if not sprite or not is_instance_valid(sprite):
 		return
 	
-	# Only play footstep sounds during run animation
-	if sprite.animation == "Run":
-		if sprite.frame in footstep_frames:
-			AudioManager.play_sfx("step")
+	## Only play footstep sounds during run animation
+	#if sprite.animation == "Run":
+		#if sprite.frame in footstep_frames:
+			#AudioManager.play_sfx("step")
 		
 func _setup_local_player(dev_id: int, p_number: int, inp_type: String):
 	player_number = p_number

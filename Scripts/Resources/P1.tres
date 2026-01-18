@@ -5,6 +5,7 @@
 
 [resource]
 script = ExtResource("1_i6hbs")
+name = "Max"
 sprite_frame = ExtResource("2_pw2g4")
 Speed = 70
 Jumping = 63

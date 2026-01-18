@@ -64,6 +64,7 @@ scale_curve = SubResource("CurveTexture_hk63f")
 color_ramp = SubResource("GradientTexture1D_vblhy")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_aw2wy"]
+resource_local_to_scene = true
 shader = ExtResource("2_yk4cr")
 shader_parameter/active = false
 

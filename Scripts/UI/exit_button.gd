@@ -18,14 +18,15 @@ func _on_pressed() -> void:
 		Networkhandler.is_solo = false
 		PlayerManager.reset()
 		AudioManager.play_sfx("click")
+		
 	elif get_tree().current_scene.name != "World":
 		get_tree().quit()
+
 	elif Networkhandler.is_local == false or Networkhandler.is_solo == false:
 		Networkhandler._on_server_disconnected()
 		AudioManager.play_sfx("click")
 	else:
 		get_tree().quit()
-
 
 func _on_timer_timeout() -> void:
 	disabled = false

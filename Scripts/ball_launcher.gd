@@ -30,6 +30,7 @@ func launch_ball() -> void:
 	
 	var direction = Vector2.UP.rotated(ball_spawn_point.global_rotation)
 	new_ball.linear_velocity = direction * launch_speed
+	new_ball.launcher_is_parent = true
 	
 	get_parent().add_child(new_ball, true)
 	AudioManager.play_sfx("balllaunch")

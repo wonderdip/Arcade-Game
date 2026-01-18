@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=4 uid="uid://5s78wt7um3vv"]
+[gd_scene load_steps=30 format=4 uid="uid://5s78wt7um3vv"]
 
 [ext_resource type="PackedScene" uid="uid://cf3plcg7m0wcg" path="res://Scenes/player.tscn" id="1_a02cp"]
 [ext_resource type="Script" uid="uid://bshn1jsaig2fx" path="res://Scripts/world.gd" id="1_fo5ed"]
@@ -13,6 +13,7 @@
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="11_ikia7"]
 [ext_resource type="PackedScene" uid="uid://c58nyk17ffnwj" path="res://Scenes/Menus/in_game_ui.tscn" id="12_7yui6"]
 [ext_resource type="PackedScene" uid="uid://dmo0d7ilqvp1s" path="res://Scenes/referee.tscn" id="13_c5t2i"]
+[ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="14_e0ngr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5v1tr"]
 size = Vector2(128, 30)
@@ -249,6 +250,17 @@ grow_vertical = 2
 
 [node name="Referee" parent="." instance=ExtResource("13_c5t2i")]
 position = Vector2(128, 55)
+
+[node name="PlayerJoined" type="Label" parent="."]
+custom_minimum_size = Vector2(256, 0)
+offset_top = 30.0
+offset_right = 256.0
+offset_bottom = 53.0
+theme_override_fonts/font = ExtResource("14_e0ngr")
+theme_override_font_sizes/font_size = 13
+text = "Player 1 Press Any Button"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="body_entered" from="PlayerOneSide" to="." method="_on_player_one_side_body_entered"]
 [connection signal="body_entered" from="PlayerTwoSide" to="." method="_on_player_two_side_body_entered"]

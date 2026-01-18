@@ -45,8 +45,6 @@ func set_bus_volume(bus_name: String, slider_value: float) -> void:
 	
 	if bus_name == "Music":
 		music_player.music_db = AudioServer.get_bus_volume_db(bus_index)
-		
-	play_sfx("click")
 	
 func slider_to_linear(value: float) -> float:
 	var normalized = clamp(value / 100.0, 0.0, 1.0)

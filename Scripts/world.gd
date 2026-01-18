@@ -7,6 +7,7 @@ const PLAYER_SCENE := preload("res://Scenes/player.tscn")
 @onready var ball_timer: Timer = $BallTimer
 @onready var camera_2d: Camera2D = $Camera2D
 @onready var referee: Node2D = $Referee
+@onready var player_joined: Label = $PlayerJoined
 
 var active_ball: Node2D = null
 @export var ball_spawned: bool = false
@@ -74,7 +75,8 @@ func _setup_solo_mode() -> void:
 func _setup_local_mode() -> void:
 	print("Initializing local multiplayer mode")
 	PlayerManager.player_joined.connect(_on_local_player_joined)
-
+	player_joined.show()
+	
 func _on_local_player_joined(device_id: int, player_number: int, input_type: String) -> void:
 	var player = PLAYER_SCENE.instantiate()
 	player.name = "Player_" + str(player_number)
@@ -84,13 +86,15 @@ func _on_local_player_joined(device_id: int, player_number: int, input_type: Str
 	
 	if player_number == 1:
 		PlayerManager.player_one = player
+		player_joined.text = "Player 2 Press Any Button"
 	elif player_number == 2:
 		PlayerManager.player_two = player
+		player_joined.hide()
 	
 	spawned_players.append(player)
 	
 	# Spawn ball when both players ready
-	if spawned_players.size() == 2:
+	if spawned_players.size() == 2 and current_mode == GameMode.LOCAL:
 		await get_tree().create_timer(0.5).timeout
 		_spawn_ball_local()
 
@@ -107,7 +111,7 @@ func _setup_network_mode() -> void:
 		total_players = multiplayer.get_peers().size() + 1
 		
 		# Spawn ball if we already have max players
-		if total_players == Networkhandler.MAX_CLIENTS:
+		if total_players == Networkhandler.MAX_CLIENTS and current_mode == GameMode.NETWORK:
 			await get_tree().create_timer(1.0).timeout
 			_spawn_ball_network()
 
@@ -118,7 +122,7 @@ func _on_peer_connected(id: int) -> void:
 	total_players = multiplayer.get_peers().size() + 1
 	print("Peer connected: %d (Total: %d/%d)" % [id, total_players, Networkhandler.MAX_CLIENTS])
 	
-	if total_players == Networkhandler.MAX_CLIENTS:
+	if total_players == Networkhandler.MAX_CLIENTS and current_mode == GameMode.NETWORK:
 		await get_tree().create_timer(1.0).timeout
 		_spawn_ball_network()
 
@@ -229,7 +233,7 @@ func _on_ball_timer_timeout() -> void:
 		return
 	
 	match current_mode:
-		GameMode.SOLO, GameMode.LOCAL:
+		GameMode.LOCAL:
 			_spawn_ball_local()
 		GameMode.NETWORK:
 			if is_network_server:

@@ -5,6 +5,7 @@ var audio_library: AudioLibrary
 
 var player_pool: Array[AudioStreamPlayer2D] = []
 var last_sfx_played := {}  # tag -> SoundEffect
+var pitch: float
 
 func _ready():
 	randomize()
@@ -31,10 +32,14 @@ func play_sfx(tag: String):
 	# If all players are busy, use the first one (it will stop and restart)
 	if available_player == null:
 		available_player = player_pool[0]
+		
 	
 	# Randomize pitch slightly for variety
-	var pitch := randf_range(0.95, 1.05)
 	
+	if tag != "click":
+		pitch = randf_range(0.95, 1.05)
+	else:
+		pitch = 1
 	# Play the sound
 	available_player.stream = sfx.stream
 	available_player.pitch_scale = pitch

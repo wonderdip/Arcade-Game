@@ -5,7 +5,7 @@
 
 [resource]
 script = ExtResource("1_ejrii")
-name = "P2"
+name = "Isiah"
 sprite_frame = ExtResource("2_gfnpf")
 Speed = 80
 Jumping = 70

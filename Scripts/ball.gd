@@ -30,12 +30,16 @@ var normal_linear_damp: float = 0.5
 var is_hovering: bool = false
 var is_local_mode: bool = false
 var is_solo_mode: bool = false
+var launcher_is_parent: bool = false
 
 func _ready() -> void:
 	normal_linear_damp = linear_damp
 	fire_particle.emitting = false
 	blue_fire_particle.emitting = false
-	setup_ball()
+	
+	if !launcher_is_parent:
+		setup_ball()
+		
 	is_local_mode = Networkhandler.is_local
 	is_solo_mode = Networkhandler.is_solo
 	# CRITICAL FIX: Set the server as the authority for the ball (only in network mode)
@@ -127,6 +131,8 @@ func exit_hover_zone() -> void:
 
 func _on_body_entered(body: Node) -> void:
 	# In local mode, always process. In network mode, only on server
+	AudioManager.play_sfx("ballbounce")
+	
 	if (not is_local_mode and not is_solo_mode) and not multiplayer.is_server():
 		return
 		

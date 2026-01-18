@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://b0ecpwqk6t3o5"]
+[gd_scene load_steps=17 format=3 uid="uid://b0ecpwqk6t3o5"]
 
 [ext_resource type="Theme" uid="uid://colk31q20bk6u" path="res://Themes/main_theme.tres" id="1_md8e5"]
 [ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="2_iol66"]
@@ -14,6 +14,7 @@
 [ext_resource type="FontFile" uid="uid://bock84trufxhp" path="res://Assets/Fonts/upheavtt.ttf" id="8_67ffs"]
 [ext_resource type="Theme" uid="uid://bjp5cysiu7jyt" path="res://Themes/small_sliders.tres" id="9_hgap6"]
 [ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="10_s0fgj"]
+[ext_resource type="PackedScene" uid="uid://c58nyk17ffnwj" path="res://Scenes/Menus/in_game_ui.tscn" id="15_4wy24"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i0nom"]
 shader = ExtResource("3_mfqh0")
@@ -265,6 +266,9 @@ layout_mode = 2
 value = 50.0
 editable = false
 scrollable = false
+
+[node name="InGame_UI" parent="." instance=ExtResource("15_4wy24")]
+layout_mode = 0
 
 [connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow/P1" to="." method="_on_p_1_pressed"]
 [connection signal="pressed" from="BasePanel/BaseVbox/HBoxContainer/CharVboc/FirstRow/P2" to="." method="_on_p_2_pressed"]

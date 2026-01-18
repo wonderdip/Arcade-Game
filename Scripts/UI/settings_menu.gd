@@ -12,12 +12,16 @@ signal settings_deleted
 @onready var audio_panel: Panel = $Panel/AudioPanel
 
 @onready var screen_mode: OptionButton = $Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/ScreenMode
-@onready var fps: SpinBox = $Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/FPS
+@onready var fps: HSlider = $Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/FPS
 @onready var vsync: CheckBox = $Panel/VideoPanel/ScrollContainer/HBoxContainer/Buttons/Vysnc
+@onready var fps_label: Label = $Panel/VideoPanel/ScrollContainer/HBoxContainer/Labels/FPS
 
 @onready var master_vol: HSlider = $Panel/AudioPanel/ScrollContainer/HBoxContainer/VBoxContainer/MasterVol
 @onready var music_vol: HSlider = $Panel/AudioPanel/ScrollContainer/HBoxContainer/VBoxContainer/MusicVol
 @onready var sfx_vol: HSlider = $Panel/AudioPanel/ScrollContainer/HBoxContainer/VBoxContainer/SFXVol
+@onready var master_label: Label = $Panel/AudioPanel/ScrollContainer/HBoxContainer/Labels/Master
+@onready var music_label: Label = $Panel/AudioPanel/ScrollContainer/HBoxContainer/Labels/Music
+@onready var sfx_label: Label = $Panel/AudioPanel/ScrollContainer/HBoxContainer/Labels/SFX
 
 @onready var launcher_check: CheckBox = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/LauncherCheck
 @onready var launcher_options: OptionButton = $Panel/GamePanel/ScrollContainer/HBoxContainer/Buttons/LauncherOptions
@@ -39,6 +43,7 @@ var user_settings: UserSettings
 func _ready() -> void:
 	SettingsManager.connect("close_settings", _on_exit_pressed)
 	
+	
 	user_settings = SettingsManager.get_settings()
 	_load_settings_to_ui()
 	_setup_ui()
@@ -49,7 +54,6 @@ func _setup_ui() -> void:
 	get_tree().node_added.connect(_on_node_added)
 	change_menu(2)
 	
-	_setup_spinbox_controller_input(fps)
 	_disable_label_focus()
 	
 	if Networkhandler.is_solo:
@@ -87,12 +91,15 @@ func _load_settings_to_ui() -> void:
 	master_vol.value = user_settings.master_volume_level
 	music_vol.value = user_settings.music_volume_level
 	sfx_vol.value = user_settings.sfx_volume_level
+	master_label.text = "Master Vol: " + str(user_settings.master_volume_level)
+	music_label.text = "Music Vol: " + str(user_settings.music_volume_level)
+	sfx_label.text = "SFX Vol: " + str(user_settings.sfx_volume_level)
 	
 	# Video
 	screen_mode.selected = user_settings.screen_mode
 	fps.value = user_settings.fps_limit
 	vsync.button_pressed = user_settings.vsync_on
-	
+	fps_label.text = "FPS Limit: " + str(user_settings.fps_limit) 
 	# Game
 	bot_difficulty.selected = user_settings.bot_difficulty
 
@@ -105,7 +112,7 @@ func _save_settings() -> void:
 # ========================================
 
 func _process(_delta: float) -> void:
-	if !exit.has_focus() and Input.is_action_just_pressed("exit_ui") and !fps.has_focus():
+	if !exit.has_focus() and Input.is_action_just_pressed("exit_ui"):
 		exit.grab_focus()
 
 func _on_game_pressed() -> void:
@@ -170,6 +177,9 @@ func _on_launcher_options_item_selected(index: int) -> void:
 	if existing_launcher:
 		existing_launcher.change_position(index + 1)
 
+func _on_launcher_options_pressed() -> void:
+	AudioManager.play_sfx("click")
+	
 func _find_existing_launcher() -> Node:
 	var world = get_tree().current_scene
 	if world:
@@ -241,6 +251,9 @@ func _on_bot_block_toggled(toggled_on: bool) -> void:
 	if bot:
 		bot.can_block = toggled_on
 
+func _on_bot_difficulty_pressed() -> void:
+	AudioManager.play_sfx("click")
+	
 func _find_bot() -> Node:
 	var world = get_tree().current_scene
 	if world:
@@ -281,9 +294,14 @@ func _on_screen_mode_item_selected(index: int) -> void:
 	_save_settings()
 	AudioManager.play_sfx("click")
 
+func _on_screen_mode_pressed() -> void:
+	AudioManager.play_sfx("click")
+
 func _on_fps_value_changed(value: int) -> void:
 	user_settings.fps_limit = int(value)
+	fps_label.text = "FPS Limit: " + str(user_settings.fps_limit) 
 	Engine.max_fps = int(value)
+	AudioManager.play_sfx("click")
 	_save_settings()
 
 func _on_vysnc_toggled(toggled_on: bool) -> void:
@@ -302,16 +320,22 @@ func _on_vysnc_toggled(toggled_on: bool) -> void:
 func _on_master_vol_value_changed(value: float) -> void:
 	user_settings.master_volume_level = int(value)
 	AudioManager.set_bus_volume("Master", user_settings.master_volume_level)
+	master_label.text = "Master Vol: " + str(user_settings.master_volume_level)
+	AudioManager.play_sfx("click")
 	_save_settings()
 
 func _on_sfx_vol_value_changed(value: float) -> void:
 	user_settings.sfx_volume_level = int(value)
 	AudioManager.set_bus_volume("SFX", user_settings.sfx_volume_level)
+	sfx_label.text = "SFX Vol: " + str(user_settings.sfx_volume_level)
+	AudioManager.play_sfx("click")
 	_save_settings()
 
 func _on_music_vol_value_changed(value: float) -> void:
 	user_settings.music_volume_level = int(value)
 	AudioManager.set_bus_volume("Music", user_settings.music_volume_level)
+	music_label.text = "Music Vol: " + str(user_settings.music_volume_level)
+	AudioManager.play_sfx("click")
 	_save_settings()
 
 # ========================================
@@ -347,12 +371,13 @@ func _setup_focus_neighbors() -> void:
 	# Video panel
 	video.focus_neighbor_right = screen_mode.get_path()
 	screen_mode.focus_neighbor_left = video.get_path()
-	screen_mode.focus_neighbor_bottom = fps.get_path()
+	screen_mode.focus_neighbor_bottom = vsync.get_path()
 	fps.focus_neighbor_left = video.get_path()
-	fps.focus_neighbor_top = screen_mode.get_path()
-	fps.focus_neighbor_bottom = vsync.get_path()
+	fps.focus_neighbor_top = vsync.get_path()
+	fps.focus_neighbor_bottom = screen_mode.get_path()
 	vsync.focus_neighbor_left = video.get_path()
-	vsync.focus_neighbor_top = fps.get_path()
+	vsync.focus_neighbor_top = screen_mode.get_path()
+	vsync.focus_neighbor_bottom = fps.get_path()
 	
 	# Audio panel
 	audio.focus_neighbor_right = master_vol.get_path()
@@ -363,26 +388,7 @@ func _setup_focus_neighbors() -> void:
 	music_vol.focus_neighbor_bottom = sfx_vol.get_path()
 	sfx_vol.focus_neighbor_left = audio.get_path()
 	sfx_vol.focus_neighbor_top = music_vol.get_path()
-
-func _setup_spinbox_controller_input(spinbox: SpinBox) -> void:
-	var line_edit = _get_spinbox_line_edit(spinbox)
-	if line_edit:
-		line_edit.focus_mode = Control.FOCUS_NONE
-		line_edit.mouse_filter = Control.MOUSE_FILTER_PASS
 	
-	spinbox.focus_mode = Control.FOCUS_ALL
-	if not spinbox.focus_entered.is_connected(_on_fps_focus_entered):
-		spinbox.focus_entered.connect(_on_fps_focus_entered)
-
-func _on_fps_focus_entered() -> void:
-	fps.grab_focus()
-
-func _get_spinbox_line_edit(spinbox: SpinBox) -> LineEdit:
-	for child in spinbox.get_children():
-		if child is LineEdit:
-			return child
-	return null
-
 func _get_all_labels(root: Node) -> Array[Label]:
 	var result: Array[Label] = []
 	_collect_labels(root, result)
