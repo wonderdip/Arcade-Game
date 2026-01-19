@@ -212,22 +212,49 @@ func _on_ball_scored(side: int) -> void:
 		AudioManager.play_sfx("quick_whistle")
 	else:
 		referee.call_point(side)
-		_reset_player_positions()
-	# Reset player positions
 	
+	# Reset player positions based on mode
+	match current_mode:
+		GameMode.SOLO, GameMode.LOCAL:
+			_reset_player_positions()
+		GameMode.NETWORK:
+			if is_network_server:
+				_reset_player_positions_network()
+			# Clients don't need to do anything - they'll receive the RPC
 	
 	# Start timer for next ball
 	ball_timer.start()
 
 func _reset_player_positions() -> void:
-	"""Move players back to spawn positions"""
-	await get_tree().create_timer(0.3).timeout  # Small delay before resetting
+	"""Move players back to spawn positions (Local/Solo mode)"""
+	await get_tree().create_timer(0.3).timeout
 	
 	if PlayerManager.player_one:
 		PlayerManager.player_one.global_position = PlayerManager.get_spawn_position(1)
 	if PlayerManager.player_two:
 		PlayerManager.player_two.global_position = PlayerManager.get_spawn_position(2)
 
+func _reset_player_positions_network() -> void:
+	"""Reset player positions in network mode (Server calls this and syncs to clients)"""
+	await get_tree().create_timer(0.3).timeout
+	
+	# Call RPC to reset all clients
+	_reset_all_players.rpc()
+
+@rpc("authority", "call_local", "reliable")
+func _reset_all_players() -> void:
+	"""RPC called on all peers to reset their player positions"""
+	# Find all player nodes
+	for child in get_children():
+		if child is CharacterBody2D and child.is_in_group("Player"):
+			var player_num = child.player_number
+			if player_num > 0:
+				child.global_position = PlayerManager.get_spawn_position(player_num)
+				print("[%d] Reset player %d to position %s" % [
+					multiplayer.get_unique_id(), 
+					player_num, 
+					PlayerManager.get_spawn_position(player_num)
+				])
 		
 func _on_ball_timer_timeout() -> void:
 	"""Spawn new ball after timer expires"""

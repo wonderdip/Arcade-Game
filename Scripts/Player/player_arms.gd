@@ -226,14 +226,29 @@ func _apply_hit_to_ball_server(body: RigidBody2D, contact_point: Vector2, face_r
 		is_set,
 		ball_control
 	)
-
-	body.apply_impulse(impulse, contact_point - body.global_position)
-
+	# Safety check for impulse magnitude
+	if impulse.length() > 1000.0:
+		push_warning("Impulse too large! Capping. Original: " + str(impulse))
+		impulse = impulse.normalized() * 1000.0
+	
+	# Apply impulse with safety check
+	var contact_offset = contact_point - body.global_position
+	if contact_offset.length() > 50.0:  # If contact point is too far from ball center
+		push_warning("Contact point too far from ball center! Using ball position.")
+		contact_offset = Vector2.ZERO
+	
+	body.apply_impulse(impulse, contact_offset)
+	body.animation_player.play("blink")
+	
+	if is_hitting or is_blocking:
+		set_collision_shape(true)
+		
+	touch_counter += 1
+	
 	# Cap speed
 	await get_tree().process_frame
 	if body.linear_velocity.length() > max_ball_speed:
 		body.linear_velocity = body.linear_velocity.normalized() * max_ball_speed
-		
 		
 func calculate_ball_hit(
 	body: RigidBody2D,

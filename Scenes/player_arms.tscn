@@ -2,6 +2,30 @@
 
 [ext_resource type="Script" uid="uid://drtktdqtjnlbe" path="res://Scripts/Player/player_arms.gd" id="1_f6qgc"]
 
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ism15"]
+resource_local_to_scene = true
+radius = 4.5
+height = 20.0
+
+[sub_resource type="Curve" id="Curve_t0651"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_yk4cr"]
+curve = SubResource("Curve_t0651")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_f6qgc"]
+particle_flag_disable_z = true
+emission_shape = 1
+emission_sphere_radius = 5.0
+radial_velocity_min = 14.999977
+radial_velocity_max = 39.999977
+gravity = Vector3(0, 0, 0)
+linear_accel_min = -2.2351742e-06
+linear_accel_max = 25.399998
+scale_max = 4.0
+scale_curve = SubResource("CurveTexture_yk4cr")
+
 [sub_resource type="Animation" id="Animation_by7ge"]
 resource_name = "Block"
 step = 1.0
@@ -152,30 +176,6 @@ _data = {
 &"Set": SubResource("Animation_w22st")
 }
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ism15"]
-resource_local_to_scene = true
-radius = 4.5
-height = 20.0
-
-[sub_resource type="Curve" id="Curve_t0651"]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="CurveTexture" id="CurveTexture_yk4cr"]
-curve = SubResource("Curve_t0651")
-
-[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_f6qgc"]
-particle_flag_disable_z = true
-emission_shape = 1
-emission_sphere_radius = 5.0
-radial_velocity_min = 14.999977
-radial_velocity_max = 39.999977
-gravity = Vector3(0, 0, 0)
-linear_accel_min = -2.2351742e-06
-linear_accel_max = 25.399998
-scale_max = 4.0
-scale_curve = SubResource("CurveTexture_yk4cr")
-
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_t0651"]
 properties/0/path = NodePath("CollisionShape2D/CollisionParticle:emitting")
 properties/0/spawn = true
@@ -186,6 +186,9 @@ properties/1/replication_mode = 1
 properties/2/path = NodePath("CollisionShape2D:disabled")
 properties/2/spawn = true
 properties/2/replication_mode = 1
+properties/3/path = NodePath("CollisionShape2D/CollisionParticle:position")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [node name="Player Arms" type="Area2D"]
 collision_layer = 64
@@ -193,15 +196,10 @@ collision_mask = 2
 script = ExtResource("1_f6qgc")
 ball_control = 0.2
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_5llls")
-}
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-6, -9)
 rotation = 0.2617994
-scale = Vector2(0.9999998, 0.9999998)
+scale = Vector2(0.99999976, 0.99999976)
 shape = SubResource("CapsuleShape2D_ism15")
 debug_color = Color(0.99861974, 0, 0.14905396, 0.41960785)
 
@@ -215,8 +213,14 @@ explosiveness = 1.0
 local_coords = true
 process_material = SubResource("ParticleProcessMaterial_f6qgc")
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_5llls")
+}
+
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_t0651")
+visibility_update_mode = 1
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="body_exited" from="." to="." method="_on_body_exited"]

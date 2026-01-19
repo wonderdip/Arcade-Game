@@ -99,9 +99,6 @@ properties/7/replication_mode = 1
 properties/8/path = NodePath("FireParticle:emitting")
 properties/8/spawn = true
 properties/8/replication_mode = 1
-properties/9/path = NodePath("BallSprite:shader_parameter/active")
-properties/9/spawn = true
-properties/9/replication_mode = 1
 
 [sub_resource type="Animation" id="Animation_aw2wy"]
 length = 0.001
