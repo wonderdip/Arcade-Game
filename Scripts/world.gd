@@ -110,6 +110,7 @@ func _setup_network_mode() -> void:
 		multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 		total_players = multiplayer.get_peers().size() + 1
 		
+		
 		# Spawn ball if we already have max players
 		if total_players == Networkhandler.MAX_CLIENTS and current_mode == GameMode.NETWORK:
 			await get_tree().create_timer(1.0).timeout
@@ -227,6 +228,7 @@ func _reset_player_positions() -> void:
 	if PlayerManager.player_two:
 		PlayerManager.player_two.global_position = PlayerManager.get_spawn_position(2)
 
+		
 func _on_ball_timer_timeout() -> void:
 	"""Spawn new ball after timer expires"""
 	if ball_spawned:

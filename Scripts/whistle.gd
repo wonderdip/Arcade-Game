@@ -21,7 +21,7 @@ func call_point(side: int) -> void:
 	size_tween.tween_property(whistle_sprite, "scale", Vector2(0, 0), 0.5).set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_IN)
 	AudioManager.play_sfx("long_whistle")
 	await size_tween.finished
-	
+	whistle_sprite.hide()
 	
 	match side:
 		1:

@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://bqo6kuh7gw6rn" path="res://Assets/Start Screen/TopViewCourt_Gradient.png" id="3_xb0mg"]
 [ext_resource type="Shader" uid="uid://binjhiy2didyr" path="res://Shaders/Vignette.gdshader" id="4_aw7ix"]
 [ext_resource type="PackedScene" uid="uid://c58nyk17ffnwj" path="res://Scenes/Menus/in_game_ui.tscn" id="5_aw7ix"]
-[ext_resource type="Script" uid="uid://d1v7jwlj2xfc4" path="res://Scripts/UI/spinbox.gd" id="5_o41or"]
+[ext_resource type="FontFile" uid="uid://cql3uikf8tstl" path="res://Assets/Fonts/nokiafc22.ttf" id="5_o41or"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_o41or"]
 shader = ExtResource("4_aw7ix")
@@ -70,13 +70,22 @@ horizontal_alignment = 1
 layout_mode = 2
 placeholder_text = "Name..."
 
-[node name="SpinBox" type="SpinBox" parent="VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="MaxPlayers" type="Label" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("5_o41or")
+theme_override_font_sizes/font_size = 8
+text = "Max Players: 2"
+
+[node name="PlayerSlider" type="HSlider" parent="VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 min_value = 2.0
 max_value = 4.0
 value = 2.0
-prefix = "Max Players:"
-script = ExtResource("5_o41or")
+rounded = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -100,6 +109,6 @@ offset_top = -72.0
 offset_right = -128.0
 offset_bottom = -72.0
 
-[connection signal="value_changed" from="VBoxContainer/SpinBox" to="." method="_on_spin_box_value_changed"]
+[connection signal="value_changed" from="VBoxContainer/HBoxContainer2/PlayerSlider" to="." method="_on_player_slider_value_changed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Confirm" to="." method="_on_confirm_pressed"]
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/Back" to="." method="_on_back_pressed"]

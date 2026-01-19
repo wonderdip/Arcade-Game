@@ -252,6 +252,7 @@ grow_vertical = 2
 position = Vector2(128, 55)
 
 [node name="PlayerJoined" type="Label" parent="."]
+visible = false
 custom_minimum_size = Vector2(256, 0)
 offset_top = 30.0
 offset_right = 256.0

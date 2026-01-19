@@ -60,7 +60,7 @@ func _on_peer_disconnected(id: int) -> void:
 	
 func spawn_player(id: int, index: int) -> void:
 	# Create player instance
-	var player: CharacterBody2D = network_player.instantiate() as CharacterBody2D
+	var player: CharacterBody2D = network_player.instantiate()
 	
 	#Set the name to the peer ID so clients know who owns this player
 	player.name = str(id)
@@ -74,3 +74,9 @@ func spawn_player(id: int, index: int) -> void:
 	player.player_number = index
 	player.position = spawn_pos
 	
+	match index:
+		1:
+			PlayerManager.player_one = player
+		2:
+			PlayerManager.player_two = player
+			
