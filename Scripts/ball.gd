@@ -68,7 +68,7 @@ func _ready() -> void:
 	else:
 		sleeping = false
 		contact_monitor = true
-		max_contacts_reported = 4
+		max_contacts_reported = 16
 		
 func setup_ball():
 	freeze_timer.start()
@@ -136,11 +136,6 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	# Cap angular velocity
 	if abs(state.angular_velocity) > 10.0:
 		state.angular_velocity = sign(state.angular_velocity) * 10.0
-	
-	# Store server position for clients to sync to
-	if multiplayer.is_server() or is_local_mode or is_solo_mode:
-		server_position = state.transform.origin
-		server_velocity = state.linear_velocity
 
 func enter_hover_zone() -> void:
 	if not is_hovering:

@@ -224,8 +224,11 @@ settings={
 
 [physics]
 
+2d/run_on_separate_thread=true
 common/physics_ticks_per_second=120
+common/max_physics_steps_per_frame=16
 common/physics_jitter_fix=0.0
+2d/physics_engine="Rapier2D"
 
 [rendering]
 

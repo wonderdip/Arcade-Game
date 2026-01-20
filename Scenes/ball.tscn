@@ -193,7 +193,6 @@ texture = ExtResource("1_d60mj")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_ij5cq")
-visibility_update_mode = 1
 
 [node name="FreezeTimer" type="Timer" parent="."]
 one_shot = true

@@ -365,7 +365,7 @@ func _decide_action() -> void:
 	
 	# 4. SET - Medium ball on ground
 	if is_on_floor() and in_set_range and player_arms.touch_counter >= 1 and distance_to_net < 110:
-		if hit_type == "quick" and (player_arms.touch_counter <= 2 or player_arms.touch_counter >= 8):
+		if hit_type == "quick" and (player_arms.touch_counter <= 2 or player_arms.touch_counter >= 10):
 			current_action = "set"
 			is_setting = true
 			action_hold_timer = 0.5

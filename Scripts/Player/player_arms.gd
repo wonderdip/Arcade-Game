@@ -49,11 +49,9 @@ func _ready():
 		
 func set_collision_shape(disabled: bool):
 	if disabled:
-		collision_shape.shape.radius = 0
-		collision_shape.shape.height = 0
+		collision_shape.disabled = true
 	else:
-		collision_shape.shape.radius = original_shape_size.x
-		collision_shape.shape.height = original_shape_size.y
+		collision_shape.disabled = false
 		
 		
 func _process(delta: float) -> void:
@@ -67,8 +65,6 @@ func _process(delta: float) -> void:
 	for body in bodies_to_remove:
 		body_hit_cooldowns.erase(body)
 
-# Replace the _on_body_entered function in Scripts/Player/player_arms.gd
-
 func _on_body_entered(body: Node):
 	if not (is_hitting or is_bumping or is_blocking or is_setting):
 		return
@@ -78,24 +74,12 @@ func _on_body_entered(body: Node):
 		return
 	
 	# For instant actions (hit, block), check cooldown
-	if (is_hitting or is_blocking):
+	if (is_hitting or is_blocking or is_bumping or is_setting):
 		if body_hit_cooldowns.has(body) and body_hit_cooldowns[body] > 0:
 			return
 		if hit_bodies.has(body):
 			return
-	
-	# For hold actions (bump, set), allow continuous contact but with minimum interval
-	if (is_bumping or is_setting):
-		var current_time = Time.get_ticks_msec() / 1000.0
-		if last_hit_time.has(body):
-			var time_since_last = current_time - last_hit_time[body]
-			# Minimum 0.15 seconds between hits (reduced for better responsiveness)
-			if time_since_last < 0.15:
-				return
-		last_hit_time[body] = current_time
-	
-	# CRITICAL FIX: Always send to server in network mode
-	# This ensures consistent timing and prevents race conditions
+		
 	if is_network_mode:
 		if multiplayer.is_server():
 			# Server applies directly
