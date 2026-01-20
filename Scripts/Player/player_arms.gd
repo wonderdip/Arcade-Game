@@ -67,7 +67,8 @@ func _process(delta: float) -> void:
 	for body in bodies_to_remove:
 		body_hit_cooldowns.erase(body)
 
-# Called when a body enters the arm's area
+# Replace the _on_body_entered function in Scripts/Player/player_arms.gd
+
 func _on_body_entered(body: Node):
 	if not (is_hitting or is_bumping or is_blocking or is_setting):
 		return
@@ -88,17 +89,22 @@ func _on_body_entered(body: Node):
 		var current_time = Time.get_ticks_msec() / 1000.0
 		if last_hit_time.has(body):
 			var time_since_last = current_time - last_hit_time[body]
-			# Minimum 0.2 seconds between hits from same hold action
-			if time_since_last < 0.2:
+			# Minimum 0.15 seconds between hits (reduced for better responsiveness)
+			if time_since_last < 0.15:
 				return
 		last_hit_time[body] = current_time
 	
-	# In network mode, send hit to server
-	if is_network_mode and not multiplayer.is_server():
-		print("Client sending hit RPC to server")
-		_request_ball_hit.rpc_id(1, body.get_path(), collision_shape.global_position, facing_right, is_hitting, is_bumping, is_blocking, is_setting)
+	# CRITICAL FIX: Always send to server in network mode
+	# This ensures consistent timing and prevents race conditions
+	if is_network_mode:
+		if multiplayer.is_server():
+			# Server applies directly
+			_apply_hit_to_ball(body)
+		else:
+			# Client sends RPC
+			_request_ball_hit.rpc_id(1, body.get_path(), collision_shape.global_position, facing_right, is_hitting, is_bumping, is_blocking, is_setting)
 	else:
-		# Server or local mode - apply directly
+		# Local/solo mode - apply directly
 		_apply_hit_to_ball(body)
 	
 	hit_bodies[body] = true

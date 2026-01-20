@@ -25,11 +25,12 @@ func _ready() -> void:
 # SERVER FUNCTIONS
 # ========================================
 
+# Replace the start_server and join_server functions in Scripts/networkhandler.gd
+
 func start_server(server_name_param: String = "", port: int = DEFAULT_PORT) -> void:
 	if server_name_param != "":
 		server_name = server_name_param
 	
-	# Clean up any existing connection
 	reset_network()
 	
 	peer = ENetMultiplayerPeer.new()
@@ -47,6 +48,9 @@ func start_server(server_name_param: String = "", port: int = DEFAULT_PORT) -> v
 		_show_error_and_return("Failed to start server")
 		return
 	
+	# CRITICAL OPTIMIZATION: Enable compression for lower bandwidth
+	peer.get_host().compress(ENetConnection.COMPRESS_RANGE_CODER)
+	
 	multiplayer.multiplayer_peer = peer
 	is_server = true
 	is_client = false
@@ -55,7 +59,7 @@ func start_server(server_name_param: String = "", port: int = DEFAULT_PORT) -> v
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	
-	print("Server started successfully on port %d" % port)
+	print("Server started on port %d with compression enabled" % port)
 	
 	# Start broadcasting server info
 	ServerDiscovery.start_broadcasting(server_name, port, MAX_CLIENTS)
@@ -63,6 +67,37 @@ func start_server(server_name_param: String = "", port: int = DEFAULT_PORT) -> v
 	# Load game scene
 	get_tree().change_scene_to_file("res://Scenes/world.tscn")
 
+func join_server(ip_address: String, port: int = DEFAULT_PORT) -> void:
+	print("Attempting to connect to %s:%d" % [ip_address, port])
+	
+	reset_network()
+	
+	peer = ENetMultiplayerPeer.new()
+	var error = peer.create_client(ip_address, port)
+	
+	if error != OK:
+		push_error("Failed to create client: %s" % error)
+		_show_error_and_return("Failed to connect")
+		return
+	
+	# CRITICAL OPTIMIZATION: Enable compression for lower bandwidth
+	peer.get_host().compress(ENetConnection.COMPRESS_RANGE_CODER)
+	
+	multiplayer.multiplayer_peer = peer
+	is_client = true
+	is_server = false
+	connection_attempts = 0
+	
+	# Connect client signals
+	if not multiplayer.connected_to_server.is_connected(_on_connected_to_server):
+		multiplayer.connected_to_server.connect(_on_connected_to_server)
+	if not multiplayer.connection_failed.is_connected(_on_connection_failed):
+		multiplayer.connection_failed.connect(_on_connection_failed)
+	if not multiplayer.server_disconnected.is_connected(_on_server_disconnected):
+		multiplayer.server_disconnected.connect(_on_server_disconnected)
+	
+	print("Client created with compression enabled")
+	
 func _on_peer_connected(id: int) -> void:
 	if not is_server:
 		return
@@ -99,33 +134,6 @@ func start_client() -> void:
 	"""Open the server browser"""
 	reset_network()
 	get_tree().change_scene_to_file("res://Scenes/Menus/server_browser.tscn")
-
-func join_server(ip_address: String, port: int = DEFAULT_PORT) -> void:
-	print("Attempting to connect to %s:%d" % [ip_address, port])
-	
-	# Clean up any existing connection
-	reset_network()
-	
-	peer = ENetMultiplayerPeer.new()
-	var error = peer.create_client(ip_address, port)
-	
-	if error != OK:
-		push_error("Failed to create client: %s" % error)
-		_show_error_and_return("Failed to connect")
-		return
-	
-	multiplayer.multiplayer_peer = peer
-	is_client = true
-	is_server = false
-	connection_attempts = 0
-	
-	# Connect client signals
-	if not multiplayer.connected_to_server.is_connected(_on_connected_to_server):
-		multiplayer.connected_to_server.connect(_on_connected_to_server)
-	if not multiplayer.connection_failed.is_connected(_on_connection_failed):
-		multiplayer.connection_failed.connect(_on_connection_failed)
-	if not multiplayer.server_disconnected.is_connected(_on_server_disconnected):
-		multiplayer.server_disconnected.connect(_on_server_disconnected)
 
 func _on_connected_to_server() -> void:
 	print("Successfully connected to server")

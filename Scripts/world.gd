@@ -57,6 +57,7 @@ func _initialize_mode() -> void:
 
 func _setup_solo_mode() -> void:
 	print("Initializing solo mode")
+	player_joined.hide()
 	var player = PLAYER_SCENE.instantiate()
 	player.position = Vector2(30, 112)
 	add_child(player)
@@ -104,6 +105,7 @@ func _on_local_player_joined(device_id: int, player_number: int, input_type: Str
 
 func _setup_network_mode() -> void:
 	print("Initializing network mode (server: %s)" % is_network_server)
+	player_joined.hide()
 	
 	if is_network_server:
 		multiplayer.peer_connected.connect(_on_peer_connected)
@@ -163,15 +165,23 @@ func _spawn_ball_network() -> void:
 	_cleanup_existing_ball()
 	
 	var ball = BALL_SCENE.instantiate()
-	ball.name = "Ball_" + str(Time.get_ticks_msec())
-	ball.global_position = _get_ball_spawn_position()
+	ball.name = "Ball"  # Consistent name for replication
+	var spawn_pos = _get_ball_spawn_position()
+	ball.global_position = spawn_pos
 	ball.current_player_side = score_board.last_point
 	
 	add_child(ball, true)
 	active_ball = ball
 	ball_spawned = true
 	
+	# IMPORTANT: Set velocity to zero explicitly to ensure clean spawn
+	await get_tree().physics_frame
+	ball.linear_velocity = Vector2.ZERO
+	ball.angular_velocity = 0.0
+	
 	_connect_ball_signals(ball)
+	
+	print("[Server] Ball spawned at: ", spawn_pos)
 
 @rpc("any_peer", "call_remote", "reliable")
 func _request_ball_spawn() -> void:
@@ -215,7 +225,7 @@ func _on_ball_scored(side: int) -> void:
 	
 	# Reset player positions based on mode
 	match current_mode:
-		GameMode.SOLO, GameMode.LOCAL:
+		GameMode.LOCAL:
 			_reset_player_positions()
 		GameMode.NETWORK:
 			if is_network_server:

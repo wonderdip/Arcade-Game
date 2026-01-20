@@ -63,17 +63,40 @@ func _ready() -> void:
 	# Load character based on mode
 	_load_character()
 	
-	# Just verify we have proper authority for input
+	# Set up input authority in network mode
 	if !is_local_mode and !is_solo_mode:
-		if get_multiplayer_authority() == multiplayer.get_unique_id():
-			print("This player instance is controlled locally")
+		# CRITICAL: Each player processes their own input locally
+		# Only physics results are synced, not input commands
+		var my_id = multiplayer.get_unique_id()
+		var node_id = int(name)
 		
-		print("[Player._ready] name=", name,
-			" player_number=", player_number,
-			" authority=", get_multiplayer_authority(),
-			" unique_id=", multiplayer.get_unique_id(),
-			" is_server=", multiplayer.is_server(),
-			" pos=", global_position)
+		if my_id == node_id:
+			# This is MY player - I control it
+			set_physics_process(true)
+			print("Player %d: Local control enabled" % player_number)
+		else:
+			# This is SOMEONE ELSE's player - just watch
+			set_physics_process(true)  # Still process for smooth interpolation
+			print("Player %d: Remote observation mode" % player_number)
+	
+	print("[Player._ready] name=", name,
+		" player_number=", player_number,
+		" authority=", get_multiplayer_authority(),
+		" unique_id=", multiplayer.get_unique_id() if multiplayer.multiplayer_peer else -1)
+
+# Add this NEW function to handle input checking in network mode
+func _can_process_input() -> bool:
+	"""Check if this client should process input for this player"""
+	if is_local_mode or is_solo_mode:
+		return true
+	
+	if not multiplayer.multiplayer_peer:
+		return true
+	
+	var my_id = multiplayer.get_unique_id()
+	var node_id = int(name)
+	
+	return my_id == node_id
 
 func _load_character():
 	var char_stat: CharacterStat = null

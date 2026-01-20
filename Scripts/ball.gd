@@ -15,8 +15,9 @@ signal update_score(current_player_side)
 @onready var ball_sprite: Sprite2D = $BallSprite
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
-const MAX_POSITION = 10000.0  # Maximum allowed position value
-const MIN_POSITION = -1000.0  # Minimum allowed position value
+const MAX_POSITION = 10000.0
+const MIN_POSITION = -1000.0
+const INTERPOLATION_SPEED = 20.0  # How fast to interpolate to server position
 
 # These need to be synced
 var current_player_side: int = 0:
@@ -32,6 +33,13 @@ var is_local_mode: bool = false
 var is_solo_mode: bool = false
 var launcher_is_parent: bool = false
 
+# Client-side prediction variables
+var is_client: bool = false
+var server_position: Vector2 = Vector2.ZERO
+var server_velocity: Vector2 = Vector2.ZERO
+var position_buffer: Array = []
+var max_buffer_size: int = 3
+
 func _ready() -> void:
 	normal_linear_damp = linear_damp
 	fire_particle.emitting = false
@@ -42,26 +50,25 @@ func _ready() -> void:
 		
 	is_local_mode = Networkhandler.is_local
 	is_solo_mode = Networkhandler.is_solo
-	# CRITICAL FIX: Set the server as the authority for the ball (only in network mode)
+	
 	if !is_local_mode and !is_solo_mode:
 		if multiplayer.is_server():
-			# Server is ALWAYS authority 1
 			set_multiplayer_authority(1)
-			print("Ball: Server set as authority")
-			
-	if is_local_mode or is_solo_mode:
-		# Local mode - always simulate physics
-		sleeping = false
-	elif multiplayer.is_server():
-		# Network mode - server simulates fully
-		sleeping = false
-		print("Ball: Server ready, physics enabled")
+			sleeping = false
+			contact_monitor = true
+			max_contacts_reported = 4
+			print("Ball: Server authority set")
+		else:
+			# CLIENT SIDE PREDICTION
+			is_client = true
+			sleeping = false
+			contact_monitor = false
+			# Allow client to simulate physics locally for smooth motion
+			print("Ball: Client with prediction enabled")
 	else:
-		# Clients still need collision detection but don't modify physics
 		sleeping = false
 		contact_monitor = true
-		max_contacts_reported = 1
-		print("Ball: Client ready, authority is ", get_multiplayer_authority())
+		max_contacts_reported = 4
 		
 func setup_ball():
 	freeze_timer.start()
@@ -69,8 +76,8 @@ func setup_ball():
 	blink(1)
 	
 func blink(length: float):
-	var blink_speed = 0.1  # Time between blinks (fixed speed)
-	var blink_count = min(10, int(length / blink_speed) * 2)  # Ensure even count
+	var blink_speed = 0.1
+	var blink_count = min(10, int(length / blink_speed) * 2)
 	
 	blink_timer.wait_time = blink_speed
 	
@@ -83,40 +90,58 @@ func _on_freeze_timer_timeout() -> void:
 	sleeping = false
 	gravity_scale = normal_gravity_scale
 	
-func _physics_process(_delta: float) -> void:
-	# Keep the raycast pointing straight down in world space
+func _physics_process(delta: float) -> void:
 	landing_ray.global_rotation = 0
 
 	if landing_ray.is_colliding():
 		var hit_point: Vector2 = landing_ray.get_collision_point()
 		landing_sprite.global_position = hit_point
 		landing_sprite.global_rotation = 0
+	
+	# CLIENT PREDICTION: Smooth interpolation to server position
+	if is_client and server_position != Vector2.ZERO:
+		var distance = global_position.distance_to(server_position)
+		
+		# If we're too far from server, snap to server position
+		if distance > 50.0:
+			global_position = server_position
+			linear_velocity = server_velocity
+		elif distance > 5.0:
+			# Smoothly interpolate towards server position
+			var blend_factor = clamp(delta * INTERPOLATION_SPEED, 0.0, 1.0)
+			global_position = global_position.lerp(server_position, blend_factor)
+			linear_velocity = linear_velocity.lerp(server_velocity, blend_factor)
 
 func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
-	# In local mode, always process. In network mode, only on server
-	if (not is_local_mode and not is_solo_mode) and not multiplayer.is_server():
-		return
+	# Server simulates full physics
+	if (not is_local_mode and not is_solo_mode):
+		if not multiplayer.is_server():
+			# Client: Use predicted physics but don't apply to server
+			return
 	
 	# Safety check for position
 	var pos = state.transform.origin
 	if abs(pos.x) > MAX_POSITION or abs(pos.y) > MAX_POSITION or pos.y < MIN_POSITION:
 		push_warning("Ball position out of bounds! Resetting. Pos: " + str(pos))
-		# Reset to center top
 		state.transform.origin = Vector2(128, -40)
 		state.linear_velocity = Vector2.ZERO
 		state.angular_velocity = 0
 		return
 	
-	# Cap velocity to prevent ball from going crazy
+	# Cap velocity
 	var vel: Vector2 = state.linear_velocity
 	if vel.length() > max_velocity:
 		state.linear_velocity = vel.normalized() * max_velocity
 	
-	# Cap angular velocity too
+	# Cap angular velocity
 	if abs(state.angular_velocity) > 10.0:
 		state.angular_velocity = sign(state.angular_velocity) * 10.0
 	
-	
+	# Store server position for clients to sync to
+	if multiplayer.is_server() or is_local_mode or is_solo_mode:
+		server_position = state.transform.origin
+		server_velocity = state.linear_velocity
+
 func enter_hover_zone() -> void:
 	if not is_hovering:
 		is_hovering = true
@@ -130,21 +155,21 @@ func exit_hover_zone() -> void:
 		linear_damp = normal_linear_damp
 
 func _on_body_entered(body: Node) -> void:
-	# In local mode, always process. In network mode, only on server
-	AudioManager.play_sfx("ballbounce")
+	# Only play sound locally (not authority-dependent)
+	if is_local_mode or is_solo_mode or multiplayer.is_server():
+		AudioManager.play_sfx("ballbounce")
 	
+	# Only server processes scoring
 	if (not is_local_mode and not is_solo_mode) and not multiplayer.is_server():
 		return
 		
 	if scored:
 		return
 		
-	# Only trigger when hitting something relevant (floor/pole/walls)
 	if body is TileMapLayer or (body is StaticBody2D and (body.collision_layer & 4)):
 		emit_signal("update_score", current_player_side)
 		scored = true
 		
-		# Keep bouncing but ignore everything except layers 3, 4, 6
 		var allowed_layers: int = (1 << 2) | (1 << 3) | (1 << 5)
 		collision_mask = allowed_layers
 

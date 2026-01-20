@@ -69,6 +69,7 @@ shader = ExtResource("2_yk4cr")
 shader_parameter/active = false
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ij5cq"]
+resource_local_to_scene = true
 radius = 6.0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_ij5cq"]
@@ -99,6 +100,9 @@ properties/7/replication_mode = 1
 properties/8/path = NodePath("FireParticle:emitting")
 properties/8/spawn = true
 properties/8/replication_mode = 1
+properties/9/path = NodePath(".:gravity_scale")
+properties/9/spawn = true
+properties/9/replication_mode = 1
 
 [sub_resource type="Animation" id="Animation_aw2wy"]
 length = 0.001
@@ -147,7 +151,7 @@ gravity_scale = 0.8
 can_sleep = false
 continuous_cd = 2
 contact_monitor = true
-max_contacts_reported = 1
+max_contacts_reported = 4
 linear_damp = 0.5
 angular_damp = 2.0
 script = ExtResource("1_ij5cq")
